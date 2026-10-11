@@ -1,0 +1,12 @@
+﻿---
+import Layout from '../layouts/Layout.astro';
+const siteUrl = Astro.site ? Astro.site.origin : 'https://youth-rent-24.pages.dev';
+---
+<Layout title="서비스 안내 - 청년월세24" description="청년월세24 서비스 소개 및 데이터 출처 안내입니다." canonical={`${siteUrl}/about/`} hasAds={false}>
+  <main style="max-width: 800px; margin: 3rem auto; padding: 0 1rem;">
+    <h1>서비스 안내</h1>
+    <p>청년월세24는 전국 각 지자체에서 시행 중인 청년 월세 특별지원 사업 공고 및 지원 기준 데이터를 분석하여, 청년 가구가 본인 부담액과 수령 가능 금액을 쉽게 산출할 수 있도록 지원하는 비영리 목적의 공공 정보 가이드입니다.</p>
+    <h2>데이터 출처</h2>
+    <p>본 사이트의 데이터는 정부24, 복지로, 서울청년포털 및 각 시·군·구청의 공식 보도자료 및 고시 내용을 기준으로 정기 갱신됩니다.</p>
+  </main>
+</Layout>

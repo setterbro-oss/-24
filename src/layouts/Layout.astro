@@ -1,0 +1,118 @@
+﻿---
+interface Props {
+  title: string;
+  description: string;
+  canonical: string;
+  hasAds?: boolean;
+}
+
+const { title, description, canonical, hasAds = false } = Astro.props;
+const adsId = import.meta.env.PUBLIC_ADSENSE_ID;
+const adsEnabled = import.meta.env.PUBLIC_ADS_ENABLED === 'true';
+const shouldRenderAds = hasAds && adsEnabled && Boolean(adsId);
+---
+
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonical} />
+
+    <!-- Google Consent Mode v2 Default Denied -->
+    <script is:inline>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){ dataLayer.push(arguments); }
+      gtag('consent', 'default', {
+        'ad_storage': 'denied',
+        'ad_user_data': 'denied',
+        'ad_personalization': 'denied',
+        'analytics_storage': 'denied'
+      });
+    </script>
+
+    {shouldRenderAds && (
+      <script
+        async
+        src={`https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${adsId}`}
+        crossorigin="anonymous"
+      ></script>
+    )}
+  </head>
+  <body>
+    <header class="site-header">
+      <div class="nav-container">
+        <a href="/" class="brand-logo">🏠 청년월세24 : 전국 월세지원 진단기</a>
+      </div>
+    </header>
+
+    <slot />
+
+    <footer class="site-footer">
+      <div class="footer-container">
+        <nav class="footer-links">
+          <a href="/about/">서비스 안내</a>
+          <span>|</span>
+          <a href="/privacy/">개인정보처리방침</a>
+        </nav>
+        <p class="footer-notice">본 사이트는 공공데이터 및 지자체 청년 고시를 분석하여 제공하는 참고용 정보 서비스입니다.</p>
+        <p class="footer-copy">&copy; {new Date().getFullYear()} 청년월세24 데이터팀. All rights reserved.</p>
+      </div>
+    </footer>
+  </body>
+</html>
+
+<style is:global>
+  :root {
+    --bg-main: #0B0F19;
+    --card-bg: #111827;
+    --border: #1F2937;
+    --text-primary: #F9FAFB;
+    --text-muted: #9CA3AF;
+    --accent: #10B981;
+  }
+  body {
+    margin: 0;
+    padding: 0;
+    background-color: var(--bg-main);
+    color: var(--text-primary);
+    font-family: -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", Pretendard, sans-serif;
+    line-height: 1.6;
+  }
+  a { color: var(--accent); text-decoration: none; }
+  .site-header {
+    border-bottom: 1px solid var(--border);
+    padding: 1rem;
+    background: #0d1322;
+  }
+  .nav-container { max-width: 860px; margin: 0 auto; }
+  .brand-logo { font-size: 1.15rem; font-weight: 700; color: #fff; }
+  .site-footer {
+    border-top: 1px solid var(--border);
+    padding: 2.5rem 1rem;
+    text-align: center;
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    margin-top: 4rem;
+  }
+  .footer-links { margin-bottom: 0.8rem; }
+  .footer-links a { color: var(--text-muted); margin: 0 0.5rem; }
+  .footer-links a:hover { color: #fff; }
+  .footer-notice { margin: 0.3rem 0; font-size: 0.8rem; }
+  .footer-copy { margin-top: 0.5rem; color: #6B7280; }
+
+  /* 애드센스 CLS 방지용 고정 높이 래퍼 (최소 280px 여백 확보) */
+  .ad-slot-wrapper {
+    min-height: 280px;
+    background: var(--card-bg);
+    border: 1px dashed var(--border);
+    border-radius: 8px;
+    margin: 2rem 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+  }
+</style>

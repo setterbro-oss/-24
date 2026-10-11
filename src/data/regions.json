@@ -1,0 +1,122 @@
+﻿[
+  {
+    "slug": "gangnam",
+    "name": "서울시 강남구",
+    "maxSupport": 2400000,
+    "monthlyLimit": 200000,
+    "incomeLimit": "기준 중위소득 60% 이하",
+    "depositLimit": 50000000,
+    "monthlyRentLimit": 700000,
+    "applyUrl": "https://youth.seoul.go.kr",
+    "office": "강남구청 일자리정책과 청년지원팀",
+    "description": "강남구 거주 무주택 청년 월세 특별지원 및 임차보증금 대출 이자 지원 기준 안내입니다."
+  },
+  {
+    "slug": "gwanak",
+    "name": "서울시 관악구",
+    "maxSupport": 2400000,
+    "monthlyLimit": 200000,
+    "incomeLimit": "기준 중위소득 60% 이하",
+    "depositLimit": 50000000,
+    "monthlyRentLimit": 700000,
+    "applyUrl": "https://youth.seoul.go.kr",
+    "office": "관악구청 청년정책과",
+    "description": "전국 청년 비율 1위 관악구 청년 1인 가구 주거안정 월세 한도액 및 자격 진단 데이터입니다."
+  },
+  {
+    "slug": "mapo",
+    "name": "서울시 마포구",
+    "maxSupport": 2400000,
+    "monthlyLimit": 200000,
+    "incomeLimit": "기준 중위소득 60% 이하",
+    "depositLimit": 50000000,
+    "monthlyRentLimit": 700000,
+    "applyUrl": "https://youth.seoul.go.kr",
+    "office": "마포구청 생활경제과",
+    "description": "마포구 홍대·신촌 인근 거주 청년 월세 지원금 및 보증금 기준 모의계산기입니다."
+  },
+  {
+    "slug": "songpa",
+    "name": "서울시 송파구",
+    "maxSupport": 2400000,
+    "monthlyLimit": 200000,
+    "incomeLimit": "기준 중위소득 60% 이하",
+    "depositLimit": 50000000,
+    "monthlyRentLimit": 700000,
+    "applyUrl": "https://youth.seoul.go.kr",
+    "office": "송파구청 청년청소년과",
+    "description": "송파구 청년 맞춤형 월세 지원 정책과 소득 인정액 기준 자격 요건 안내입니다."
+  },
+  {
+    "slug": "seongdong",
+    "name": "서울시 성동구",
+    "maxSupport": 2400000,
+    "monthlyLimit": 200000,
+    "incomeLimit": "기준 중위소득 60% 이하",
+    "depositLimit": 50000000,
+    "monthlyRentLimit": 700000,
+    "applyUrl": "https://youth.seoul.go.kr",
+    "office": "성동구청 아동청년과",
+    "description": "성동구 청년 1인 가구 임대료 부담 경감 및 보증금 기준 진단 데이터입니다."
+  },
+  {
+    "slug": "dongdaemun",
+    "name": "서울시 동대문구",
+    "maxSupport": 2400000,
+    "monthlyLimit": 200000,
+    "incomeLimit": "기준 중위소득 60% 이하",
+    "depositLimit": 50000000,
+    "monthlyRentLimit": 700000,
+    "applyUrl": "https://youth.seoul.go.kr",
+    "office": "동대문구청 일자리청년과",
+    "description": "동대문구 대학가 원룸 거주 청년 월세 수령 한도 및 본인 부담금 시뮬레이션입니다."
+  },
+  {
+    "slug": "suwon",
+    "name": "경기도 수원시",
+    "maxSupport": 2400000,
+    "monthlyLimit": 200000,
+    "incomeLimit": "기준 중위소득 60% 이하",
+    "depositLimit": 50000000,
+    "monthlyRentLimit": 600000,
+    "applyUrl": "https://youth.gg.go.kr",
+    "office": "수원시청 청년청소년과",
+    "description": "수원특례시 청년 월세 한도 및 최대 12개월간 총 240만원 지원 자격 명세입니다."
+  },
+  {
+    "slug": "seongnam",
+    "name": "경기도 성남시",
+    "maxSupport": 2400000,
+    "monthlyLimit": 200000,
+    "incomeLimit": "기준 중위소득 60% 이하",
+    "depositLimit": 50000000,
+    "monthlyRentLimit": 600000,
+    "applyUrl": "https://youth.gg.go.kr",
+    "office": "성남시청 청년정책과",
+    "description": "성남시 분당·수정·중원구 청년 주거비 지원 기준 및 전월세 상한액 분석입니다."
+  },
+  {
+    "slug": "bucheon",
+    "name": "경기도 부천시",
+    "maxSupport": 2400000,
+    "monthlyLimit": 200000,
+    "incomeLimit": "기준 중위소득 60% 이하",
+    "depositLimit": 50000000,
+    "monthlyRentLimit": 600000,
+    "applyUrl": "https://youth.gg.go.kr",
+    "office": "부천시청 미래세대청년과",
+    "description": "부천시 독립 청년 가구 월세 한도액과 신청 서류 및 모의계산 데이터입니다."
+  },
+  {
+    "slug": "ansan",
+    "name": "경기도 안산시",
+    "maxSupport": 2400000,
+    "monthlyLimit": 200000,
+    "incomeLimit": "기준 중위소득 60% 이하",
+    "depositLimit": 50000000,
+    "monthlyRentLimit": 600000,
+    "applyUrl": "https://youth.gg.go.kr",
+    "office": "안산시청 청년정책관",
+    "description": "안산시 청년 주거복지 증진 지원 기준 및 12개월 분할 지급액 계산기입니다."
+  }
+]

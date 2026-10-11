@@ -1,0 +1,12 @@
+﻿---
+import Layout from '../layouts/Layout.astro';
+const siteUrl = Astro.site ? Astro.site.origin : 'https://youth-rent-24.pages.dev';
+---
+<Layout title="개인정보처리방침 - 청년월세24" description="청년월세24 개인정보처리방침입니다." canonical={`${siteUrl}/privacy/`} hasAds={false}>
+  <main style="max-width: 800px; margin: 3rem auto; padding: 0 1rem;">
+    <h1>개인정보처리방침</h1>
+    <p>청년월세24는 이용자의 어떠한 개인정보도 서버에 직접 수집하거나 저장하지 않습니다. 모의계산기에 입력된 보증금 및 월세 금액은 이용자의 브라우저 내에서만 연산되며 외부로 전송되지 않습니다.</p>
+    <h2>쿠키 및 제3자 광고 안내</h2>
+    <p>본 사이트는 향후 구글 애드센스 등 제3자 광고 서비스를 이용할 수 있으며, 이 과정에서 맞춤형 광고 게재를 위해 비식별 쿠키가 사용될 수 있습니다. 이용자는 브라우저 설정을 통해 언제든지 쿠키 저장을 거부할 수 있습니다.</p>
+  </main>
+</Layout>
