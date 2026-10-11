@@ -1,1 +1,1 @@
-﻿youth-rent-24-init
+youth-rent-24-ready-1.1.0

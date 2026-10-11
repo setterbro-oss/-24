@@ -1,12 +1,17 @@
-﻿---
-import Layout from '../layouts/Layout.astro';
-const siteUrl = Astro.site ? Astro.site.origin : 'https://youth-rent-24.pages.dev';
 ---
-<Layout title="서비스 안내 - 청년월세24" description="청년월세24 서비스 소개 및 데이터 출처 안내입니다." canonical={`${siteUrl}/about/`} hasAds={false}>
-  <main style="max-width: 800px; margin: 3rem auto; padding: 0 1rem;">
+import Layout from '../layouts/Layout.astro';
+const siteUrl = Astro.site?.origin ?? 'https://youth-rent-24.pages.dev';
+---
+<Layout title="서비스 안내 | 청년월세24" description="청년월세24의 운영 목적, 데이터 검증 방식 및 정보 이용 시 주의사항을 안내합니다." canonical={`${siteUrl}/about/`}>
+  <main id="main-content" class="text-page">
     <h1>서비스 안내</h1>
-    <p>청년월세24는 전국 각 지자체에서 시행 중인 청년 월세 특별지원 사업 공고 및 지원 기준 데이터를 분석하여, 청년 가구가 본인 부담액과 수령 가능 금액을 쉽게 산출할 수 있도록 지원하는 비영리 목적의 공공 정보 가이드입니다.</p>
-    <h2>데이터 출처</h2>
-    <p>본 사이트의 데이터는 정부24, 복지로, 서울청년포털 및 각 시·군·구청의 공식 보도자료 및 고시 내용을 기준으로 정기 갱신됩니다.</p>
+    <p>청년월세24는 청년 주거지원 정보를 찾을 때 참고할 수 있도록 지역별 자료와 월세 산술 계산 도구를 제공하는 독립 정보 서비스입니다. 정부기관이나 지자체가 운영하는 공식 사이트가 아닙니다.</p>
+    <h2>정보 출처와 검증</h2>
+    <p>지원 조건은 사업과 공고 시점에 따라 달라질 수 있습니다. 공식 기관의 공고 원문, 신청 기간, 적용 대상 및 기준일을 대조한 경우에만 검증 상태를 갱신합니다. 검증되지 않은 수치는 확정 기준으로 사용하지 마세요.</p>
+    <h2>계산기 이용 안내</h2>
+    <p>계산기는 등록된 값으로 단순 산술 결과를 보여줍니다. 소득·재산·가구 구성·주택 요건·중복 지원·예산 등 모든 심사 기준을 반영하지 않으며, 수급 자격이나 지급을 보장하지 않습니다.</p>
+    <h2>오류 제보</h2>
+    <p>잘못된 정보나 변경된 공고를 발견하면 <a href="/contact/">문의 및 정정 요청</a> 페이지를 이용해 주세요.</p>
   </main>
 </Layout>
+<style>.text-page{max-width:800px;margin:0 auto;padding:2rem 1rem 3rem}.text-page h1{font-size:2rem}.text-page h2{margin-top:2rem}.text-page p{color:#d1d5db;line-height:1.85}</style>

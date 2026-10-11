@@ -1,0 +1,19 @@
+---
+import Layout from '../layouts/Layout.astro';
+const siteUrl = Astro.site?.origin ?? 'https://youth-rent-24.pages.dev';
+---
+<Layout title="문의 및 정보 정정 요청 | 청년월세24" description="청년월세24 정보 오류, 변경된 공고, 접근성 문제를 제보하는 방법입니다." canonical={`${siteUrl}/contact/`}>
+  <main id="main-content" class="text-page">
+    <h1>문의 및 정보 정정 요청</h1>
+    <p>지역별 지원 조건, 신청 기간, 공식 출처 링크에 오류가 있으면 아래 정보를 준비해 운영자에게 제보해 주세요.</p>
+    <ul>
+      <li>오류가 있는 페이지 URL</li>
+      <li>수정이 필요한 항목과 확인한 날짜</li>
+      <li>정부·지자체 공식 공고 URL 또는 공고명</li>
+      <li>공고 게시일 또는 적용 기간(확인 가능한 경우)</li>
+    </ul>
+    <aside class="notice"><strong>운영자 연락처 설정 필요</strong><p>배포 전에 운영자가 실제로 확인하는 이메일 주소를 아래 파일에 직접 추가해야 합니다. 검증되지 않은 주소는 게시하지 않기 위해 기본 템플릿에는 임의의 이메일을 넣지 않았습니다.</p><p>파일: <code>src/pages/contact.astro</code></p></aside>
+    <p>이 페이지를 공개하기 전 실제 문의 이메일 또는 운영 가능한 연락 방법을 반드시 추가하세요.</p>
+  </main>
+</Layout>
+<style>.text-page{max-width:800px;margin:0 auto;padding:2rem 1rem 3rem}.text-page h1{font-size:2rem}.text-page li{margin:.5rem 0}.text-page p{color:#d1d5db;line-height:1.85}.notice{margin:1.5rem 0;padding:1rem;border:1px solid #805b20;border-radius:8px;background:#211a0d}</style>

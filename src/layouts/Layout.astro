@@ -1,38 +1,39 @@
-﻿---
+---
 interface Props {
   title: string;
   description: string;
   canonical: string;
+  noindex?: boolean;
   hasAds?: boolean;
 }
 
-const { title, description, canonical, hasAds = false } = Astro.props;
-const adsId = import.meta.env.PUBLIC_ADSENSE_ID;
+const {
+  title,
+  description,
+  canonical,
+  noindex = false,
+  hasAds = false,
+} = Astro.props;
+const adsId = import.meta.env.PUBLIC_ADSENSE_ID ?? '';
 const adsEnabled = import.meta.env.PUBLIC_ADS_ENABLED === 'true';
-const shouldRenderAds = hasAds && adsEnabled && Boolean(adsId);
+const validAdsId = /^ca-pub-\d{16}$/.test(adsId);
+// 광고는 명시적으로 활성화하고, 페이지가 색인 가능하며, 유효한 게시자 ID가 있을 때만 로드합니다.
+const shouldRenderAds = !noindex && hasAds && adsEnabled && validAdsId;
 ---
-
 <!doctype html>
 <html lang="ko">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#0b0f19" />
     <title>{title}</title>
     <meta name="description" content={description} />
     <link rel="canonical" href={canonical} />
-
-    <!-- Google Consent Mode v2 Default Denied -->
-    <script is:inline>
-      window.dataLayer = window.dataLayer || [];
-      function gtag(){ dataLayer.push(arguments); }
-      gtag('consent', 'default', {
-        'ad_storage': 'denied',
-        'ad_user_data': 'denied',
-        'ad_personalization': 'denied',
-        'analytics_storage': 'denied'
-      });
-    </script>
-
+    {noindex && <meta name="robots" content="noindex,follow" />}
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical} />
     {shouldRenderAds && (
       <script
         async
@@ -42,77 +43,51 @@ const shouldRenderAds = hasAds && adsEnabled && Boolean(adsId);
     )}
   </head>
   <body>
+    <a class="skip-link" href="#main-content">본문으로 바로가기</a>
     <header class="site-header">
       <div class="nav-container">
-        <a href="/" class="brand-logo">🏠 청년월세24 : 전국 월세지원 진단기</a>
+        <a href="/" class="brand-logo" aria-label="청년월세24 홈">🏠 청년월세24</a>
+        <nav aria-label="주요 메뉴">
+          <a href="/about/">서비스 안내</a>
+          <a href="/privacy/">개인정보</a>
+          <a href="/contact/">문의</a>
+        </nav>
       </div>
     </header>
-
     <slot />
-
     <footer class="site-footer">
       <div class="footer-container">
-        <nav class="footer-links">
+        <nav class="footer-links" aria-label="서비스 정보">
           <a href="/about/">서비스 안내</a>
-          <span>|</span>
           <a href="/privacy/">개인정보처리방침</a>
+          <a href="/contact/">문의 및 정정 요청</a>
         </nav>
-        <p class="footer-notice">본 사이트는 공공데이터 및 지자체 청년 고시를 분석하여 제공하는 참고용 정보 서비스입니다.</p>
-        <p class="footer-copy">&copy; {new Date().getFullYear()} 청년월세24 데이터팀. All rights reserved.</p>
+        <p class="footer-notice">청년월세24는 정부·지자체의 공식 기관이 아닌 독립 정보 안내 사이트입니다. 계산 결과는 참고용이며 수급 자격이나 지급을 보장하지 않습니다.</p>
+        <p class="footer-copy">© {new Date().getFullYear()} 청년월세24</p>
       </div>
     </footer>
   </body>
 </html>
-
 <style is:global>
-  :root {
-    --bg-main: #0B0F19;
-    --card-bg: #111827;
-    --border: #1F2937;
-    --text-primary: #F9FAFB;
-    --text-muted: #9CA3AF;
-    --accent: #10B981;
-  }
-  body {
-    margin: 0;
-    padding: 0;
-    background-color: var(--bg-main);
-    color: var(--text-primary);
-    font-family: -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", Pretendard, sans-serif;
-    line-height: 1.6;
-  }
-  a { color: var(--accent); text-decoration: none; }
-  .site-header {
-    border-bottom: 1px solid var(--border);
-    padding: 1rem;
-    background: #0d1322;
-  }
-  .nav-container { max-width: 860px; margin: 0 auto; }
-  .brand-logo { font-size: 1.15rem; font-weight: 700; color: #fff; }
-  .site-footer {
-    border-top: 1px solid var(--border);
-    padding: 2.5rem 1rem;
-    text-align: center;
-    font-size: 0.85rem;
-    color: var(--text-muted);
-    margin-top: 4rem;
-  }
-  .footer-links { margin-bottom: 0.8rem; }
-  .footer-links a { color: var(--text-muted); margin: 0 0.5rem; }
-  .footer-links a:hover { color: #fff; }
-  .footer-notice { margin: 0.3rem 0; font-size: 0.8rem; }
-  .footer-copy { margin-top: 0.5rem; color: #6B7280; }
-
-  /* 애드센스 CLS 방지용 고정 높이 래퍼 (최소 280px 여백 확보) */
-  .ad-slot-wrapper {
-    min-height: 280px;
-    background: var(--card-bg);
-    border: 1px dashed var(--border);
-    border-radius: 8px;
-    margin: 2rem 0;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    overflow: hidden;
-  }
+  :root { color-scheme: dark; --bg: #0b0f19; --card: #111827; --border: #293548; --text: #f9fafb; --muted: #aab4c4; --accent: #34d399; }
+  * { box-sizing: border-box; }
+  html { background: var(--bg); scroll-behavior: smooth; }
+  body { margin: 0; background: var(--bg); color: var(--text); font-family: system-ui, -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", sans-serif; line-height: 1.65; }
+  a { color: var(--accent); text-underline-offset: .2em; }
+  a:focus-visible, button:focus-visible, input:focus-visible { outline: 3px solid #fbbf24; outline-offset: 3px; }
+  .skip-link { position: absolute; top: -100px; left: 1rem; z-index: 20; padding: .7rem; background: #fff; color: #111; }
+  .skip-link:focus { top: 1rem; }
+  .site-header { border-bottom: 1px solid var(--border); background: #0d1322; }
+  .nav-container { max-width: 1000px; margin: 0 auto; padding: .9rem 1rem; display: flex; align-items: center; justify-content: space-between; gap: 1rem; flex-wrap: wrap; }
+  .brand-logo { color: #fff; font-size: 1.1rem; font-weight: 800; text-decoration: none; }
+  .nav-container nav { display: flex; gap: 1rem; flex-wrap: wrap; font-size: .9rem; }
+  .site-footer { border-top: 1px solid var(--border); margin-top: 3rem; padding: 2rem 1rem; text-align: center; color: var(--muted); font-size: .85rem; }
+  .footer-container { max-width: 900px; margin: 0 auto; }
+  .footer-links { display: flex; justify-content: center; flex-wrap: wrap; gap: 1rem; }
+  .footer-links a { color: var(--muted); }
+  .footer-notice { max-width: 760px; margin: 1rem auto; }
+  .footer-copy { color: #778397; }
+  .ad-slot-wrapper { min-height: 280px; margin: 1.5rem 0; border: 1px dashed var(--border); border-radius: 8px; display: grid; place-items: center; overflow: hidden; }
+  @media (max-width: 520px) { .nav-container { align-items: flex-start; flex-direction: column; } .nav-container nav { gap: .8rem; } }
+  @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
 </style>

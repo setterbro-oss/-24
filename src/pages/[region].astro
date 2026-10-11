@@ -1,158 +1,74 @@
 ---
 import Layout from '../layouts/Layout.astro';
 import Calculator from '../components/Calculator.astro';
-import regionsData from '../data/regions.json';
+import regions from '../data/regions.json';
 
 export function getStaticPaths() {
-  return regionsData.map((region) => ({
-    params: { region: region.slug },
-    props: { region },
-  }));
+  return regions.map((region) => ({ params: { region: region.slug }, props: { region } }));
 }
-
 const { region } = Astro.props;
 const siteUrl = Astro.site?.origin ?? 'https://youth-rent-24.pages.dev';
-
-const title = `${region.name} 청년 월세지원 조건 및 모의계산`;
-const description =
-  `${region.name} 청년 월세지원 기준과 신청 경로를 확인하고, ` +
-  '입력한 월세에 따른 조건부 예상 지원액을 계산해 보세요.';
-
-const canonical = `${siteUrl}/${region.slug}/`;
+const verified = region.verificationStatus === 'verified' && Boolean(region.sourceUrl) && Boolean(region.verifiedAt);
+const title = `${region.name} 청년 월세지원 정보 및 계산기 | 청년월세24`;
+const description = `${region.name} 청년 주거지원 관련 등록 데이터와 월세 단순 계산 도구입니다. 실제 신청 조건은 공식 공고에서 확인하세요.`;
 ---
-
-<Layout
-  title={title}
-  description={description}
-  canonical={canonical}
-  hasAds={false}
->
-  <main class="region-container">
-    <nav aria-label="현재 위치" class="breadcrumb">
-      <a href="/">홈</a>
-      <span aria-hidden="true"> / </span>
-      <span>{region.name}</span>
-    </nav>
-
+<Layout title={title} description={description} canonical={`${siteUrl}/${region.slug}/`} noindex={!verified} hasAds={false}>
+  <main id="main-content" class="region-container">
+    <nav class="breadcrumb" aria-label="현재 위치"><a href="/">홈</a><span aria-hidden="true"> / </span><span>{region.name}</span></nav>
     <header class="hero">
       <p class="eyebrow">지역별 주거지원 정보</p>
-      <h1>{region.name} 청년 월세지원</h1>
+      <h1>{region.name} 청년 월세지원 정보</h1>
       <p>{region.description}</p>
     </header>
-
+    {!verified && <aside class="verification-warning" role="status"><strong>공식 자료 확인 중</strong><p>이 페이지의 지역별 금액과 조건은 최신 공식 공고와 대조가 완료되지 않았습니다. 정확한 신청 조건으로 사용하지 마세요. 검증이 완료될 때까지 검색엔진 색인 대상에서 제외됩니다.</p></aside>}
     <section class="info-card" aria-labelledby="criteria-title">
-      <h2 id="criteria-title">등록된 지원 기준</h2>
-
+      <h2 id="criteria-title">등록된 참고 데이터</h2>
       <dl>
-        <div>
-          <dt>월 지원 상한(데이터 등록값)</dt>
-          <dd>{region.monthlyLimit.toLocaleString('ko-KR')}원</dd>
-        </div>
-        <div>
-          <dt>12개월 단순 합산 상한</dt>
-          <dd>{region.maxSupport.toLocaleString('ko-KR')}원</dd>
-        </div>
-        <div>
-          <dt>등록된 보증금 기준</dt>
-          <dd>{region.depositLimit.toLocaleString('ko-KR')}원</dd>
-        </div>
-        <div>
-          <dt>등록된 월세 기준</dt>
-          <dd>{region.monthlyRentLimit.toLocaleString('ko-KR')}원</dd>
-        </div>
-        <div>
-          <dt>등록된 소득 기준</dt>
-          <dd>{region.incomeLimit}</dd>
-        </div>
+        <div><dt>등록 월 지원 상한</dt><dd>{region.monthlyLimit.toLocaleString('ko-KR')}원</dd></div>
+        <div><dt>등록 최대 지원 총액</dt><dd>{region.maxSupport.toLocaleString('ko-KR')}원</dd></div>
+        <div><dt>등록 보증금 기준</dt><dd>{region.depositLimit.toLocaleString('ko-KR')}원</dd></div>
+        <div><dt>등록 월세 기준</dt><dd>{region.monthlyRentLimit.toLocaleString('ko-KR')}원</dd></div>
+        <div><dt>등록 소득 기준</dt><dd>{region.incomeLimit}</dd></div>
       </dl>
+      <p class="source-note">검증 상태: {verified ? '공식 출처 확인 완료' : '미검증'}{region.verifiedAt ? ` · 확인일 ${region.verifiedAt}` : ''}</p>
     </section>
-
-    <Calculator
-      regionName={region.name}
-      monthlyLimit={region.monthlyLimit}
-      depositLimit={region.depositLimit}
-    />
-
-    <aside class="notice">
-      <h2>계산 결과를 확인하기 전에</h2>
-      <p>
-        이 계산기는 등록된 일부 기준만 사용하는 참고용 도구입니다.
-        실제 수급 자격, 지급액 및 지원 기간을 판정하지 않습니다.
-        소득, 재산, 연령, 거주 형태, 다른 주거지원과의 중복 여부 등
-        사업별 조건을 반드시 공식 공고에서 확인하세요.
-      </p>
-      <p>
-        위 금액과 지역별 설명은 원본 데이터에 입력된 값이며,
-        공식 기관의 최신 공고와 대조하기 전에는 확정된 지원 기준으로
-        사용하지 마세요.
-      </p>
-    </aside>
-
+    <Calculator regionName={region.name} monthlyLimit={region.monthlyLimit} depositLimit={region.depositLimit} monthlyRentLimit={region.monthlyRentLimit} maxSupport={region.maxSupport} />
+    <section class="info-card">
+      <h2>신청 전 확인할 항목</h2>
+      <ul>
+        <li>사업별 연령 및 주민등록·거주 요건</li>
+        <li>본인 및 원가구의 소득·재산 기준(해당 사업에 적용되는 경우)</li>
+        <li>임대차계약, 보증금·월세, 실제 납부 증빙 요건</li>
+        <li>주택 소유 여부와 다른 주거급여·월세지원의 중복 제한</li>
+        <li>신청 기간, 제출 서류, 예산 소진 여부</li>
+      </ul>
+      <p>위 항목은 확인해야 할 일반적인 예시이며, 모든 사업에 동일하게 적용된다는 의미가 아닙니다.</p>
+    </section>
     <section class="apply-card">
-      <h2>공식 신청 정보 확인</h2>
-      <p>
-        신청 기간과 자격 요건, 제출 서류는 해당 사업의 최신 공식 공고를
-        기준으로 확인하세요.
-      </p>
-      <a href={region.applyUrl} target="_blank" rel="noopener noreferrer">
-        등록된 공식 사이트 방문하기 ↗
-      </a>
-      <p class="source-note">
-        참고: 등록된 링크가 해당 지역 및 사업의 실제 신청 페이지인지
-        확인해야 합니다.
-      </p>
+      <h2>공식 공고 확인</h2>
+      <p>등록된 링크는 안내 포털일 수 있습니다. 해당 지역·사업의 최신 공고 및 실제 신청 페이지인지 직접 확인하세요.</p>
+      <a href={region.sourceUrl || region.applyUrl} target="_blank" rel="noopener noreferrer">등록된 출처 열기 ↗</a>
+      {region.verifiedAt && <p>자료 확인일: {region.verifiedAt}</p>}
     </section>
-
-    <p class="back-link"><a href="/">← 다른 지역 보기</a></p>
+    <p class="back-link"><a href="/">← 지역 목록으로 돌아가기</a></p>
   </main>
 </Layout>
-
 <style>
-  .region-container {
-    width: min(860px, calc(100% - 32px));
-    margin: 0 auto;
-    padding: 28px 0 48px;
-  }
-
-  .breadcrumb {
-    font-size: 0.85rem;
-    color: #9ca3af;
-    margin-bottom: 28px;
-  }
-
-  .hero { margin-bottom: 28px; }
+  .region-container { width: min(860px, calc(100% - 32px)); margin: 0 auto; padding: 28px 0 48px; }
+  .breadcrumb { color: #9ca3af; font-size: .85rem; margin-bottom: 24px; }
+  .hero { margin-bottom: 24px; }
   .hero h1 { font-size: clamp(1.7rem, 5vw, 2.4rem); line-height: 1.3; }
-  .hero p { color: #d1d5db; }
-  .eyebrow { color: #10b981 !important; font-weight: 700; }
-
-  .info-card, .notice, .apply-card {
-    padding: 20px;
-    margin: 24px 0;
-    border: 1px solid #374151;
-    border-radius: 12px;
-    background: #111827;
-  }
-
+  .hero p { color: #c1cad7; }
+  .eyebrow { color: #34d399 !important; font-weight: 800; }
+  .info-card, .verification-warning, .apply-card { padding: 20px; margin: 24px 0; border: 1px solid #293548; border-radius: 12px; background: #111827; }
+  .verification-warning { border-color: #b45309; background: #251a0b; }
+  .verification-warning p { margin-bottom: 0; }
   dl { margin: 0; }
-  dl div {
-    display: grid;
-    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-    gap: 12px;
-    padding: 12px 0;
-    border-bottom: 1px solid #374151;
-  }
+  dl div { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 12px; padding: 12px 0; border-bottom: 1px solid #293548; }
   dl div:last-child { border-bottom: 0; }
-  dt { color: #d1d5db; }
-  dd { margin: 0; text-align: right; overflow-wrap: anywhere; }
-
-  .notice p, .apply-card p { line-height: 1.8; }
+  dt { color: #c1cad7; } dd { margin: 0; text-align: right; overflow-wrap: anywhere; }
+  li { margin: .4rem 0; }
+  .source-note { color: #aab4c4; font-size: .85rem; }
   .apply-card a { display: inline-block; margin: 8px 0; font-weight: 700; }
-  .source-note { font-size: 0.85rem; color: #9ca3af; }
-  .back-link { margin-top: 32px; }
-
-  @media (max-width: 480px) {
-    .info-card, .notice, .apply-card { padding: 16px; }
-    dl div { grid-template-columns: 1fr; gap: 4px; }
-    dd { text-align: left; }
-  }
+  @media (max-width: 480px) { .info-card, .verification-warning, .apply-card { padding: 16px; } dl div { grid-template-columns: 1fr; gap: 4px; } dd { text-align: left; } }
 </style>
