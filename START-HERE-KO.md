@@ -1,64 +1,81 @@
-# 먼저 읽으세요 — 업로드 및 배포 순서
+# 먼저 읽으세요 — v1.2.0 적용 방법
 
-## 0. 이 ZIP이 적용한 변경 사항
+## 0. 이번 버전에서 고친 것
 
-- 지역별 페이지 템플릿 누락 보완: `src/pages/[region].astro`
-- 입력값 검증을 추가한 월세 산술 계산기
-- 지역 데이터 검증 스크립트와 자동 테스트
-- 빌드 결과물·미검증 페이지 noindex·sitemap 제외 확인
-- GitHub Actions 자동 검사/빌드
-- 문의 페이지, 404 페이지, robots.txt, 보안 헤더
-- 애드센스 기본 비활성화
-- 공식 공고 대조 전 모든 지역을 `unverified`로 표시하고 색인에서 제외
+| 문제 | 고친 방법 |
+|---|---|
+| canonical 주소가 `youth-rent-24.pages.dev`로 나옴 | 기본 주소를 `https://24.setterbro.workers.dev`로 통일하고, 모든 페이지가 이 한 곳(`src/lib/site.mjs`)에서 주소를 가져옵니다. 빌드 검사가 주소 불일치를 잡아냅니다. |
+| 지역 10곳의 숫자가 전부 같았음(복사 페이지) | 근거 없는 공통 수치를 모두 삭제했습니다. 전국 공통 가이드 1개 + 공식 공고로 근거를 찾은 지역(서울시, 강남구)만 남겼습니다. 항목이 똑같은 지역이 생기면 빌드가 실패합니다. |
+| 출처가 포털 메인 주소였음 | 공고 원문 주소로 바꿨습니다. 포털 메인 주소로는 `verified`가 되지 않습니다. |
+| 계산기가 동작하지 않을 위험 | 스크립트에 `lang="ts"`가 붙어 브라우저에서 오류가 날 수 있었습니다. 순수 JS로 바꾸고 계산 로직을 테스트했습니다. |
+| robots.txt에 sitemap 줄 없음 | 사이트 주소에서 자동 생성합니다. |
+| 캐시 설정 오타(`/assets/*`) | Astro 실제 경로 `/_astro/*`로 수정했습니다. |
+| 화면에 개발자용 안내문이 노출됨 | 연락처·개인정보 페이지의 "설정 필요" 문구를 제거하고 이 문서로 옮겼습니다. |
 
-## 1. 내 컴퓨터에서 먼저 검사
+새로 생긴 기능: 기본 요건 자가진단, 국토부 사업 vs 서울시 사업 비교표, 매월 데이터 신선도 점검(GitHub Actions).
 
-1. ZIP을 다운로드한 뒤 압축을 풉니다.
-2. VS Code에서 압축을 푼 폴더를 엽니다.
-3. `Terminal` → `New Terminal`을 선택합니다.
-4. 다음을 한 줄씩 실행합니다.
+## 1. 중요: 지금 모든 페이지는 "색인 제외" 상태입니다
+
+데이터는 공식 공고에서 옮겨 적은 **초안**입니다. 사람이 원문과 대조해 `verified`로 바꾸기 전에는 검색엔진에 노출되지 않습니다. 이것이 정상입니다.
+
+> **정정:** 이전 안내에서 "2026년부터 상시 신청"이라고 설명했습니다. 복지로 공지에는 2026년 신규 신청 기간이 **3.30~5.29**로 명시되어 있어 블로그들의 "상시" 표현과 다릅니다. 이 사이트는 공식 공지 기준으로 작성했고, 가이드 FAQ에도 이 차이를 적었습니다.
+
+## 2. GitHub에 올리기 (기존 저장소 덮어쓰기)
+
+1. ZIP을 풀면 `youth-rent-24` 폴더가 나옵니다. **폴더 안의 파일 전체**(숨김 폴더 `.github` 포함)를 GitHub 저장소 루트에 업로드합니다. (`Add file` → `Upload files`, 같은 이름은 덮어써집니다.)
+2. 저장소에서 아래 파일을 **직접 삭제**합니다. (파일 열기 → 오른쪽 위 `…` → `Delete file` → Commit)
+   - `public/robots.txt` (새 방식과 충돌)
+   - `.github/workflows/ci.yml` 가 있다면 삭제 (`validate.yml`만 사용)
+3. 상단 `Actions` 탭에서 `Validate and Build`가 **초록색 체크**가 되는지 확인합니다. 빨간색이면 로그 맨 위 오류 한 줄을 알려 주세요.
+
+## 3. Cloudflare 확인
+
+배포는 GitHub에 올리면 자동으로 다시 됩니다. 끝나면 직접 확인하세요.
+
+1. `https://24.setterbro.workers.dev/robots.txt` 를 열어 맨 아래에 `Sitemap: https://24.setterbro.workers.dev/sitemap-index.xml` 이 있는지 봅니다.
+2. 사이트에서 마우스 오른쪽 → `페이지 소스 보기` → `canonical`을 검색해 주소가 `24.setterbro.workers.dev`인지 봅니다.
+3. `/guide/` 페이지에서 자가진단과 계산기에 숫자를 넣어 결과가 바뀌는지 봅니다. (`-`만 보이면 알려 주세요.)
+
+다른 주소(자체 도메인 등)로 바꿀 때만 Cloudflare 프로젝트 → `Settings` → `Variables and Secrets`(빌드 변수)에 `SITE_URL` = `https://내도메인` 을 추가하고 재배포합니다. GitHub Actions도 같은 값을 쓰려면 저장소 `Settings` → `Secrets and variables` → `Actions` → `Variables`에 같은 이름으로 추가하세요.
+
+## 4. 공식 공고와 대조해 `verified`로 바꾸기 (가장 중요)
+
+전국 가이드부터 하세요.
+
+1. `src/data/national.json`을 열고 `sourceUrl` 주소를 브라우저에서 엽니다.
+2. `facts`의 각 줄(대상, 금액, 소득·재산 기준, 신청 기간 등)이 원문과 같은지 한 줄씩 비교하고, 다르면 원문대로 고칩니다. 강남구 공고, 전주시 공고 링크는 `sources`에 있습니다.
+3. 모두 맞으면 같은 파일에서 아래 두 줄을 바꿉니다.
+   - `"verificationStatus": "verified"`
+   - `"verifiedAt": "오늘 날짜(예: 2026-10-12)"`
+4. `Commit changes` → Actions 초록 체크 → 자동 배포. 이때부터 가이드와 홈이 색인 허용되고 sitemap에 들어갑니다.
+
+`src/data/regions.json`의 서울시·강남구도 같은 방법으로 하되, `effectiveFrom`(공고 적용 시작일)도 채웁니다. 확인하지 못한 항목이 있으면 `unverified`로 두세요.
+
+## 5. 연락처 넣기
+
+`src/data/site.json`의 `"contactEmail": ""` 에 실제로 확인하는 이메일을 넣습니다. 문의 페이지에 자동 표시됩니다. 비어 있으면 광고가 켜지지 않도록 막아 둡니다.
+
+## 6. 지역 추가하기
+
+1. `docs/region-template.json`을 복사해 `src/data/regions.json`의 목록 끝에 붙입니다.
+2. 공식 공고에서 전국 사업과 **다른 내용**을 찾아 `facts`와 `body`를 직접 채웁니다.
+3. 다른 지역과 항목이 같으면 빌드가 실패합니다. 전국 사업과 다른 점이 없는 지역은 만들지 마세요.
+4. 한 번에 1~3곳씩 추가하세요.
+
+## 7. Google Search Console
+
+가이드가 `verified`가 된 뒤에 등록합니다. `search.google.com/search-console` → URL 접두어 → `https://24.setterbro.workers.dev` → 소유권 확인 → 사이트맵 `sitemap-index.xml` 제출. 색인은 보장되지 않습니다.
+
+## 8. 광고는 마지막
+
+광고는 꺼져 있습니다. 검색 유입이 생기고, 연락처가 있고, 개인정보처리방침을 실제 광고 설정에 맞게 고친 뒤에 검토하세요. `workers.dev` 주소로는 애드센스 승인이 어려울 수 있으니 신청 전에 애드센스 도움말에서 사이트 주소 조건을 확인하세요.
+
+## 9. 이 환경에서 못 해 본 것
+
+이 ZIP을 만든 환경에서는 npm 설치가 막혀 **Astro 전체 빌드는 실행하지 못했습니다.** 데이터 검증, 단위 테스트 17개, 빌드 검사 스크립트의 통과·실패 동작은 직접 실행해 확인했습니다. 첫 빌드는 GitHub Actions나 내 PC에서 확인해야 합니다. 로컬에서 하려면:
 
 ```bash
-node -v
-npm -v
 npm install
 npm test
 npm run build
 ```
-
-성공 기준: `npm test`의 모든 테스트 통과, `npm run build` 마지막에 `BUILD VERIFICATION PASSED`가 표시됨. `dist` 폴더가 생성되어야 합니다. 현재 실행 환경에서는 외부 npm 패키지를 다운로드할 수 없어 Astro 전체 빌드 실행까지 검증하지 못했습니다. 실제 첫 빌드는 사용자 PC 또는 GitHub/Cloudflare에서 반드시 확인해야 합니다.
-
-## 2. GitHub 업로드
-
-1. github.com에서 `+` → `New repository`를 눌러 `youth-rent-24` 저장소를 만듭니다.
-2. ZIP 자체를 올리는 것이 아니라, **압축을 푼 내부 파일**을 저장소 루트에 올립니다. `.github/workflows/ci.yml`의 `.github` 폴더도 포함해야 합니다.
-3. 최상위에 `package.json`, `astro.config.mjs`, `src`, `public`, `.github`, `scripts`, `tests`가 보여야 합니다.
-4. 가능하면 먼저 로컬에서 `npm install`을 실행해 생성된 `package-lock.json`도 커밋합니다.
-5. GitHub의 `Actions` 탭을 열고 `Validate and build`가 성공하는지 확인합니다. 실패하면 로그의 첫 번째 오류부터 해결해야 합니다.
-
-## 3. Cloudflare Pages 연결
-
-1. dash.cloudflare.com → `Workers & Pages` → `Create application`으로 이동합니다.
-2. Pages의 GitHub 연동을 선택하고 `youth-rent-24` 저장소를 연결합니다.
-3. 빌드 명령은 `npm run build`, 출력 폴더는 `dist`, 루트 디렉터리는 기본값(`/`)으로 설정합니다.
-4. 배포를 시작합니다. 빌드가 실패하면 공개 사이트가 완성된 것이 아니므로 오류 로그를 확인합니다.
-5. 배포가 성공하면 제공된 `*.pages.dev` 주소를 열어 홈·지역 페이지·서비스 안내·개인정보·문의·404를 직접 확인합니다.
-
-## 4. 공개 전 필수 작업
-
-- `src/data/regions.json`의 각 지역별 지원금, 소득·재산 기준, 연령, 거주·임대차 조건, 신청 기간, URL을 공식 공고 원문과 하나씩 대조합니다.
-- `sourceUrl`에는 포털 메인 페이지가 아닌 해당 사업의 구체적인 공고 원문 URL을 기록합니다.
-- 확인 후 `verifiedAt`, `effectiveFrom`, `effectiveTo`를 채우고 `verificationStatus`를 `verified`로 변경합니다. 확인하지 않은 지역을 색인시키기 위해 임의 변경하지 마세요.
-- `src/pages/contact.astro`에 실제로 관리되는 문의 이메일/연락 방법을 넣습니다.
-- `src/pages/privacy.astro`를 실제 운영 설정에 맞게 검토합니다.
-- 이 사이트는 공공기관 공식 사이트가 아닙니다. 소속을 오해하게 만드는 표현을 사용하지 마세요.
-
-검증 전에는 홈과 지역 페이지가 `noindex`이며 지역 페이지는 sitemap에서 제외됩니다. 공식 데이터 검증을 끝내고 고유한 실질 콘텐츠를 만든 뒤에만 색인 허용을 고려하세요.
-
-## 5. Google Search Console
-
-배포 주소가 안정화되고 색인할 콘텐츠의 출처 검증을 마친 뒤 Search Console에서 소유권을 확인하고 `https://실제도메인/sitemap-index.xml`을 제출합니다. 기본 `pages.dev` 주소를 쓰면 그 주소로 제출합니다. sitemap 제출은 색인이나 순위를 보장하지 않습니다.
-
-## 6. 광고 설정은 마지막
-
-광고는 꺼진 상태가 기본입니다. 이 프로젝트의 모든 페이지는 `hasAds={false}`이므로 ID를 입력하거나 환경 변수만 바꾼다고 광고가 표시되지는 않습니다. 애드센스 정책, 필요한 동의 관리, 콘텐츠 품질, 실제 광고 슬롯 코드를 검토하기 전에는 켜지 마세요. 수익 또는 계정의 영구적인 정상 상태는 보장할 수 없습니다.

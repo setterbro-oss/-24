@@ -1,0 +1,22 @@
+{
+  "slug": "예: busan (영문 소문자와 하이픈만)",
+  "name": "예: 부산시",
+  "description": "이 지역 사업이 전국 사업과 무엇이 다른지 한두 문장",
+  "applyUrl": "https://신청·안내 사이트 주소",
+  "sourceTitle": "공고 제목 (예: 부산시 2026년 청년월세 지원 공고)",
+  "sourceUrl": "https://공고 원문 주소 (포털 메인 주소 금지)",
+  "verificationStatus": "unverified",
+  "verifiedAt": "",
+  "effectiveFrom": "",
+  "effectiveTo": "",
+  "facts": [
+    { "label": "지원 대상", "value": "공고 문구 그대로" },
+    { "label": "지원 금액", "value": "공고 문구 그대로" },
+    { "label": "소득 기준", "value": "공고 문구 그대로" },
+    { "label": "신청 기간", "value": "공고 문구 그대로" }
+  ],
+  "body": [
+    "전국 사업과 다른 점, 신청 시 주의할 점을 직접 쓴 설명 1~3문단"
+  ],
+  "editorialNote": "원문과 항목별로 대조한 뒤에만 verified로 바꾸세요."
+}

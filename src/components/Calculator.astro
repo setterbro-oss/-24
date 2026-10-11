@@ -1,70 +1,66 @@
 ---
 interface Props {
-  regionName: string;
+  title: string;
   monthlyLimit: number;
-  depositLimit: number;
-  monthlyRentLimit: number;
-  maxSupport: number;
+  maxMonths: number;
 }
-const { regionName, monthlyLimit, depositLimit, monthlyRentLimit, maxSupport } = Astro.props;
+const { title, monthlyLimit, maxMonths } = Astro.props;
 const fmt = (value: number) => new Intl.NumberFormat('ko-KR').format(value);
 ---
-<section class="calc-card" data-monthly-limit={monthlyLimit} aria-labelledby="calc-title">
+<section class="calc-card" data-calc data-monthly-limit={monthlyLimit} data-max-months={maxMonths} aria-labelledby="calc-title">
   <p class="eyebrow">참고용 산술 계산기</p>
-  <h2 id="calc-title">{regionName} 월세 부담 계산</h2>
-  <p class="desc">입력한 월세와 등록된 월 한도 중 작은 금액을 단순 계산합니다. 자격 심사, 실제 지원금 산정, 신청 가능 여부를 판정하지 않습니다.</p>
+  <h2 id="calc-title">{title}</h2>
+  <p class="desc">월세와 월 한도({fmt(monthlyLimit)}원) 중 작은 금액에 개월 수를 곱한 단순 계산입니다. 자격 심사와 선정 여부는 반영하지 않으며 실제 지급액을 뜻하지 않습니다.</p>
   <div class="form-grid">
     <div class="field">
       <label for="rent-input">월 임차료 (원)</label>
       <input id="rent-input" type="number" inputmode="numeric" min="0" max="100000000" step="1000" value="450000" />
     </div>
     <div class="field">
-      <label for="months-input">계산 기간 (개월)</label>
-      <input id="months-input" type="number" inputmode="numeric" min="1" max="24" step="1" value="12" />
+      <label for="months-input">계산 기간 (1~{maxMonths}개월)</label>
+      <input id="months-input" type="number" inputmode="numeric" min="1" max={maxMonths} step="1" value={Math.min(12, maxMonths)} />
     </div>
   </div>
   <div class="result-box" aria-live="polite" aria-atomic="true">
-    <div class="res-item"><span>월 한도 적용 산술값</span><strong id="monthly-result">-</strong></div>
-    <div class="res-item"><span>선택 기간 단순 합계</span><strong id="total-result">-</strong></div>
-    <p id="calc-message" class="res-note">입력값을 확인하고 있습니다.</p>
+    <div class="res-item"><span>월 지원 상한 적용 금액</span><strong data-out="monthly">-</strong></div>
+    <div class="res-item"><span>선택 기간 단순 합계</span><strong data-out="total">-</strong></div>
+    <p class="res-note" data-out="message">입력값을 확인하고 있습니다.</p>
   </div>
-  <details class="criteria">
-    <summary>계산에 참고한 데이터 보기</summary>
-    <ul>
-      <li>등록 월 지원 상한: {fmt(monthlyLimit)}원</li>
-      <li>등록 보증금 기준: {fmt(depositLimit)}원</li>
-      <li>등록 월세 기준: {fmt(monthlyRentLimit)}원</li>
-      <li>등록 최대 지원 총액: {fmt(maxSupport)}원</li>
-    </ul>
-    <p>위 값은 원본 데이터에 기록된 수치이며, 공식 공고 대조가 끝나지 않은 데이터일 수 있습니다. 현재 계산식은 자격 기준과 실제 지급액을 반영하지 않습니다.</p>
-  </details>
 </section>
-<script lang="ts">
-  const rentInput = document.querySelector('#rent-input');
-  const monthsInput = document.querySelector('#months-input');
-  const monthlyResult = document.querySelector('#monthly-result');
-  const totalResult = document.querySelector('#total-result');
-  const calcMessage = document.querySelector('#calc-message');
-  // 서버가 HTML에 기록한 등록 한도를 사용합니다. 이 값은 공식 검증 여부와 별개입니다.
-  const limit = Number((document.querySelector('.calc-card') as HTMLElement | null)?.dataset.monthlyLimit || 0);
-  const money = (n: number) => `${new Intl.NumberFormat('ko-KR').format(n)}원`;
-  function calculate() {
-    const rent = Number((rentInput as HTMLInputElement)?.value);
-    const months = Number((monthsInput as HTMLInputElement)?.value);
-    if (!Number.isFinite(rent) || rent < 0 || rent > 100000000 || !Number.isInteger(months) || months < 1 || months > 24) {
-      if (monthlyResult) monthlyResult.textContent = '입력 확인';
-      if (totalResult) totalResult.textContent = '입력 확인';
-      if (calcMessage) calcMessage.textContent = '월세는 0~100,000,000원, 기간은 1~24개월 사이로 입력하세요.';
-      return;
+<script>
+  import { calculateSupport, formatWon } from '../lib/calc.mjs';
+
+  document.querySelectorAll('[data-calc]').forEach((root) => {
+    const monthlyLimit = Number(root.dataset.monthlyLimit);
+    const maxMonths = Number(root.dataset.maxMonths);
+    const rentInput = root.querySelector('#rent-input');
+    const monthsInput = root.querySelector('#months-input');
+    const outMonthly = root.querySelector('[data-out="monthly"]');
+    const outTotal = root.querySelector('[data-out="total"]');
+    const outMessage = root.querySelector('[data-out="message"]');
+
+    function run() {
+      const result = calculateSupport({
+        rent: Number(rentInput.value),
+        months: Number(monthsInput.value),
+        monthlyLimit,
+        maxMonths,
+      });
+      if (!result.ok) {
+        outMonthly.textContent = '입력 확인';
+        outTotal.textContent = '입력 확인';
+        outMessage.textContent = result.error;
+        return;
+      }
+      outMonthly.textContent = formatWon(result.monthly);
+      outTotal.textContent = formatWon(result.total);
+      outMessage.textContent = '단순 산술 결과입니다. 실제 지원금이나 수급 자격을 뜻하지 않습니다.';
     }
-    const monthly = Math.min(rent, limit);
-    if (monthlyResult) monthlyResult.textContent = money(monthly);
-    if (totalResult) totalResult.textContent = money(monthly * months);
-    if (calcMessage) calcMessage.textContent = '단순 산술 결과입니다. 실제 지원금이나 수급 자격을 뜻하지 않습니다.';
-  }
-  rentInput?.addEventListener('input', calculate);
-  monthsInput?.addEventListener('input', calculate);
-  calculate();
+
+    rentInput.addEventListener('input', run);
+    monthsInput.addEventListener('input', run);
+    run();
+  });
 </script>
 <style>
   .calc-card { margin: 2rem 0; padding: clamp(1rem, 4vw, 1.5rem); border: 1px solid #293548; border-radius: 14px; background: #111827; }
@@ -74,11 +70,9 @@ const fmt = (value: number) => new Intl.NumberFormat('ko-KR').format(value);
   .form-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; margin: 1.2rem 0; }
   .field label { display: block; margin-bottom: .35rem; font-size: .9rem; }
   .field input { width: 100%; min-height: 44px; padding: .65rem; border: 1px solid #526078; border-radius: 7px; background: #0b0f19; color: #fff; font: inherit; }
-  .result-box { padding: 1rem; border-radius: 9px; background: #0b0f19; border: 1px solid #293548; }
+  .result-box { min-height: 150px; padding: 1rem; border-radius: 9px; background: #0b0f19; border: 1px solid #293548; }
   .res-item { display: flex; justify-content: space-between; gap: 1rem; padding: .5rem 0; }
   .res-item strong { color: #34d399; text-align: right; }
   .res-note { margin: .5rem 0 0; padding-top: .7rem; border-top: 1px solid #293548; color: #d1d5db; font-size: .85rem; }
-  .criteria { margin-top: 1rem; color: #d1d5db; }
-  .criteria summary { cursor: pointer; }
   @media (max-width: 520px) { .form-grid { grid-template-columns: 1fr; } .res-item { flex-direction: column; gap: .15rem; } .res-item strong { text-align: left; } }
 </style>

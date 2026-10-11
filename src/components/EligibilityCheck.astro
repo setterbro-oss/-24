@@ -1,0 +1,111 @@
+---
+interface Props {
+  birthYearMin: number;
+  birthYearMax: number;
+  incomeLimit1p: number;
+}
+const { birthYearMin, birthYearMax, incomeLimit1p } = Astro.props;
+---
+<section class="check-card" data-check data-birth-min={birthYearMin} data-birth-max={birthYearMax} data-income-limit={incomeLimit1p} aria-labelledby="check-title">
+  <p class="eyebrow">기본 요건 자가진단</p>
+  <h2 id="check-title">나는 기본 요건에 해당할까?</h2>
+  <p class="desc">공고에 적힌 연령·거주·무주택·소득 기준만 간단히 대조합니다. 원가구 소득, 재산, 선정 순위는 반영하지 않으므로 최종 확인은 복지로 모의계산에서 하세요. 입력값은 서버로 전송되지 않습니다.</p>
+  <div class="form-grid">
+    <div class="field">
+      <label for="chk-birth">출생연도 (예: 1998)</label>
+      <input id="chk-birth" type="number" inputmode="numeric" min="1900" max="2100" step="1" placeholder="1998" />
+    </div>
+    <div class="field">
+      <label for="chk-income">청년가구 월 소득 (만원, 선택)</label>
+      <input id="chk-income" type="number" inputmode="numeric" min="0" max="100000" step="1" placeholder="150" />
+    </div>
+    <div class="field">
+      <label for="chk-separate">부모와 별도 거주 중인가요?</label>
+      <select id="chk-separate">
+        <option value="">선택</option>
+        <option value="yes">예, 별도 거주(전입신고 분리)</option>
+        <option value="no">아니요, 함께 거주</option>
+      </select>
+    </div>
+    <div class="field">
+      <label for="chk-home">본인 명의 주택이 있나요?</label>
+      <select id="chk-home">
+        <option value="">선택</option>
+        <option value="no">없음(무주택)</option>
+        <option value="yes">있음</option>
+      </select>
+    </div>
+  </div>
+  <div class="result" aria-live="polite" aria-atomic="true">
+    <p class="overall" data-out="overall">값을 입력하면 결과가 표시됩니다.</p>
+    <ul class="items" data-out="items"></ul>
+  </div>
+</section>
+<script>
+  import { evaluateEligibility } from '../lib/eligibility.mjs';
+
+  const LABELS = { ok: '해당', fail: '확인 필요', check: '입력 대기' };
+  const OVERALL = {
+    ok: '입력한 항목에서는 제외 사유가 보이지 않습니다. 원가구 소득·재산 기준은 복지로 모의계산으로 꼭 확인하세요.',
+    check: '아직 입력하지 않은 항목이 있습니다.',
+    fail: '제외 사유가 있을 수 있는 항목이 있습니다. 공고와 복지로 모의계산으로 다시 확인하세요.',
+  };
+
+  document.querySelectorAll('[data-check]').forEach((root) => {
+    const rules = {
+      birthYearMin: Number(root.dataset.birthMin),
+      birthYearMax: Number(root.dataset.birthMax),
+      incomeLimit1p: Number(root.dataset.incomeLimit),
+    };
+    const birth = root.querySelector('#chk-birth');
+    const income = root.querySelector('#chk-income');
+    const separate = root.querySelector('#chk-separate');
+    const home = root.querySelector('#chk-home');
+    const overallEl = root.querySelector('[data-out="overall"]');
+    const listEl = root.querySelector('[data-out="items"]');
+
+    function run() {
+      const birthValue = birth.value.trim() === '' ? NaN : Number(birth.value);
+      const incomeValue = income.value.trim() === '' ? null : Number(income.value) * 10000;
+      const result = evaluateEligibility(
+        { birthYear: birthValue, livesSeparately: separate.value, ownsHome: home.value, monthlyIncome: incomeValue },
+        rules
+      );
+      overallEl.textContent = OVERALL[result.overall];
+      listEl.replaceChildren();
+      for (const item of result.items) {
+        const li = document.createElement('li');
+        li.className = `item item-${item.status}`;
+        const head = document.createElement('strong');
+        head.textContent = `${item.label} · ${LABELS[item.status]}`;
+        const msg = document.createElement('span');
+        msg.textContent = item.message;
+        li.append(head, msg);
+        listEl.append(li);
+      }
+    }
+
+    for (const el of [birth, income, separate, home]) {
+      el.addEventListener('input', run);
+      el.addEventListener('change', run);
+    }
+    run();
+  });
+</script>
+<style>
+  .check-card { margin: 2rem 0; padding: clamp(1rem, 4vw, 1.5rem); border: 1px solid #293548; border-radius: 14px; background: #111827; }
+  .eyebrow { margin: 0 0 .3rem; color: #34d399; font-size: .8rem; font-weight: 800; }
+  .check-card h2 { margin: 0 0 .5rem; font-size: 1.35rem; }
+  .desc { color: #c1cad7; font-size: .92rem; }
+  .form-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; margin: 1.2rem 0; }
+  .field label { display: block; margin-bottom: .35rem; font-size: .9rem; }
+  .field input, .field select { width: 100%; min-height: 44px; padding: .65rem; border: 1px solid #526078; border-radius: 7px; background: #0b0f19; color: #fff; font: inherit; }
+  .result { min-height: 260px; padding: 1rem; border-radius: 9px; background: #0b0f19; border: 1px solid #293548; }
+  .overall { margin: 0 0 .8rem; font-weight: 700; }
+  .items { list-style: none; margin: 0; padding: 0; display: grid; gap: .6rem; }
+  .items :global(.item) { display: flex; flex-direction: column; gap: .15rem; padding: .6rem .8rem; border-left: 4px solid #526078; background: #111827; border-radius: 4px; font-size: .9rem; }
+  .items :global(.item span) { color: #c1cad7; }
+  .items :global(.item-ok) { border-left-color: #34d399; }
+  .items :global(.item-fail) { border-left-color: #f59e0b; }
+  @media (max-width: 520px) { .form-grid { grid-template-columns: 1fr; } .result { min-height: 340px; } }
+</style>

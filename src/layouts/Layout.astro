@@ -1,24 +1,24 @@
 ---
+import siteConfig from '../data/site.json';
+
 interface Props {
   title: string;
   description: string;
-  canonical: string;
+  path: string;
   noindex?: boolean;
   hasAds?: boolean;
+  jsonLd?: Record<string, unknown>;
 }
 
-const {
-  title,
-  description,
-  canonical,
-  noindex = false,
-  hasAds = false,
-} = Astro.props;
+const { title, description, path, noindex = false, hasAds = false, jsonLd } = Astro.props;
+// canonical은 astro.config의 site(SITE_URL) 값에서만 만들어집니다.
+const canonical = new URL(path, Astro.site).href;
 const adsId = import.meta.env.PUBLIC_ADSENSE_ID ?? '';
 const adsEnabled = import.meta.env.PUBLIC_ADS_ENABLED === 'true';
 const validAdsId = /^ca-pub-\d{16}$/.test(adsId);
-// 광고는 명시적으로 활성화하고, 페이지가 색인 가능하며, 유효한 게시자 ID가 있을 때만 로드합니다.
-const shouldRenderAds = !noindex && hasAds && adsEnabled && validAdsId;
+const hasContact = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(siteConfig.contactEmail || '');
+// 광고는 명시적으로 켜고, 색인 가능한 페이지이며, 유효한 게시자 ID와 운영자 연락처가 있을 때만 로드합니다.
+const shouldRenderAds = !noindex && hasAds && adsEnabled && validAdsId && hasContact;
 ---
 <!doctype html>
 <html lang="ko">
@@ -34,6 +34,7 @@ const shouldRenderAds = !noindex && hasAds && adsEnabled && validAdsId;
     <meta property="og:title" content={title} />
     <meta property="og:description" content={description} />
     <meta property="og:url" content={canonical} />
+    {jsonLd && <script type="application/ld+json" set:html={JSON.stringify(jsonLd).replace(/</g, '\\u003c')} />}
     {shouldRenderAds && (
       <script
         async
@@ -48,6 +49,7 @@ const shouldRenderAds = !noindex && hasAds && adsEnabled && validAdsId;
       <div class="nav-container">
         <a href="/" class="brand-logo" aria-label="청년월세24 홈">🏠 청년월세24</a>
         <nav aria-label="주요 메뉴">
+          <a href="/guide/">청년월세 가이드</a>
           <a href="/about/">서비스 안내</a>
           <a href="/privacy/">개인정보</a>
           <a href="/contact/">문의</a>
@@ -58,6 +60,7 @@ const shouldRenderAds = !noindex && hasAds && adsEnabled && validAdsId;
     <footer class="site-footer">
       <div class="footer-container">
         <nav class="footer-links" aria-label="서비스 정보">
+          <a href="/guide/">청년월세 가이드</a>
           <a href="/about/">서비스 안내</a>
           <a href="/privacy/">개인정보처리방침</a>
           <a href="/contact/">문의 및 정정 요청</a>

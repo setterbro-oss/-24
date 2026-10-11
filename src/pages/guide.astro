@@ -1,0 +1,126 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Calculator from '../components/Calculator.astro';
+import EligibilityCheck from '../components/EligibilityCheck.astro';
+import national from '../data/national.json';
+import { isGuideIndexable } from '../lib/indexing.mjs';
+
+const indexable = isGuideIndexable(national);
+const origin = Astro.site.origin;
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'BreadcrumbList',
+  itemListElement: [
+    { '@type': 'ListItem', position: 1, name: '홈', item: `${origin}/` },
+    { '@type': 'ListItem', position: 2, name: national.name, item: `${origin}/guide/` },
+  ],
+};
+---
+<Layout
+  title="국토교통부 청년월세 지원 가이드 | 대상·금액·신청방법 | 청년월세24"
+  description="국토교통부 청년월세 지원의 대상, 월 20만원·24개월 지원 금액, 소득·재산 기준, 제외 대상, 신청 방법을 공식 공고 기준으로 정리하고 자가진단과 계산기를 제공합니다."
+  path="/guide/"
+  noindex={!indexable}
+  jsonLd={jsonLd}
+>
+  <main id="main-content" class="page">
+    <nav class="breadcrumb" aria-label="현재 위치"><a href="/">홈</a><span aria-hidden="true"> / </span><span>청년월세 가이드</span></nav>
+    <header class="hero">
+      <p class="eyebrow">전국 공통 사업</p>
+      <h1>국토교통부 청년월세 지원 가이드</h1>
+      <p>{national.description}</p>
+    </header>
+
+    {!indexable && (
+      <aside class="verification-warning" role="status">
+        <strong>공식 자료 대조 중</strong>
+        <p>이 페이지의 내용은 공식 공고에서 옮긴 초안이며 원문과의 최종 대조가 끝나지 않았습니다. 정확한 신청 조건은 아래 출처의 공고 원문을 확인하세요. 대조가 끝나기 전에는 검색엔진 색인에서 제외됩니다.</p>
+      </aside>
+    )}
+
+    <section class="info-card" aria-labelledby="facts-title">
+      <h2 id="facts-title">한눈에 보기</h2>
+      <dl>
+        {national.facts.map((f) => (
+          <div><dt>{f.label}</dt><dd>{f.value}</dd></div>
+        ))}
+      </dl>
+      <p class="source-note">
+        {indexable ? `공식 출처 확인 완료 · 확인일 ${national.verifiedAt}` : '미검증 초안'}
+      </p>
+    </section>
+
+    <EligibilityCheck
+      birthYearMin={national.eligibility.birthYearMin}
+      birthYearMax={national.eligibility.birthYearMax}
+      incomeLimit1p={national.eligibility.incomeLimit1p}
+    />
+
+    <Calculator title="청년월세 지원 월세 계산" monthlyLimit={national.calc.monthlyLimit} maxMonths={national.calc.maxMonths} />
+
+    <section class="info-card" aria-labelledby="excl-title">
+      <h2 id="excl-title">제외 대상</h2>
+      <ul>
+        {national.exclusions.map((e) => <li>{e}</li>)}
+      </ul>
+      <p class="muted">보증금·월세 상한 등 주택 요건은 사업 연도별로 달라질 수 있으니 해당 연도 공고에서 확인하세요.</p>
+    </section>
+
+    <section class="info-card" aria-labelledby="apply-title">
+      <h2 id="apply-title">신청 방법</h2>
+      <ol>
+        {national.howToApply.map((s) => <li>{s}</li>)}
+      </ol>
+      <p><a href={national.applyUrl} target="_blank" rel="noopener noreferrer">복지로 바로가기 ↗</a></p>
+    </section>
+
+    <section class="info-card" aria-labelledby="local-title">
+      <h2 id="local-title">지자체 별도 사업도 확인하세요</h2>
+      <p>국토교통부 사업과 별개로 서울시 등 지자체가 자체 청년월세 사업을 운영합니다. 대상 연령과 소득 기준이 달라 한쪽만 해당될 수 있습니다.</p>
+      <p><a href="/seoul/">서울시 청년월세지원과 비교하기 →</a></p>
+    </section>
+
+    <section class="info-card" aria-labelledby="faq-title">
+      <h2 id="faq-title">자주 묻는 질문</h2>
+      {national.faq.map((item) => (
+        <details>
+          <summary>{item.q}</summary>
+          <p>{item.a}</p>
+        </details>
+      ))}
+    </section>
+
+    <section class="apply-card" aria-labelledby="src-title">
+      <h2 id="src-title">출처</h2>
+      <ul>
+        {national.sources.map((s) => (
+          <li><a href={s.url} target="_blank" rel="noopener noreferrer">{s.label} ↗</a><br /><span class="muted">{s.note}</span></li>
+        ))}
+      </ul>
+      <p class="muted">공고 내용은 바뀔 수 있습니다. 신청 전에 반드시 최신 공고 원문을 확인하세요.</p>
+    </section>
+  </main>
+</Layout>
+<style>
+  .page { width: min(860px, calc(100% - 32px)); margin: 0 auto; padding: 28px 0 48px; }
+  .breadcrumb { color: #9ca3af; font-size: .85rem; margin-bottom: 24px; }
+  .hero { margin-bottom: 24px; }
+  .hero h1 { font-size: clamp(1.7rem, 5vw, 2.4rem); line-height: 1.3; }
+  .hero p { color: #c1cad7; }
+  .eyebrow { color: #34d399 !important; font-weight: 800; }
+  .info-card, .verification-warning, .apply-card { padding: 20px; margin: 24px 0; border: 1px solid #293548; border-radius: 12px; background: #111827; }
+  .verification-warning { border-color: #b45309; background: #251a0b; }
+  .verification-warning p { margin-bottom: 0; }
+  dl { margin: 0; }
+  dl div { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 2fr); gap: 12px; padding: 12px 0; border-bottom: 1px solid #293548; }
+  dl div:last-child { border-bottom: 0; }
+  dt { color: #c1cad7; }
+  dd { margin: 0; overflow-wrap: anywhere; }
+  li { margin: .4rem 0; }
+  details { padding: .6rem 0; border-bottom: 1px solid #293548; }
+  details:last-child { border-bottom: 0; }
+  summary { cursor: pointer; font-weight: 700; }
+  details p { color: #d1d5db; margin: .6rem 0 0; }
+  .source-note, .muted { color: #aab4c4; font-size: .85rem; }
+  @media (max-width: 560px) { .info-card, .verification-warning, .apply-card { padding: 16px; } dl div { grid-template-columns: 1fr; gap: 4px; } }
+</style>

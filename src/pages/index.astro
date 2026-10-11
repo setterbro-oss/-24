@@ -1,37 +1,64 @@
 ---
 import Layout from '../layouts/Layout.astro';
+import national from '../data/national.json';
 import regions from '../data/regions.json';
-const siteUrl = Astro.site?.origin ?? 'https://youth-rent-24.pages.dev';
-const verifiedCount = regions.filter((region) => region.verificationStatus === 'verified').length;
+import { isGuideIndexable, isRegionIndexable, isHomeIndexable } from '../lib/indexing.mjs';
+
+const homeIndexable = isHomeIndexable(national, regions);
+const verifiedCount = [isGuideIndexable(national), ...regions.map(isRegionIndexable)].filter(Boolean).length;
+const total = regions.length + 1;
 ---
-<Layout title="청년월세24 | 지역별 청년 주거지원 정보" description="지역별 청년 월세지원 관련 데이터, 공식 공고 확인 경로, 월세 단순 계산 도구를 제공합니다. 실제 자격과 지급 여부는 공식 공고를 확인하세요." canonical={`${siteUrl}/`} noindex={verifiedCount === 0}>
+<Layout
+  title="청년월세24 | 청년 월세지원 가이드와 계산기"
+  description="국토교통부 청년월세 지원과 서울시 등 지자체 사업의 대상·소득 기준·신청 방법을 공식 공고 기준으로 정리하고, 기본 요건 자가진단과 월세 계산기를 제공합니다."
+  path="/"
+  noindex={!homeIndexable}
+>
   <main id="main-content" class="home-container">
     <header class="hero">
       <p class="eyebrow">청년 주거지원 정보 도구</p>
-      <h1>청년 월세지원 정보와 월세 계산</h1>
-      <p>지역별로 등록된 참고 데이터를 확인하고, 월세의 단순 산술값을 계산해 보세요. 계산 결과는 지원 자격 또는 실제 지급액을 의미하지 않습니다.</p>
+      <h1>청년 월세지원, 기준부터 신청까지</h1>
+      <p>전국 공통 사업과 지자체 사업의 차이를 비교하고, 기본 요건 자가진단과 월세 계산기로 나에게 해당하는지 먼저 확인해 보세요. 모든 결과는 참고용이며 실제 자격과 지급 여부는 공식 공고가 기준입니다.</p>
     </header>
-    <aside class="notice" aria-label="정보 검증 안내">
-      <strong>정보 확인 안내</strong>
-      <p>지역별 수치와 신청 조건은 공식 공고와 대조해야 합니다. 현재 검증 완료로 표시된 지역은 {verifiedCount}곳입니다. 검증되지 않은 지역 페이지는 검색엔진 색인에서 제외됩니다.</p>
-    </aside>
+
+    {verifiedCount < total && (
+      <aside class="notice" aria-label="정보 검증 안내">
+        <strong>정보 확인 안내</strong>
+        <p>공식 공고 원문과 대조가 끝난 페이지는 {total}개 중 {verifiedCount}개입니다. 대조가 끝나지 않은 페이지는 검색엔진 색인에서 제외됩니다.</p>
+      </aside>
+    )}
+
+    <section aria-labelledby="start-title">
+      <h2 id="start-title">먼저 확인하세요</h2>
+      <div class="grid-list">
+        <a href="/guide/" class="card featured">
+          <span class={`list-badge ${isGuideIndexable(national) ? 'verified' : ''}`}>{isGuideIndexable(national) ? '출처 확인 완료' : '공식 자료 대조 중'}</span>
+          <h3>{national.name}</h3>
+          <p>{national.description}</p>
+          <span class="card-link">가이드 보기 →</span>
+        </a>
+      </div>
+    </section>
+
     <section aria-labelledby="regions-title">
-      <h2 id="regions-title">지역별 정보</h2>
+      <h2 id="regions-title">지자체별 정보</h2>
+      <p class="section-desc">전국 공통 기준과 다른 점이 있는 지자체만 별도 페이지로 정리합니다. 지역 페이지는 공식 공고에서 확인된 내용만 담습니다.</p>
       <div class="grid-list">
         {regions.map((region) => (
           <a href={`/${region.slug}/`} class="card">
-            <span class={`list-badge ${region.verificationStatus === 'verified' ? 'verified' : ''}`}>{region.verificationStatus === 'verified' ? '출처 확인 완료' : '공식 자료 대조 필요'}</span>
+            <span class={`list-badge ${isRegionIndexable(region) ? 'verified' : ''}`}>{isRegionIndexable(region) ? '출처 확인 완료' : '공식 자료 대조 중'}</span>
             <h3>{region.name}</h3>
             <p>{region.description}</p>
-            <span class="card-link">등록 데이터 확인 →</span>
+            <span class="card-link">자세히 보기 →</span>
           </a>
         ))}
       </div>
     </section>
+
     <section class="howto">
       <h2>지원 신청 전 체크리스트</h2>
       <ol>
-        <li>복지로·정부24·해당 지자체의 최신 공식 공고를 확인합니다.</li>
+        <li>복지로·마이홈포털·해당 지자체의 최신 공식 공고를 확인합니다.</li>
         <li>연령, 거주, 임대차, 소득·재산 및 중복 지원 요건을 확인합니다.</li>
         <li>신청 기간과 필수 서류, 온라인·방문 접수처를 확인합니다.</li>
         <li>불일치하거나 오래된 정보는 문의 페이지를 통해 정정을 요청합니다.</li>
@@ -47,8 +74,11 @@ const verifiedCount = regions.filter((region) => region.verificationStatus === '
   .eyebrow { color: #34d399 !important; font-weight: 800; }
   .notice { max-width: 850px; margin: 0 auto 2rem; padding: 1rem 1.2rem; border: 1px solid #805b20; border-radius: 10px; background: #211a0d; }
   .notice p { margin-bottom: 0; color: #e5d7b8; }
-  .grid-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 260px), 1fr)); gap: 1rem; }
+  .section-desc { color: #c1cad7; margin-top: 0; }
+  section { margin-bottom: 2rem; }
+  .grid-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 280px), 1fr)); gap: 1rem; }
   .card { display: flex; flex-direction: column; gap: .65rem; min-height: 190px; padding: 1.2rem; border: 1px solid #293548; border-radius: 12px; background: #111827; text-decoration: none; }
+  .card.featured { border-color: #34d399; }
   .card:hover { border-color: #34d399; }
   .card h3 { margin: 0; color: #fff; font-size: 1.15rem; }
   .card p { margin: 0; color: #c1cad7; font-size: .9rem; }
