@@ -3,7 +3,8 @@ import Layout from '../layouts/Layout.astro';
 import Calculator from '../components/Calculator.astro';
 import AdSlot from '../components/AdSlot.astro';
 import regions from '../data/regions.json';
-import { isRegionIndexable } from '../lib/indexing.mjs';
+import { isGuideIndexable, isRegionIndexable, getVerifiedClaim } from '../lib/indexing.mjs';
+import national from '../data/national.json';
 
 export function getStaticPaths() {
   return regions.map((region) => ({ params: { region: region.slug }, props: { region } }));
@@ -11,6 +12,8 @@ export function getStaticPaths() {
 
 const { region } = Astro.props;
 const indexable = isRegionIndexable(region);
+const monthlyLimitClaim = getVerifiedClaim(region, 'monthly_limit_krw');
+const maxMonthsClaim = getVerifiedClaim(region, 'max_months');
 const origin = Astro.site.origin;
 const title = `${region.name} 청년 월세지원 정보 | 청년월세24`;
 const jsonLd = {
@@ -33,17 +36,17 @@ const jsonLd = {
 
     {!indexable && (
       <aside class="verification-warning" role="status">
-        <strong>공식 자료 대조 중</strong>
-        <p>이 페이지의 내용은 공식 공고에서 옮긴 초안이며 원문과의 최종 대조가 끝나지 않았습니다. 정확한 신청 조건은 아래 출처의 공고 원문을 확인하세요. 대조가 끝나기 전에는 검색엔진 색인에서 제외됩니다.</p>
+        <strong>공식 공고 확인 안내</strong>
+        <p>이 지역의 세부 내용은 현재 검색 노출 기준을 충족하지 않아 검색·광고 목록에서 제외되어 있습니다. 최신 조건은 아래 공식 원문에서 직접 확인하세요.</p>
       </aside>
     )}
 
-    <section class="info-card" aria-labelledby="summary-title">
+    {indexable && <section class="info-card" aria-labelledby="summary-title">
       <h2 id="summary-title">핵심 내용</h2>
       {region.body.map((p) => <p>{p}</p>)}
-    </section>
+    </section>}
 
-    <section class="info-card" aria-labelledby="facts-title">
+    {indexable && <section class="info-card" aria-labelledby="facts-title">
       <h2 id="facts-title">공고에 적힌 주요 항목</h2>
       <dl>
         {region.facts.map((f) => (
@@ -51,11 +54,11 @@ const jsonLd = {
         ))}
       </dl>
       <p class="source-note">
-        {indexable ? `공식 출처 확인 완료 · 확인일 ${region.verifiedAt}` : '미검증 초안'}
+        {indexable ? `공식 출처 대조 완료 · 확인일 ${region.verifiedAt}` : '공식 원문 확인 안내'}
       </p>
     </section>
 
-    {region.comparison && (
+    {indexable && region.comparison && (
       <section class="info-card" aria-labelledby="cmp-title">
         <h2 id="cmp-title">국토교통부 사업과 비교</h2>
         <div class="table-wrap">
@@ -70,13 +73,11 @@ const jsonLd = {
             </tbody>
           </table>
         </div>
-        <p class="source-note">전국 사업 상세는 <a href="/guide/">청년월세 가이드</a>에서 확인하세요.</p>
+        {isGuideIndexable(national) && <p class="source-note">전국 사업 상세는 <a href="/guide/">청년월세 가이드</a>에서 확인하세요.</p>}
       </section>
     )}
 
-    {region.calc && (
-      <Calculator title={`${region.name} 월세 계산`} monthlyLimit={region.calc.monthlyLimit} maxMonths={region.calc.maxMonths} />
-    )}
+    {indexable && monthlyLimitClaim && maxMonthsClaim && <Calculator title={`${region.name} 월세 계산`} monthlyLimit={Number(monthlyLimitClaim.value)} maxMonths={Number(maxMonthsClaim.value)} />}
 
     {indexable && <AdSlot slot="content" label="본문 중간 광고" />}
 

@@ -1,5 +1,8 @@
 ---
 import siteConfig from '../data/site.json';
+import national from '../data/national.json';
+import { isGuideIndexable } from '../lib/indexing.mjs';
+const showGuideLink = isGuideIndexable(national);
 
 interface Props {
   title: string;
@@ -37,7 +40,7 @@ const isContact = current.startsWith('/contact');
     <title>{title}</title>
     <meta name="description" content={description} />
     <link rel="canonical" href={canonical} />
-    {noindex && <meta name="robots" content="noindex,follow" />}
+    {noindex && <meta name="robots" content="noindex,nofollow" />}
     <meta property="og:type" content="website" />
     <meta property="og:title" content={title} />
     <meta property="og:description" content={description} />
@@ -57,14 +60,14 @@ const isContact = current.startsWith('/contact');
       <div class="nav-container">
         <a href="/" class="brand-logo" aria-label="청년월세24 홈">🏠 청년월세24</a>
         <nav aria-label="주요 메뉴">
-          <a href="/guide/" aria-current={isGuide ? 'page' : undefined}>청년월세 가이드</a>
+          {showGuideLink && <a href="/guide/" aria-current={isGuide ? 'page' : undefined}>청년월세 가이드</a>}
           <a href="/about/" aria-current={isAbout ? 'page' : undefined}>서비스 안내</a>
           <a href="/privacy/" aria-current={isPrivacy ? 'page' : undefined}>개인정보</a>
           <a href="/contact/" aria-current={isContact ? 'page' : undefined}>문의</a>
         </nav>
       </div>
     </header>
-    <slot />
+    <div class="site-main"><slot /></div>
     {shouldRenderAds && <script is:inline>
       window.addEventListener('load', function () {
         var slots = document.querySelectorAll('ins.adsbygoogle:not([data-adsbygoogle-status])');
@@ -76,7 +79,7 @@ const isContact = current.startsWith('/contact');
     <footer class="site-footer">
       <div class="footer-container">
         <nav class="footer-links" aria-label="서비스 정보">
-          <a href="/guide/">청년월세 가이드</a>
+          {showGuideLink && <a href="/guide/">청년월세 가이드</a>}
           <a href="/about/">서비스 안내</a>
           <a href="/privacy/">개인정보처리방침</a>
           <a href="/contact/">문의 및 정정 요청</a>
@@ -106,9 +109,9 @@ const isContact = current.startsWith('/contact');
     --warning-text: #7c2d12;
   }
   * { box-sizing: border-box; }
-  html { background: var(--bg); scroll-behavior: smooth; font-size: 112.5%; -webkit-text-size-adjust: 100%; }
+  html { background: var(--bg); min-height: 100%; scroll-behavior: smooth; font-size: 112.5%; -webkit-text-size-adjust: 100%; }
   @media (min-width: 900px) { html { font-size: 118.75%; } }
-  body { margin: 0; background: var(--bg); color: var(--body); font-family: system-ui, -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", "Pretendard", "Noto Sans KR", "Malgun Gothic", sans-serif; line-height: 1.7; word-break: keep-all; overflow-wrap: anywhere; }
+  body { min-height: 100dvh; display: flex; flex-direction: column; margin: 0; background: var(--bg); color: var(--body); font-family: system-ui, -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", "Pretendard", "Noto Sans KR", "Malgun Gothic", sans-serif; line-height: 1.7; word-break: keep-all; overflow-wrap: anywhere; }
   h1, h2, h3, h4 { color: var(--text); line-height: 1.35; text-wrap: balance; }
   h1 { font-size: clamp(1.75rem, 5vw, 2.4rem); letter-spacing: -0.02em; margin: 0 0 .9rem; }
   h2 { font-size: 1.4rem; margin: 2.25rem 0 .9rem; letter-spacing: -0.01em; }
@@ -118,7 +121,7 @@ const isContact = current.startsWith('/contact');
   li { margin: .45rem 0; }
   h2[id] { scroll-margin-top: 1rem; }
   a:link { color: #1d4ed8; text-underline-offset: .2em; text-decoration-thickness: 1px; }
-  a:visited { color: #4338ca; }
+  a:visited { color: #1d4ed8; }
   a:hover { color: #1e40af; }
   a:active { color: #1e3a8a; }
   a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible, summary:focus-visible { outline: 3px solid #b45309; outline-offset: 3px; }
@@ -134,7 +137,8 @@ const isContact = current.startsWith('/contact');
   .nav-container nav a:visited { color: #334155; }
   .nav-container nav a:hover, .nav-container nav a[aria-current="page"] { color: var(--accent); border-bottom-color: var(--accent); }
   .nav-container nav a[aria-current="page"] { font-weight: 700; }
-  .site-footer { border-top: 1px solid var(--border); margin-top: 3rem; padding: 2rem 1rem 2.5rem; text-align: center; color: var(--muted); font-size: .9rem; background: #fff; }
+  .site-main { flex: 1 0 auto; }
+  .site-footer { margin-top: auto; border-top: 1px solid var(--border); margin-top: 3rem; padding: 2rem 1rem 2.5rem; text-align: center; color: var(--muted); font-size: .9rem; background: #fff; }
   .footer-container { max-width: 900px; margin: 0 auto; }
   .footer-links { display: flex; justify-content: center; flex-wrap: wrap; gap: .25rem 1.25rem; }
   .footer-links a { display: inline-flex; align-items: center; min-height: 44px; color: #334155; }

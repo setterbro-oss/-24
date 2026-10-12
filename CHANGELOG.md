@@ -1,48 +1,10 @@
 # Changelog
 
-## 1.8.0 — 2026-10-12
-- Fixed build verification false positives: a client API reference alone is no longer treated as a rendered ad; actual AdSense slot markup and loader remain blocked when ads are disabled.
-- Added explicit build-output and indexability checks for `/editorial-policy/` and `/corrections/`.
-- Removed clipping and fixed minimum-width behavior from the AdSense slot to reduce narrow-screen overflow risk. Ad initialization now lives in the layout and only renders when the same ad-eligibility gate passes; slot markup also requires a valid contact email.
-- Rebuilt homepage cards as `<article>` surfaces with stretched title links so `:visited` styling cannot recolor the card background in Firefox.
-- Added regression tests for card structure and ad-slot clipping.
-- Did not add fabricated official verification, hard-coded policy claims, or guaranteed AdSense outcomes.
-
-
-## v1.4.0
-- Firefox에서 카드 hover/visited 상태의 글자·배경색 대비를 명시해 밝은 배경에 흰 글자가 남는 현상을 방지.
-- 기본 글자 크기와 보조 글씨 크기를 상향.
-- 공식 HTML 공고의 SHA-256 변경/접근 실패를 매주 감시하고 GitHub Issue 및 Actions artifact로 보고.
-- 공고의 수치 기준을 무인으로 덮어쓰지 않도록 안전장치와 운영 절차 문서화.
-- 광고는 기존처럼 기본 비활성 상태 유지.
-
-
-## v1.5.0
-- 공식 출처 감시에서 PDF를 HTML처럼 해석하던 정규식 오류를 수정하고, PDF/비텍스트 응답은 명확히 제외.
-- 기존 감시 Issue가 열려 있으면 최신 보고서를 자동 댓글로 추가.
-- 데이터 최신성 점검을 매주 실행하고 오래된 검증 자료에 대해 Issue를 자동 생성/갱신.
-- 광고 슬롯 컴포넌트를 추가하되 광고 기본값은 계속 OFF, 검증·색인 가능 페이지와 유효한 게시자/슬롯 ID가 모두 있을 때만 광고를 표시.
-- 본문 광고에 최소 높이를 예약해 CLS를 줄이고 개인정보처리방침에 광고 활성/비활성 상태별 안내를 반영.
-- GitHub 수동 실행 및 광고 설정 절차를 문서화.
-
-## 1.6.0
-- 공식 공고 감시에서 HTTP 접근 실패를 정상적인 감시 결과로 보고서/Issue에 기록해, workflow가 녹색이어도 모니터 단계에 `exit code 2`가 남던 혼동을 제거했습니다. 스크립트 자체의 예외는 계속 실패로 표시됩니다.
-- 변경된 출처의 재산·소득·신청기간 등 관련 문구를 보고서에 함께 기록해 사람이 원문을 재검증하기 쉽게 했습니다.
-- 원문 응답을 스트리밍 방식으로 읽고 2 MiB 제한을 초과하면 즉시 중단합니다.
-- `ads.txt` 엔드포인트와 빌드 검증을 추가했습니다. 유효한 AdSense 게시자 ID가 설정된 경우에만 실제 게시자 선언을 생성합니다.
-- GitHub Actions의 checkout/setup-node 액션을 업데이트했습니다.
-
-
-## v1.7.0 — 2026-10-12
-- 전역 테마를 화이트 기반으로 변경하고 카드/링크/입력 폼의 기본·방문·hover 상태 대비를 명시했습니다.
-- 홈의 내부 검증 건수 경고를 제거하고, 핵심 CTA를 추가했습니다. 검증 현황은 서비스 안내와 정정 이력에서 투명하게 공개합니다.
-- 편집·검증 정책 및 정정 이력 페이지를 추가하고 sitemap 허용 경로에 반영했습니다.
-- 공식 감시 워크플로가 감시 스크립트의 실패를 숨기지 않고, 실패 시 보고/이슈를 남긴 후 작업을 실패 상태로 표시하도록 개선했습니다. 감시 스크립트가 상태 파일을 쓰기 전에 실패해도 저장 단계가 별도 오류로 중단되지 않게 했습니다.
-- 라이트 테마, 홈 CTA, 정책 페이지, 광고 레이아웃 규칙을 확인하는 회귀 테스트 4개를 추가했습니다.
-- AdSense 준비 자체 점검 스크립트(`npm run check:adsense`)를 추가했습니다. 이 도구는 기술 설정을 점검할 뿐 승인이나 수익을 보장하지 않습니다.
-- 공식 수치의 무인 추론 수정, 근거 없는 226개 지역 페이지 대량 생성, 자격 판정으로 오인될 수 있는 계산은 추가하지 않았습니다.
-
-
-## 1.7.1
-- Fixed build verification false positives: the disabled-ad check now ignores CSS selectors and detects only actual AdSense elements/loaders.
-- Aligned expected sitemap URLs with the editorial-policy and corrections pages already intentionally included by the sitemap filter.
+## 1.9.0
+- 중앙 `getPublishState()` 게이트로 색인·sitemap·광고·내부 링크의 공개 기준 통합.
+- 45일 확인 기한, 공식 도메인, 적용기간, source URL 일치, snapshot hash 및 근거 claim 보고서 요구.
+- 미검증/강등 페이지용 `X-Robots-Tag: noindex, nofollow` 헤더 자동 생성.
+- 하드코딩된 calc/eligibility 필드를 데이터에서 제거하고 검증된 claim에서만 도구 값을 읽도록 변경.
+- 미검증 페이지 홈 카드 및 지역 비교 링크 제외.
+- 방문 링크 색상 통일 및 sticky footer 적용.
+- 24개 테스트 통과. Astro 전체 빌드는 npm 설치 시간 초과로 이 환경에서 검증하지 못함.

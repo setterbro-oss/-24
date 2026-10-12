@@ -59,6 +59,8 @@ function checkVerification(at, r, { minFacts, requireBody }) {
     if (!hasSpecificSource(r)) errors.push(`${at}: verified records need a specific sourceUrl (not a portal home, and different from applyUrl)`);
     if ((r.facts?.length ?? 0) < minFacts) errors.push(`${at}: verified records need at least ${minFacts} facts`);
     if (requireBody && (r.body?.length ?? 0) < MIN_BODY_FOR_INDEX) errors.push(`${at}: verified records need at least ${MIN_BODY_FOR_INDEX} body paragraph`);
+    const report = r.verificationReport;
+    if (report?.allClaimsMatch !== true || report.sourceUrl !== r.sourceUrl || !DATE_RE.test(report.checkedAt || '') || !/^[a-fA-F0-9]{64}$/.test(report.snapshotHash || '') || !Array.isArray(report.claims) || report.claims.length === 0 || !report.claims.every((c) => c?.status === 'matched' && isText(c?.id) && isText(c?.type) && c.value !== undefined && isText(c?.unit) && isText(c?.sourceSnippet) && isText(c?.anchor) && DATE_RE.test(c?.verifiedAt || ''))) errors.push(`${at}: verified records require a source-matched verificationReport with snapshot hash and fully evidenced matched claims`);
   }
 }
 
@@ -77,11 +79,7 @@ const national = read('src/data/national.json');
   }
   for (const key of ['sourceUrl', 'applyUrl']) checkUrl(at, key, national[key]);
   checkFacts(at, national.facts, { min: MIN_FACTS_FOR_INDEX });
-  checkCalc(at, national.calc);
-  if (!national.calc) errors.push(`${at}: calc is required`);
-  const e = national.eligibility;
-  if (!Number.isInteger(e?.birthYearMin) || !Number.isInteger(e?.birthYearMax) || e.birthYearMin > e.birthYearMax) errors.push(`${at}: eligibility birth year range invalid`);
-  if (!Number.isSafeInteger(e?.incomeLimit1p) || e.incomeLimit1p <= 0) errors.push(`${at}: eligibility.incomeLimit1p must be a positive integer`);
+  if (national.calc !== undefined || national.eligibility !== undefined) errors.push(`${at}: remove duplicated calc/eligibility values; derive official numbers only from verificationReport.claims`);
   for (const key of ['exclusions', 'howToApply']) {
     if (!Array.isArray(national[key]) || national[key].length === 0 || !national[key].every(isText)) errors.push(`${at}: ${key} must be a non-empty array of text`);
   }
@@ -111,7 +109,7 @@ for (const [i, r] of (Array.isArray(regions) ? regions : []).entries()) {
   }
   for (const key of ['applyUrl', 'sourceUrl']) if (isText(r?.[key])) checkUrl(at, key, r[key]);
   checkFacts(at, r?.facts, { min: 1 });
-  checkCalc(at, r?.calc);
+  if (r?.calc !== undefined || r?.eligibility !== undefined) errors.push(`${at}: remove duplicated calc/eligibility values; derive official numbers only from verificationReport.claims`);
   if (!Array.isArray(r?.body) || r.body.length === 0 || !r.body.every(isText)) errors.push(`${at}: body must be a non-empty array of paragraphs`);
   if (r?.comparison !== undefined) {
     if (!Array.isArray(r.comparison) || !r.comparison.every((c) => isText(c?.label) && isText(c?.national) && isText(c?.local))) errors.push(`${at}: comparison rows need label, national, local`);

@@ -4,9 +4,17 @@ import Calculator from '../components/Calculator.astro';
 import EligibilityCheck from '../components/EligibilityCheck.astro';
 import AdSlot from '../components/AdSlot.astro';
 import national from '../data/national.json';
-import { isGuideIndexable } from '../lib/indexing.mjs';
+import regions from '../data/regions.json';
+import { isGuideIndexable, isRegionIndexable, getVerifiedClaim } from '../lib/indexing.mjs';
 
 const indexable = isGuideIndexable(national);
+const monthlyLimitClaim = getVerifiedClaim(national, 'monthly_limit_krw');
+const maxMonthsClaim = getVerifiedClaim(national, 'max_months');
+const birthMinClaim = getVerifiedClaim(national, 'birth_year_min');
+const birthMaxClaim = getVerifiedClaim(national, 'birth_year_max');
+const incomeLimitClaim = getVerifiedClaim(national, 'income_limit_1p_krw');
+const hasCalculatorClaims = monthlyLimitClaim && maxMonthsClaim;
+const hasEligibilityClaims = birthMinClaim && birthMaxClaim && incomeLimitClaim;
 const origin = Astro.site.origin;
 const jsonLd = {
   '@context': 'https://schema.org',
@@ -19,7 +27,7 @@ const jsonLd = {
 ---
 <Layout
   title="국토교통부 청년월세 지원 가이드 | 대상·금액·신청방법 | 청년월세24"
-  description="국토교통부 청년월세 지원의 대상, 월 20만원·24개월 지원 금액, 소득·재산 기준, 제외 대상, 신청 방법을 공식 공고 기준으로 정리하고 자가진단과 계산기를 제공합니다."
+  description="청년월세 지원사업의 공식 공고 원문, 신청 안내와 검증 기준을 확인할 수 있는 독립 정보 서비스입니다."
   path="/guide/"
   noindex={!indexable}
   jsonLd={jsonLd}
@@ -36,21 +44,21 @@ const jsonLd = {
     <nav aria-label="이 페이지 바로가기">
       <ul class="toc">
         <li><a href="#facts-title">한눈에 보기</a></li>
-        <li><a href="#check-title">자가진단</a></li>
-        <li><a href="#calc-title">월세 계산</a></li>
-        <li><a href="#apply-title">신청 방법</a></li>
-        <li><a href="#faq-title">자주 묻는 질문</a></li>
+        {hasEligibilityClaims && <li><a href="#check-title">자가진단</a></li>}
+        {hasCalculatorClaims && <li><a href="#calc-title">월세 계산</a></li>}
+        {indexable && <li><a href="#apply-title">신청 방법</a></li>}
+        {indexable && <li><a href="#faq-title">자주 묻는 질문</a></li>}
       </ul>
     </nav>
 
     {!indexable && (
       <aside class="verification-warning" role="status">
-        <strong>공식 자료 대조 중</strong>
-        <p>이 페이지의 내용은 공식 공고에서 옮긴 초안이며 원문과의 최종 대조가 끝나지 않았습니다. 정확한 신청 조건은 아래 출처의 공고 원문을 확인하세요. 대조가 끝나기 전에는 검색엔진 색인에서 제외됩니다.</p>
+        <strong>최신 공고를 확인하세요</strong>
+        <p>지원 조건과 신청 일정은 공고별로 달라질 수 있습니다. 아래 공식 출처에서 현재 적용되는 공고와 접수 상태를 확인한 뒤 신청하세요.</p>
       </aside>
     )}
 
-    <section class="info-card" aria-labelledby="facts-title">
+    {indexable && <section class="info-card" aria-labelledby="facts-title">
       <h2 id="facts-title">한눈에 보기</h2>
       <dl>
         {national.facts.map((f) => (
@@ -58,43 +66,39 @@ const jsonLd = {
         ))}
       </dl>
       <p class="source-note">
-        {indexable ? `공식 출처 확인 완료 · 확인일 ${national.verifiedAt}` : '미검증 초안'}
+        {indexable ? `공식 출처 확인 완료 · 확인일 ${national.verifiedAt}` : '공식 원문에서 최신 조건 확인'}
       </p>
-    </section>
+    </section>}
 
-    <EligibilityCheck
-      birthYearMin={national.eligibility.birthYearMin}
-      birthYearMax={national.eligibility.birthYearMax}
-      incomeLimit1p={national.eligibility.incomeLimit1p}
-    />
+    {indexable && hasEligibilityClaims && <><EligibilityCheck birthYearMin={Number(birthMinClaim.value)} birthYearMax={Number(birthMaxClaim.value)} incomeLimit1p={Number(incomeLimitClaim.value)} /><p class="muted">자가진단 근거: 공식 공고 대조 완료 · {national.verifiedAt}</p></>}
 
-    <Calculator title="청년월세 지원 월세 계산" monthlyLimit={national.calc.monthlyLimit} maxMonths={national.calc.maxMonths} />
+    {indexable && hasCalculatorClaims && <><Calculator title="청년월세 지원 월세 계산" monthlyLimit={Number(monthlyLimitClaim.value)} maxMonths={Number(maxMonthsClaim.value)} /><p class="muted">계산 기준 근거: 공식 공고 대조 완료 · {national.verifiedAt}</p></>}
 
     {indexable && <AdSlot slot="content" label="본문 중간 광고" />}
 
-    <section class="info-card" aria-labelledby="excl-title">
+    {indexable && <section class="info-card" aria-labelledby="excl-title">
       <h2 id="excl-title">제외 대상</h2>
       <ul>
         {national.exclusions.map((e) => <li>{e}</li>)}
       </ul>
       <p class="muted">보증금·월세 상한 등 주택 요건은 사업 연도별로 달라질 수 있으니 해당 연도 공고에서 확인하세요.</p>
-    </section>
+    </section>}
 
-    <section class="info-card" aria-labelledby="apply-title">
+    {indexable && <section class="info-card" aria-labelledby="apply-title">
       <h2 id="apply-title">신청 방법</h2>
       <ol>
         {national.howToApply.map((s) => <li>{s}</li>)}
       </ol>
       <p><a href={national.applyUrl} target="_blank" rel="noopener noreferrer">복지로 바로가기 ↗</a></p>
-    </section>
+    </section>}
 
-    <section class="info-card" aria-labelledby="local-title">
+    {indexable && <section class="info-card" aria-labelledby="local-title">
       <h2 id="local-title">지자체 별도 사업도 확인하세요</h2>
       <p>국토교통부 사업과 별개로 서울시 등 지자체가 자체 청년월세 사업을 운영합니다. 대상 연령과 소득 기준이 달라 한쪽만 해당될 수 있습니다.</p>
-      <p><a href="/seoul/">서울시 청년월세지원과 비교하기 →</a></p>
-    </section>
+      {isRegionIndexable(regions.find((r) => r.slug === 'seoul')) && <p><a href="/seoul/">서울시 청년월세지원과 비교하기 →</a></p>}
+    </section>}
 
-    <section class="info-card" aria-labelledby="faq-title">
+    {indexable && <section class="info-card" aria-labelledby="faq-title">
       <h2 id="faq-title">자주 묻는 질문</h2>
       {national.faq.map((item) => (
         <details>
@@ -102,7 +106,7 @@ const jsonLd = {
           <p>{item.a}</p>
         </details>
       ))}
-    </section>
+    </section>}
 
     <section class="apply-card" aria-labelledby="src-title">
       <h2 id="src-title">출처</h2>

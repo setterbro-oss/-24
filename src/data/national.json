@@ -8,15 +8,6 @@
   "verifiedAt": "",
   "effectiveFrom": "2026-03-30",
   "effectiveTo": "",
-  "calc": {
-    "monthlyLimit": 200000,
-    "maxMonths": 24
-  },
-  "eligibility": {
-    "birthYearMin": 1991,
-    "birthYearMax": 2007,
-    "incomeLimit1p": 1538000
-  },
   "facts": [
     {
       "label": "사업",

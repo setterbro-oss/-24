@@ -9,7 +9,8 @@ src/data/national.json        전국 공통 사업(국토교통부 청년월세)
 src/data/regions.json         지역별 고유 사업 데이터와 검증 상태
 src/data/site.json            사이트 이름, 문의 이메일
 src/lib/site.mjs              사이트 주소(SITE_URL)의 단일 기준
-src/lib/indexing.mjs          색인 허용 규칙 (레이아웃·sitemap·빌드 검사가 공유)
+src/lib/publish-gate.mjs     색인·광고·내부 링크 단일 공개 게이트
+src/lib/indexing.mjs          게시 게이트를 사용하는 색인 판정
 src/lib/calc.mjs              월세 계산 로직
 src/lib/eligibility.mjs       기본 요건 자가진단 로직
 src/pages/guide.astro         전국 가이드
@@ -24,10 +25,12 @@ scripts/check-freshness.mjs   확인일이 오래된 verified 데이터 점검
 
 페이지는 아래를 모두 만족할 때만 `index`가 되고 sitemap에 들어갑니다. 하나라도 빠지면 `noindex`입니다.
 
-- `verificationStatus`가 `verified`
-- `verifiedAt`, `effectiveFrom`이 `YYYY-MM-DD`
-- `sourceUrl`이 포털 메인이 아닌 공고 원문 주소이고 `applyUrl`과 다름
-- `facts` 4개 이상 (지역 페이지는 직접 쓴 `body` 1문단 이상도 필요)
+- `verificationStatus`가 `verified`이고 확인일이 45일 이내
+- `effectiveFrom`이 유효하고 `effectiveTo`가 지나지 않음
+- `sourceUrl`이 공식기관 HTTPS 원문이며 신청 포털 주소와 다름
+- 원문 URL·스냅샷 SHA-256·확인일이 포함된 `verificationReport`가 존재
+- 모든 `claims[]`에 근거 문장·앵커·단위·값이 있고 모두 `matched`
+- `facts` 4개 이상, 본문 고유 텍스트 700자 이상
 
 지역끼리 `facts`가 완전히 같으면 데이터 검사에서 실패합니다. 홈은 가이드나 지역 페이지 중 하나라도 색인 허용일 때만 `index`입니다.
 
@@ -38,7 +41,7 @@ scripts/check-freshness.mjs   확인일이 오래된 verified 데이터 점검
 | `npm test` | 단위 테스트 (계산, 자가진단, 색인 규칙, 데이터 규칙) |
 | `npm run check:data` | 데이터 검사 |
 | `npm run build` | 데이터 검사 → 빌드 → 결과물 검사 |
-| `npm run check:freshness` | verified 데이터의 확인일이 60일 이내인지 점검 |
+| `npm run check:freshness` | verified 데이터의 확인일이 45일 이내인지 점검 |
 
 ## 사이트 주소
 
@@ -73,10 +76,15 @@ Issue 생성에 실패하면 저장소의 `Settings → Actions → General → 
 `src/components/AdSlot.astro`는 게시자 ID·광고 슬롯 ID·`PUBLIC_ADS_ENABLED=true`가 모두 유효할 때만 본문 광고를 렌더링합니다. `Layout.astro`도 같은 조건에 더해 페이지 색인 허용과 연락처 유효성을 요구합니다. 광고 기본값은 OFF이며, 검증되지 않은 데이터는 색인·광고에서 제외됩니다. 광고 슬롯은 CLS 완화를 위해 최소 높이를 예약하지만, 이는 승인·수익·광고 표시를 보장하지 않습니다. 광고 설정 안내는 `START-HERE-KO.md` 12절을 참고하세요.
 
 
-## v1.8.0 변경 사항
+## v1.9.0 변경 사항
 
 - Firefox에서 방문한 링크 스타일이 카드 전체 배경을 바꾸지 않도록 홈 카드 구조를 `article` + 제목 링크로 변경했습니다.
 - 광고 비활성 상태에서 광고 API 참조만으로 실패하던 빌드 검사를 수정하고, 실제 광고 슬롯/로더가 출력되는 경우만 감지합니다.
 - 광고 컨테이너의 `overflow:hidden`과 고정 최소 너비를 제거했습니다.
 - `/editorial-policy/`, `/corrections/`의 빌드 출력과 색인 검사도 검증 대상으로 포함했습니다.
 - 테스트: `npm test` 24/24 통과, `node scripts/validate-data.mjs` 통과. 현재 실행 환경에서 npm 레지스트리에 접근할 수 없어 Astro 의존성을 설치하지 못했으므로 전체 `astro build`는 여기서 검증하지 못했습니다. GitHub Actions의 `Validate and Build` 결과를 배포 전에 확인하세요.
+
+
+## v1.9.0 게시 게이트
+
+`npm run build`는 `scripts/build-headers.mjs`를 먼저 실행해 미통과 경로의 `X-Robots-Tag: noindex, nofollow` 규칙을 생성합니다. 미검증 레코드는 홈/지역 링크, sitemap, 계산기·자가진단, 광고에서 제외됩니다. 공식 원문 HTML 변경 감지는 자동 검증과 같지 않으며, 의미 단위의 근거 대조 없이 자동 승격하지 않습니다.

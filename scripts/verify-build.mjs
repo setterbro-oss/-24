@@ -38,7 +38,7 @@ for (const file of ['404.html', 'robots.txt', 'ads.txt', 'sitemap-index.xml', 'b
 }
 
 // 2) 모든 HTML: canonical 주소·스크립트 속성 검사
-const noindexRe = /<meta[^>]+name="robots"[^>]+content="noindex,follow"/i;
+const noindexRe = /<meta[^>]+name="robots"[^>]+content="noindex,nofollow"/i;
 for (const f of files.filter((x) => x.endsWith('.html'))) {
   const r = rel(f);
   const html = fs.readFileSync(f, 'utf8');
@@ -62,9 +62,11 @@ for (const f of files.filter((x) => x.endsWith('.html'))) {
 // 3) 페이지별 색인 허용/제외
 function checkRobots(file, shouldIndex, label) {
   if (!has(file)) return;
-  const isNoindex = noindexRe.test(text(file));
-  if (shouldIndex && isNoindex) errors.push(`${file}: ${label} is verified but marked noindex`);
-  if (!shouldIndex && !isNoindex) errors.push(`${file}: ${label} is not verified and must be noindex`);
+  const html = text(file);
+  const isNoindex = noindexRe.test(html);
+  if (shouldIndex && isNoindex) errors.push(`${file}: ${label} is published but marked noindex`);
+  if (!shouldIndex && !isNoindex) errors.push(`${file}: ${label} is not published and must be noindex,nofollow`);
+  if (!shouldIndex && (/<ins\b[^>]*class=[\"'][^\"']*\badsbygoogle\b/i.test(html) || /<script\b[^>]*src=[\"']https:\/\/pagead2?\.googlesyndication\.com\/pagead\/js\/adsbygoogle\.js/i.test(html))) errors.push(`${file}: draft/demoted page contains ad markup or loader`);
 }
 checkRobots('index.html', isHomeIndexable(national, regions), 'home');
 checkRobots('guide/index.html', isGuideIndexable(national), 'guide');
@@ -114,6 +116,19 @@ for (const loc of locs) {
 }
 for (const p of expectedPaths) if (!sitemapPaths.has(p)) errors.push(`sitemap: missing ${p}`);
 for (const p of sitemapPaths) if (!expectedPaths.has(p)) errors.push(`sitemap: unexpected (noindex) page ${p}`);
+
+
+if (has('_headers')) {
+  const headersText = text('_headers');
+  const draftRoutes = [];
+  if (!isHomeIndexable(national, regions)) draftRoutes.push('/');
+  if (!isGuideIndexable(national)) draftRoutes.push('/guide/');
+  for (const region of regions) if (!isRegionIndexable(region)) draftRoutes.push(`/${region.slug}/`);
+  for (const route of draftRoutes) {
+    const escaped = route.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    if (!new RegExp(`(?:^|\\n)${escaped}\\n\\s+X-Robots-Tag: noindex, nofollow`, 'm').test(headersText)) errors.push(`_headers: missing X-Robots-Tag noindex,nofollow for ${route}`);
+  }
+}
 
 // 6) 광고 기본 비활성 확인
 if (process.env.PUBLIC_ADS_ENABLED !== 'true') {

@@ -5,7 +5,7 @@ import { fileURLToPath } from 'node:url';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const read = (rel) => JSON.parse(fs.readFileSync(path.join(root, rel), 'utf8'));
-const MAX_AGE_DAYS = Number(process.env.FRESHNESS_MAX_DAYS || 60);
+const MAX_AGE_DAYS = Number(process.env.FRESHNESS_MAX_DAYS || 45);
 
 const records = [
   { id: 'guide', ...read('src/data/national.json') },

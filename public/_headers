@@ -12,3 +12,25 @@
 
 /build-id.txt
   Cache-Control: no-store
+
+# BEGIN GENERATED PUBLISH-GATE HEADERS
+/
+  X-Robots-Tag: noindex, nofollow
+
+/guide/
+  X-Robots-Tag: noindex, nofollow
+
+/guide/*
+  X-Robots-Tag: noindex, nofollow
+
+/seoul/
+  X-Robots-Tag: noindex, nofollow
+
+/seoul/*
+  X-Robots-Tag: noindex, nofollow
+
+/gangnam/
+  X-Robots-Tag: noindex, nofollow
+
+/gangnam/*
+  X-Robots-Tag: noindex, nofollow

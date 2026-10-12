@@ -14,8 +14,9 @@ test('global theme uses a light background and explicit readable text colors', (
 test('home page does not expose internal verification count and includes primary tools', () => {
   const home = read('../src/pages/index.astro');
   assert.doesNotMatch(home, /대조가 끝난 페이지는/);
-  assert.match(home, /지원 자격 간이 확인/);
-  assert.match(home, /월세 계산기/);
+  assert.match(home, /공식 공고 원문 확인/);
+  assert.match(home, /자료 검증 현황/);
+  assert.match(home, /regions\.filter\(\(region\) => isRegionIndexable\(region\)\)/);
 });
 
 test('editorial policy and corrections pages exist and are discoverable in sitemap config', () => {

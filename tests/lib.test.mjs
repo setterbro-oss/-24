@@ -8,7 +8,8 @@ import { evaluateEligibility } from '../src/lib/eligibility.mjs';
 const facts = (n) => Array.from({ length: n }, (_, i) => ({ label: `L${i}`, value: `V${i}` }));
 const verifiedRegion = (over = {}) => ({
   slug: 'x', verificationStatus: 'verified', verifiedAt: '2026-10-11', effectiveFrom: '2026-03-30',
-  sourceUrl: 'https://example.go.kr/notice/123', applyUrl: 'https://www.bokjiro.go.kr/', facts: facts(4), body: ['text'], ...over,
+  sourceUrl: 'https://example.go.kr/notice/123', applyUrl: 'https://www.bokjiro.go.kr/', facts: facts(4), body: ['x'.repeat(750)],
+  verificationReport: { sourceUrl: 'https://example.go.kr/notice/123', checkedAt: '2026-10-11', snapshotHash: 'a'.repeat(64), allClaimsMatch: true, claims: [{ id: 'c1', type: 'monthly_limit_krw', value: 200000, unit: 'KRW/month', status: 'matched', anchor: '지원 금액', sourceSnippet: '월 최대 200,000원', verifiedAt: '2026-10-11' }] }, ...over,
 });
 
 test('SITE_URL: default is the live workers.dev address', () => {
@@ -34,6 +35,10 @@ test('indexing: verified but thin or portal-only records stay noindex', () => {
   assert.equal(isRegionIndexable(verifiedRegion({ body: [] })), false);
   assert.equal(isRegionIndexable(verifiedRegion({ sourceUrl: 'https://www.bokjiro.go.kr/' })), false);
   assert.equal(isRegionIndexable(verifiedRegion({ verifiedAt: '' })), false);
+  assert.equal(isRegionIndexable(verifiedRegion({ verificationReport: undefined })), false);
+  assert.equal(isRegionIndexable(verifiedRegion({ verifiedAt: '2026-08-01' })), false);
+  assert.equal(isRegionIndexable(verifiedRegion({ body: ['too short'] })), false);
+  assert.equal(isRegionIndexable(verifiedRegion({ verificationReport: { allClaimsMatch: false, claims: [] } })), false);
   assert.equal(hasSpecificSource({ sourceUrl: 'https://youth.seoul.go.kr', applyUrl: 'https://youth.seoul.go.kr' }), false);
 });
 
