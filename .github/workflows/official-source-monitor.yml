@@ -1,0 +1,85 @@
+
+name: Official Notice Monitor
+
+on:
+  schedule:
+    - cron: '17 1 * * 1'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  issues: write
+
+concurrency:
+  group: official-notice-monitor
+  cancel-in-progress: false
+
+jobs:
+  monitor:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: Check official source changes
+        id: monitor
+        continue-on-error: true
+        run: node scripts/monitor-official-sources.mjs
+
+      - name: Save latest source fingerprints
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add src/data/source-monitor-state.json src/data/national.json src/data/regions.json
+          if ! git diff --cached --quiet; then
+            git commit -m "chore: refresh official source fingerprints"
+            git push
+          fi
+
+      - name: Create or update review issue
+        if: always() && (steps.monitor.outputs.changed != '0' || steps.monitor.outputs.failed != '0' || steps.monitor.outcome == 'failure')
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          REPORT="source-monitor-report.md"
+
+          if [ ! -s "$REPORT" ]; then
+            printf '%s\n' \
+              '# 공식 공고 감시 작업 실패' \
+              '' \
+              '감시 스크립트가 보고서를 생성하지 못했습니다. Actions 로그를 확인하세요.' \
+              > "$REPORT"
+          fi
+
+          OPEN_COUNT=$(gh issue list \
+            --state open \
+            --search '"[공식 공고 자동 감시]" in:title' \
+            --json number --jq 'length')
+
+          if [ "$OPEN_COUNT" -eq 0 ]; then
+            gh issue create \
+              --title "[공식 공고 자동 감시] 원문 변경 또는 접근 실패 검토 필요" \
+              --body-file "$REPORT"
+          else
+            ISSUE=$(gh issue list \
+              --state open \
+              --search '"[공식 공고 자동 감시]" in:title' \
+              --json number --jq '.[0].number')
+            gh issue comment "$ISSUE" --body-file "$REPORT"
+          fi
+
+      - name: Upload source monitor report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: official-source-monitor-report
+          path: source-monitor-report.md
+          if-no-files-found: ignore
+          retention-days: 30
