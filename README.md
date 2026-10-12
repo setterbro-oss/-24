@@ -57,3 +57,12 @@ scripts/check-freshness.mjs   확인일이 오래된 verified 데이터 점검
 ## 선택: 404 상태 코드
 
 Cloudflare가 Workers 정적 자산으로 배포하는 경우 존재하지 않는 주소에 404 페이지를 보여 주려면 프로젝트에 `wrangler.jsonc`로 `assets.not_found_handling: "404-page"`를 설정할 수 있습니다. Worker 이름이 기존과 달라지면 새 Worker가 생기므로, 설정 전에 Cloudflare 문서를 확인하세요.
+
+
+## 공식 공고 자동 감시 (추가)
+
+`.github/workflows/official-source-monitor.yml`은 매주 월요일 공식 HTML 출처를 확인합니다. 원문 내용 해시가 달라지거나 출처에 접근하지 못하면 GitHub Issue와 Actions artifact에 보고서를 남기고, 마지막으로 확인한 해시를 저장합니다. 변경 또는 접근 실패가 확인된 검증 완료 페이지는 수치 데이터를 임의 수정하지 않고 `unverified`로 전환해 검색 색인을 차단합니다.
+
+**중요한 한계:** 자동 감시는 원문 변경을 감지할 뿐, 재산·소득 기준이나 신청 기간이 실제로 바뀌었는지 의미를 정확히 판독하지 않습니다. PDF는 이 간단한 HTML 감시에서 제외합니다. 따라서 기준 수치를 무인으로 덮어쓰지 않으며, 변경이 발견된 페이지는 원문 검토 후 `facts` 등을 수정하고 `verificationStatus`, `verifiedAt`, `effectiveFrom`을 갱신해야 합니다. 확인되지 않은 수치를 자동 게시하는 것은 복지 정보 오류와 검색/광고 정책 위험을 높입니다.
+
+Issue 생성에 실패하면 저장소의 `Settings → Actions → General → Workflow permissions`에서 `Read and write permissions`를 허용하세요. `data-review` 라벨이 없어도 워크플로는 라벨 없이 Issue 생성을 재시도합니다. 출처 HTML 구조 변경으로 감시가 실패할 수 있으므로 Actions 결과도 확인하세요.

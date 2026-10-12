@@ -90,3 +90,12 @@ npm install
 npm test
 npm run build
 ```
+
+
+## 10. 공식 공고 자동 감시 (v1.4.0)
+
+- `.github/workflows/official-source-monitor.yml`이 매주 공식 HTML 공고를 확인합니다.
+- 공고 페이지 내용이 바뀌거나 접근이 실패하면 GitHub Issue를 생성하고 보고서를 첨부합니다. `Actions` 탭에서도 `official-source-monitor` 실행 결과와 artifact를 확인할 수 있습니다.
+- 이 자동화는 **변경 감지/알림**이지, 기준값을 자동 승인하는 기능은 아닙니다. 공고 페이지의 메뉴·광고·접수 상태 문구만 바뀌어도 알림이 날 수 있습니다.
+- 재산 기준처럼 잘못 게시하면 피해가 큰 정보는 원문을 의미 단위로 검증하지 않고 자동 변경하지 않습니다. 검토 후에만 `src/data/national.json` 또는 `src/data/regions.json`을 수정하세요.
+- 저장소 `Settings → Actions → General → Workflow permissions`에서 `Read and write permissions`를 허용해야 상태 파일 커밋 및 Issue 생성이 가능합니다.
