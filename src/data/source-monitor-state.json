@@ -1,0 +1,76 @@
+{
+  "version": 1,
+  "updatedAt": "2026-10-12T06:47:31.871Z",
+  "sources": [
+    {
+      "id": "national-main",
+      "label": "복지로 공지사항 - 2026년 청년월세 지원 신청 안내",
+      "url": "https://m.bokjiro.go.kr/ssis-tem/cms/mob/customer/notice/1309500_1155.html",
+      "ok": true,
+      "hash": "046a0c499c185a934b782464720e71ce6fd6b36780b71227bac6d36f099a0186",
+      "length": 1065,
+      "checkedAt": "2026-10-12T06:47:23.234Z"
+    },
+    {
+      "id": "national-ref-1",
+      "label": "복지로 공지사항 - 2026년 청년월세 지원 신청 안내",
+      "url": "https://m.bokjiro.go.kr/ssis-tem/cms/mob/customer/notice/1309500_1155.html",
+      "ok": true,
+      "hash": "046a0c499c185a934b782464720e71ce6fd6b36780b71227bac6d36f099a0186",
+      "length": 1065,
+      "checkedAt": "2026-10-12T06:47:23.932Z"
+    },
+    {
+      "id": "national-ref-2",
+      "label": "강남구청 - 2026년 국토부 청년월세 지원사업 신청 안내",
+      "url": "https://www.gangnam.go.kr/board/B_000001/1076368/view.do?mid=ID05_040101",
+      "ok": false,
+      "error": "too little readable text (69 chars)",
+      "checkedAt": "2026-10-12T06:47:24.888Z"
+    },
+    {
+      "id": "national-ref-3",
+      "label": "전주시 - 2026년 청년월세 지원사업 모집공고(PDF)",
+      "url": "https://jeonju.go.kr/youth2/download/announcement.pdf",
+      "ok": true,
+      "hash": "c9c3b9144cb5f6206a5b514a043525fa5c31da1b4c36f3613a98801891c4c55d",
+      "length": 158221,
+      "checkedAt": "2026-10-12T06:47:27.092Z"
+    },
+    {
+      "id": "national-ref-4",
+      "label": "복지로 공지사항(PC) - 2026년 청년월세 지원 신청 안내",
+      "url": "https://www.bokjiro.go.kr/ssis-tbu/cms/pc/customer/notice/1309500_1141.html",
+      "ok": true,
+      "hash": "046a0c499c185a934b782464720e71ce6fd6b36780b71227bac6d36f099a0186",
+      "length": 1065,
+      "checkedAt": "2026-10-12T06:47:28.692Z"
+    },
+    {
+      "id": "national-ref-5",
+      "label": "전주시 - 2026년 청년월세 지원사업 한눈에 보기(PDF)",
+      "url": "https://jeonju.go.kr/youth2/download/programguide.pdf",
+      "ok": true,
+      "hash": "bbce49a4c7c3b7f516ca6121a6cfad998f79e78f2bbfd290769cf261c2594ee1",
+      "length": 66026,
+      "checkedAt": "2026-10-12T06:47:29.325Z"
+    },
+    {
+      "id": "region-seoul",
+      "label": "서울주거포털 - 청년월세지원 사업개요",
+      "url": "https://housing.seoul.go.kr/site/main/content/sh01_060513",
+      "ok": true,
+      "hash": "bca27ad5e28bb9ded9dc47372ebdfdd166efcfa6e5afba43d2087bc6255eda18",
+      "length": 9477,
+      "checkedAt": "2026-10-12T06:47:31.595Z"
+    },
+    {
+      "id": "region-gangnam",
+      "label": "강남구청 공지 - 2026년 국토부 청년월세 지원사업 신청 안내",
+      "url": "https://www.gangnam.go.kr/board/B_000001/1076368/view.do?mid=ID05_040101",
+      "ok": false,
+      "error": "too little readable text (69 chars)",
+      "checkedAt": "2026-10-12T06:47:31.871Z"
+    }
+  ]
+}
