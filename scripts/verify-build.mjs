@@ -33,7 +33,7 @@ for (const route of routes) {
   const file = route ? `${route}/index.html` : 'index.html';
   if (!has(file)) errors.push(`Missing build output: ${file}`);
 }
-for (const file of ['404.html', 'robots.txt', 'sitemap-index.xml', 'build-id.txt', '_headers']) {
+for (const file of ['404.html', 'robots.txt', 'ads.txt', 'sitemap-index.xml', 'build-id.txt', '_headers']) {
   if (!has(file)) errors.push(`Missing build output: ${file}`);
 }
 
@@ -80,10 +80,20 @@ for (const page of ['about', 'privacy', 'contact']) {
 }
 if (has('404.html') && !noindexRe.test(text('404.html'))) errors.push('404.html: must be noindex');
 
-// 4) robots.txt
+// 4) robots.txt 및 ads.txt
 if (has('robots.txt')) {
   const lines = text('robots.txt').split(/\r?\n/).map((l) => l.trim());
   if (!lines.includes(`Sitemap: ${SITE_URL}/sitemap-index.xml`)) errors.push(`robots.txt: missing "Sitemap: ${SITE_URL}/sitemap-index.xml"`);
+}
+if (has('ads.txt')) {
+  const adsTxt = text('ads.txt');
+  const configuredId = process.env.PUBLIC_ADSENSE_ID ?? '';
+  if (/^ca-pub-\d{16}$/.test(configuredId)) {
+    const expected = `google.com, ${configuredId.replace(/^ca-/, '')}, DIRECT, f08c47fec0942fa0`;
+    if (!adsTxt.split(/\r?\n/).includes(expected)) errors.push(`ads.txt: missing configured publisher declaration`);
+  } else if (/^google\.com,\s*pub-/m.test(adsTxt)) {
+    errors.push('ads.txt: publisher declaration exists while no valid publisher ID is configured');
+  }
 }
 
 // 5) sitemap은 색인 허용 페이지와 정확히 일치해야 합니다.

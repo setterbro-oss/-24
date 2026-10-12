@@ -1,6 +1,6 @@
 {
   "name": "youth-rent-24",
-  "version": "1.4.0",
+  "version": "1.7.0",
   "private": true,
   "type": "module",
   "engines": {
@@ -14,7 +14,8 @@
     "check:freshness": "node scripts/check-freshness.mjs",
     "verify:build": "node scripts/verify-build.mjs",
     "test": "node --test tests/*.test.mjs",
-    "monitor:sources": "node scripts/monitor-official-sources.mjs"
+    "monitor:sources": "node scripts/monitor-official-sources.mjs",
+    "check:adsense": "node scripts/adsense-readiness.mjs"
   },
   "dependencies": {
     "@astrojs/sitemap": "^3.2.1",

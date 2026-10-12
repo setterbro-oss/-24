@@ -2,6 +2,7 @@
 import Layout from '../layouts/Layout.astro';
 import Calculator from '../components/Calculator.astro';
 import EligibilityCheck from '../components/EligibilityCheck.astro';
+import AdSlot from '../components/AdSlot.astro';
 import national from '../data/national.json';
 import { isGuideIndexable } from '../lib/indexing.mjs';
 
@@ -22,6 +23,7 @@ const jsonLd = {
   path="/guide/"
   noindex={!indexable}
   jsonLd={jsonLd}
+  hasAds={indexable}
 >
   <main id="main-content" class="page">
     <nav class="breadcrumb" aria-label="현재 위치"><a href="/">홈</a><span aria-hidden="true"> / </span><span>청년월세 가이드</span></nav>
@@ -67,6 +69,8 @@ const jsonLd = {
     />
 
     <Calculator title="청년월세 지원 월세 계산" monthlyLimit={national.calc.monthlyLimit} maxMonths={national.calc.maxMonths} />
+
+    {indexable && <AdSlot slot="content" label="본문 중간 광고" />}
 
     <section class="info-card" aria-labelledby="excl-title">
       <h2 id="excl-title">제외 대상</h2>

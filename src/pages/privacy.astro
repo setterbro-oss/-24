@@ -3,15 +3,21 @@ import Layout from '../layouts/Layout.astro';
 import siteConfig from '../data/site.json';
 const email = siteConfig.contactEmail;
 const hasEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email || '');
+const adsConfigured = import.meta.env.PUBLIC_ADS_ENABLED === 'true' && /^ca-pub-\d{16}$/.test(import.meta.env.PUBLIC_ADSENSE_ID ?? '') && /^\d{5,20}$/.test(import.meta.env.PUBLIC_ADSENSE_SLOT_CONTENT ?? '');
 ---
 <Layout title="개인정보처리방침 | 청년월세24" description="청년월세24의 개인정보 처리, 계산기·자가진단 입력값, 로그 및 제3자 서비스 관련 안내입니다." path="/privacy/">
   <main id="main-content" class="text-page">
     <h1>개인정보처리방침</h1>
-    <p><strong>시행일:</strong> 2026-10-11</p>
+    <p><strong>시행일:</strong> 2026-10-12</p>
     <h2>1. 계산기·자가진단 입력값</h2>
     <p>월세 계산기와 자가진단에 입력한 값은 이용자의 브라우저 안에서만 계산에 사용되며 서버로 전송하거나 저장하지 않습니다. 다만 사이트가 호스팅되는 Cloudflare는 서비스 운영과 보안을 위해 접속 로그(IP 주소, 접속 시각, 요청 주소 등)를 처리할 수 있습니다.</p>
     <h2>2. 쿠키 및 제3자 서비스</h2>
-    <p>현재 이 사이트는 광고와 분석 도구를 사용하지 않습니다. 이후 광고나 분석 서비스를 도입하면 해당 서비스의 쿠키·식별자 사용 내용과 이용자의 선택 방법을 이 문서에 먼저 반영합니다.</p>
+    {adsConfigured ? (
+      <p>이 사이트는 Google AdSense 광고를 표시할 수 있습니다. Google 및 광고 파트너는 광고 게재, 빈도 제한, 사기 방지, 측정 및 개인화 광고 설정에 따라 쿠키나 유사 식별자를 사용할 수 있습니다. 광고·개인정보 설정은 Google의 광고 설정 및 개인정보 안내에서 확인할 수 있습니다. 광고 표시 여부와 개인화 설정은 지역 법령과 Google의 동의 관리 요구사항을 함께 따라야 합니다.</p>
+    ) : (
+      <p>현재 사이트 설정상 Google AdSense 광고는 비활성화되어 있습니다. 광고를 활성화하면 Google 및 광고 파트너의 쿠키·유사 식별자 처리 내용과 필요한 동의·선택 절차를 실제 설정과 적용 법령에 맞게 갱신해야 합니다.</p>
+    )}
+    <p>Google 개인정보처리 안내: <a href="https://policies.google.com/technologies/partner-sites" target="_blank" rel="noopener noreferrer">Google 파트너 사이트에서 Google이 데이터를 사용하는 방법</a>. Google 광고 설정: <a href="https://adssettings.google.com/" target="_blank" rel="noopener noreferrer">광고 설정</a>.</p>
     <h2>3. 외부 링크</h2>
     <p>공식 기관 및 외부 사이트로 연결되는 링크를 제공합니다. 외부 사이트의 개인정보 처리에는 해당 사이트의 정책이 적용됩니다.</p>
     <h2>4. 문의 및 정정</h2>

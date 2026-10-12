@@ -1,6 +1,7 @@
 ---
 import Layout from '../layouts/Layout.astro';
 import Calculator from '../components/Calculator.astro';
+import AdSlot from '../components/AdSlot.astro';
 import regions from '../data/regions.json';
 import { isRegionIndexable } from '../lib/indexing.mjs';
 
@@ -21,7 +22,7 @@ const jsonLd = {
   ],
 };
 ---
-<Layout title={title} description={region.description} path={`/${region.slug}/`} noindex={!indexable} jsonLd={jsonLd}>
+<Layout title={title} description={region.description} path={`/${region.slug}/`} noindex={!indexable} jsonLd={jsonLd} hasAds={indexable}>
   <main id="main-content" class="region-container">
     <nav class="breadcrumb" aria-label="현재 위치"><a href="/">홈</a><span aria-hidden="true"> / </span><span>{region.name}</span></nav>
     <header class="hero">
@@ -76,6 +77,8 @@ const jsonLd = {
     {region.calc && (
       <Calculator title={`${region.name} 월세 계산`} monthlyLimit={region.calc.monthlyLimit} maxMonths={region.calc.maxMonths} />
     )}
+
+    {indexable && <AdSlot slot="content" label="본문 중간 광고" />}
 
     <section class="apply-card" aria-labelledby="src-title">
       <h2 id="src-title">공식 출처</h2>

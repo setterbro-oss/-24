@@ -1,4 +1,4 @@
-# 먼저 읽으세요 — v1.3.0 (가독성 개선판)
+# 먼저 읽으세요 — v1.5.0 (자동 감시·광고 안전장치 개선판)
 
 ## 0. v1.3.0에서 바뀐 것 (읽기 편하게 + 연락처)
 
@@ -99,3 +99,58 @@ npm run build
 - 이 자동화는 **변경 감지/알림**이지, 기준값을 자동 승인하는 기능은 아닙니다. 공고 페이지의 메뉴·광고·접수 상태 문구만 바뀌어도 알림이 날 수 있습니다.
 - 재산 기준처럼 잘못 게시하면 피해가 큰 정보는 원문을 의미 단위로 검증하지 않고 자동 변경하지 않습니다. 검토 후에만 `src/data/national.json` 또는 `src/data/regions.json`을 수정하세요.
 - 저장소 `Settings → Actions → General → Workflow permissions`에서 `Read and write permissions`를 허용해야 상태 파일 커밋 및 Issue 생성이 가능합니다.
+
+
+## 11. `Official Notice Monitor` 수동 실행
+
+1. GitHub 저장소를 열고 상단 `Actions` 탭을 누릅니다.
+2. 왼쪽 목록에서 `Official Notice Monitor`를 선택합니다.
+3. 오른쪽 `Run workflow`를 누릅니다. 브랜치는 `main`을 선택하고 초록색 `Run workflow`를 다시 누릅니다.
+4. 실행 목록에서 새 실행을 열고 `Check official source changes`, `Save latest source fingerprints`, `Create one review issue...` 단계를 확인합니다.
+5. 보고서는 실행 상세 페이지 아래 `Artifacts`의 `official-source-monitor-report`에서 확인할 수 있습니다. 변경/접근 실패가 있으면 열려 있는 `[공식 공고 자동 감시]` Issue에 최신 보고서가 댓글로 추가됩니다.
+
+자동 실행은 매주 월요일 한국 시간 오전 10:17입니다. 첫 실행은 비교할 이전 해시가 없어 기준값을 저장할 수 있습니다. PDF 원문은 이 HTML 감시에서 제외되므로 PDF 공고는 별도 검증이 필요합니다.
+
+저장소 `Settings → Actions → General → Workflow permissions`에서 `Read and write permissions`를 허용하세요. 저장소의 Issue 기능도 켜져 있어야 검토 Issue를 생성할 수 있습니다.
+
+## 12. 광고 설정 — 검증 및 승인 이후에만
+
+광고는 기본적으로 꺼져 있습니다. Google AdSense에서 사이트 승인을 받고, 개인정보처리방침과 적용 지역의 동의 요건을 실제 설정에 맞게 점검하기 전에는 켜지 마세요.
+
+Cloudflare Pages 프로젝트의 `Settings → Environment variables` 또는 GitHub Actions Variables에 아래 값을 설정하고 새 배포를 실행합니다. `PUBLIC_` 변수는 브라우저에 공개되므로 비밀값을 넣지 마세요.
+
+- `PUBLIC_ADS_ENABLED` = `true` (사이트 검토·개인정보 문구·동의 요구사항 점검 후에만)
+- `PUBLIC_ADSENSE_ID` = `ca-pub-`로 시작하는 본인 게시자 ID 16자리 숫자
+- `PUBLIC_ADSENSE_SLOT_CONTENT` = AdSense에서 생성한 본문 광고 단위의 슬롯 ID 숫자
+
+Cloudflare 빌드 환경과 GitHub 검증 워크플로에서 같은 값을 써야 합니다. 광고는 `verified` 상태이고 검색 색인이 허용된 전국 가이드/지역 페이지의 본문 중간 슬롯에서만 출력됩니다. 미검증 페이지·홈·문의·개인정보·404에는 광고를 출력하지 않습니다. 광고 클릭 유도, 보상형 클릭, 콘텐츠와 광고의 혼동을 유발하는 배치는 금지합니다.
+
+광고 설정을 켠 뒤에도 광고가 실제 표시된다는 보장은 없습니다. `PUBLIC_ADS_ENABLED=true`를 설정하기 전에 Google AdSense 정책 센터에서 사이트 상태를 확인하세요. 광고 노출·CTR·수익은 Google 심사, 방문자 구성, 경매 수요, 광고 차단 및 페이지 품질에 따라 달라집니다.
+
+## 13. 자동화 범위와 안전 한계
+
+- 매주 공식 HTML 출처 변경/접근 실패 감시, 보고서 생성, 검토 Issue 생성·갱신이 자동입니다.
+- 검증 완료 자료의 최신성도 매주 검사합니다. 확인일이 60일을 넘으면 검토 Issue를 만들고 작업을 실패 처리해 알림을 남깁니다.
+- 공식 공고의 재산·소득 숫자와 신청 기간은 원문을 의미 단위로 검증하지 않고 자동 변경하지 않습니다. 페이지 해시 변경은 메뉴·레이아웃 변경일 수도 있기 때문입니다.
+- 현재 원본 데이터는 `unverified`이므로 색인 및 광고가 비활성인 것이 의도된 안전 상태입니다. 모든 페이지를 사람이 원문 대조하지 않은 채 자동으로 `verified`로 바꾸지 마세요.
+- 이 ZIP은 전체 Astro 빌드/실제 Cloudflare 배포/AdSense 승인까지 증명하지 않습니다. GitHub `Validate and Build`가 초록색인지 확인한 뒤 실제 페이지 소스와 AdSense 정책 센터를 점검하세요.
+
+## v1.7.0 추가 확인
+1. `Actions` → `Official Notice Monitor`를 수동 실행합니다.
+2. `monitor` 작업이 초록색이면 스크립트가 실행을 완료한 것입니다. 실제 공식 출처 접근 실패나 변경이 있으면 실행 요약/Artifact/Issue에 `검토 필요`로 표시될 수 있습니다. 초록색은 모든 공고가 최신이라고 보증하지 않습니다.
+3. `source-monitor-report.md` Artifact에서 변경 출처와 관련 문구를 확인한 뒤, 공식 원문을 사람이 대조합니다. 숫자·자격·접수기간은 자동으로 덮어쓰지 않습니다.
+4. AdSense 승인 후 Cloudflare Pages 빌드 변수 `PUBLIC_ADSENSE_ID`, `PUBLIC_ADS_ENABLED`, `PUBLIC_ADSENSE_SLOT_CONTENT`를 실제 값으로 설정하면 `/ads.txt`가 게시자 선언을 출력합니다. 게시자 ID를 설정하지 않으면 안내 주석만 출력합니다.
+5. ZIP을 업로드하기 전에 기존 파일은 유지하고 같은 경로의 파일만 덮어씁니다. 배포 전 `Validate and Build` 성공 여부를 확인합니다.
+
+
+## v1.7.0 변경사항
+- 라이트 테마 및 Firefox 포함 링크/카드 대비 개선
+- 홈의 내부 검증 건수 문구 제거, 서비스 안내/정정 이력으로 상태 이동
+- 편집·검증 정책(`/editorial-policy/`) 및 정정 이력(`/corrections/`) 추가
+- Official Notice Monitor가 스크립트 자체 실패를 성공으로 숨기지 않도록 워크플로 개선
+
+주의: 자동 감시는 공고 변경 감지와 안전 격리를 담당합니다. HTML에서 숫자가 발견된 것만으로 정부 기준을 검증 완료 처리하지 않습니다. 지역 이름만 바꾼 226개 페이지 생성도 하지 않습니다. 검증되지 않은 수치의 자동 게시보다 미검증 유지가 안전합니다.
+
+
+## AdSense 사전 자체 점검
+GitHub Actions 로그 또는 로컬 Node.js 환경에서 `npm run check:adsense`를 실행하면 필수 안내 페이지, 색인 가능한 검증 데이터, 문의 이메일, 광고 설정 형식 등을 보고합니다. 이는 Google 승인 기준 전체를 대변하지 않으며 승인이나 광고 유지 여부를 보장하지 않습니다. `CHECK` 결과는 확인 후 조치하세요.

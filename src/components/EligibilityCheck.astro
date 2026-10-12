@@ -100,15 +100,15 @@ const { birthYearMin, birthYearMax, incomeLimit1p } = Astro.props;
   .desc { color: var(--body); font-size: 1rem; }
   .form-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1.1rem; margin: 1.3rem 0; }
   .field label { display: block; margin-bottom: .4rem; font-size: .95rem; font-weight: 600; color: var(--text); }
-  .field input, .field select { width: 100%; min-height: 48px; padding: .65rem .8rem; border: 1px solid #5a6a85; border-radius: 8px; background: var(--bg); color: #fff; font: inherit; }
+  .field input, .field select { width: 100%; min-height: 48px; padding: .65rem .8rem; border: 1px solid #94a3b8; border-radius: 8px; background: #fff; color: #111827; font: inherit; }
   .field input:focus, .field select:focus { border-color: var(--accent); }
   .result { min-height: 260px; padding: 1.1rem 1.2rem; border-radius: 10px; background: var(--bg); border: 1px solid var(--border); }
   .overall { margin: 0 0 1rem; font-weight: 700; color: var(--text); }
   .items { list-style: none; margin: 0; padding: 0; display: grid; gap: .7rem; }
-  .items :global(.item) { display: flex; flex-direction: column; gap: .2rem; margin: 0; padding: .7rem .9rem; border-left: 4px solid #5a6a85; background: var(--card); border-radius: 6px; font-size: .95rem; }
+  .items :global(.item) { display: flex; flex-direction: column; gap: .2rem; margin: 0; padding: .7rem .9rem; border-left: 4px solid #94a3b8; background: #f8fafc; border-radius: 6px; font-size: .95rem; }
   .items :global(.item strong) { color: var(--text); }
   .items :global(.item span) { color: var(--body); }
-  .items :global(.item-ok) { border-left-color: #34d399; }
-  .items :global(.item-fail) { border-left-color: #f59e0b; }
+  .items :global(.item-ok) { border-left-color: #15803d; }
+  .items :global(.item-fail) { border-left-color: #b45309; }
   @media (max-width: 520px) { .form-grid { grid-template-columns: 1fr; } .result { min-height: 340px; } }
 </style>

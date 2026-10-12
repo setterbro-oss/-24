@@ -16,9 +16,11 @@ const canonical = new URL(path, Astro.site).href;
 const adsId = import.meta.env.PUBLIC_ADSENSE_ID ?? '';
 const adsEnabled = import.meta.env.PUBLIC_ADS_ENABLED === 'true';
 const validAdsId = /^ca-pub-\d{16}$/.test(adsId);
+const contentSlot = import.meta.env.PUBLIC_ADSENSE_SLOT_CONTENT ?? '';
+const validContentSlot = /^\d{5,20}$/.test(contentSlot);
 const hasContact = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(siteConfig.contactEmail || '');
 // 광고는 명시적으로 켜고, 색인 가능한 페이지이며, 유효한 게시자 ID와 운영자 연락처가 있을 때만 로드합니다.
-const shouldRenderAds = !noindex && hasAds && adsEnabled && validAdsId && hasContact;
+const shouldRenderAds = !noindex && hasAds && adsEnabled && validAdsId && validContentSlot && hasContact;
 const current = Astro.url.pathname;
 const isGuide = current.startsWith('/guide');
 const isAbout = current.startsWith('/about');
@@ -30,7 +32,7 @@ const isContact = current.startsWith('/contact');
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="theme-color" content="#0b0f19" />
+    <meta name="theme-color" content="#f8fafc" />
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
     <title>{title}</title>
     <meta name="description" content={description} />
@@ -70,6 +72,8 @@ const isContact = current.startsWith('/contact');
           <a href="/about/">서비스 안내</a>
           <a href="/privacy/">개인정보처리방침</a>
           <a href="/contact/">문의 및 정정 요청</a>
+          <a href="/editorial-policy/">편집·검증 정책</a>
+          <a href="/corrections/">정정 이력</a>
         </nav>
         <p class="footer-notice">청년월세24는 정부·지자체의 공식 기관이 아닌 독립 정보 안내 사이트입니다. 계산 결과는 참고용이며 수급 자격이나 지급을 보장하지 않습니다.</p>
         <p class="footer-copy">© {new Date().getFullYear()} 청년월세24</p>
@@ -79,26 +83,24 @@ const isContact = current.startsWith('/contact');
 </html>
 <style is:global>
   :root {
-    color-scheme: dark;
-    --bg: #0b0f19;
-    --card: #111827;
-    --border: #2b3a52;
-    --text: #f5f7fb;
-    --body: #dde4ee;
-    --muted: #b7c2d2;
-    --accent: #34d399;
-    --accent-hover: #6ee7b7;
+    color-scheme: light;
+    --bg: #f8fafc;
+    --card: #ffffff;
+    --border: #dbe3ee;
+    --text: #111827;
+    --body: #263449;
+    --muted: #526174;
+    --accent: #1d4ed8;
+    --accent-hover: #1e40af;
+    --accent-soft: #eff6ff;
+    --success: #166534;
+    --warning-bg: #fff7ed;
+    --warning-text: #7c2d12;
   }
   * { box-sizing: border-box; }
   html { background: var(--bg); scroll-behavior: smooth; font-size: 112.5%; -webkit-text-size-adjust: 100%; }
   @media (min-width: 900px) { html { font-size: 118.75%; } }
-  body {
-    margin: 0; background: var(--bg); color: var(--body);
-    font-family: system-ui, -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", "Pretendard", "Noto Sans KR", "Malgun Gothic", sans-serif;
-    line-height: 1.75;
-    /* 한글이 단어 중간에서 끊기지 않게 합니다 (긴 주소만 예외로 줄바꿈) */
-    word-break: keep-all; overflow-wrap: break-word;
-  }
+  body { margin: 0; background: var(--bg); color: var(--body); font-family: system-ui, -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", "Pretendard", "Noto Sans KR", "Malgun Gothic", sans-serif; line-height: 1.7; word-break: keep-all; overflow-wrap: anywhere; }
   h1, h2, h3, h4 { color: var(--text); line-height: 1.35; text-wrap: balance; }
   h1 { font-size: clamp(1.75rem, 5vw, 2.4rem); letter-spacing: -0.02em; margin: 0 0 .9rem; }
   h2 { font-size: 1.4rem; margin: 2.25rem 0 .9rem; letter-spacing: -0.01em; }
@@ -107,59 +109,48 @@ const isContact = current.startsWith('/contact');
   ul, ol { padding-left: 1.4rem; }
   li { margin: .45rem 0; }
   h2[id] { scroll-margin-top: 1rem; }
-
-  /* 링크: 방문 여부와 관계없이 읽기 쉬운 초록 계열 (where()로 우선순위 0 → 클래스 색이 우선) */
-  :where(a) { color: var(--accent); text-underline-offset: .22em; text-decoration-thickness: 1px; }
-  :where(a:visited) { color: var(--accent-hover); }
-  :where(a:hover) { color: #a7f3d0; }
-  a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible, summary:focus-visible { outline: 3px solid #fbbf24; outline-offset: 3px; }
-
-  .skip-link { position: absolute; top: -100px; left: 1rem; z-index: 20; padding: .7rem 1rem; background: #fff; color: #111; }
+  a { color: var(--accent); text-underline-offset: .2em; text-decoration-thickness: 1px; }
+  a:visited { color: #4338ca; }
+  a:hover { color: var(--accent-hover); }
+  a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible, summary:focus-visible { outline: 3px solid #b45309; outline-offset: 3px; }
+  .skip-link { position: absolute; top: -100px; left: 1rem; z-index: 20; padding: .7rem 1rem; background: #fff; color: #111827; }
   .skip-link:focus { top: 1rem; }
-
-  /* 헤더 */
-  .site-header { border-bottom: 1px solid var(--border); background: #0d1322; }
+  .site-header { border-bottom: 1px solid var(--border); background: #fff; }
   .nav-container { max-width: 1000px; margin: 0 auto; padding: .5rem 1rem; display: flex; align-items: center; justify-content: space-between; gap: .5rem 1rem; flex-wrap: wrap; }
-  .brand-logo { display: inline-flex; align-items: center; min-height: 44px; color: #fff; font-size: 1.15rem; font-weight: 800; text-decoration: none; }
-  .brand-logo:visited { color: #fff; }
+  .brand-logo { display: inline-flex; align-items: center; min-height: 44px; color: #1d4ed8; font-size: 1.15rem; font-weight: 800; text-decoration: none; }
+  .brand-logo:visited { color: #1d4ed8; }
   .nav-container nav { display: flex; gap: .15rem .6rem; flex-wrap: wrap; }
-  .nav-container nav a { display: inline-flex; align-items: center; min-height: 44px; padding: 0 .4rem; color: var(--body); font-size: .95rem; text-decoration: none; border-bottom: 2px solid transparent; }
-  .nav-container nav a:visited { color: var(--body); }
-  .nav-container nav a:hover { color: var(--accent); border-bottom-color: var(--accent); }
-  .nav-container nav a[aria-current="page"] { color: var(--accent); border-bottom-color: var(--accent); font-weight: 700; }
-
-  /* 푸터 */
-  .site-footer { border-top: 1px solid var(--border); margin-top: 3rem; padding: 2rem 1rem 2.5rem; text-align: center; color: var(--muted); font-size: .95rem; }
+  .nav-container nav a { display: inline-flex; align-items: center; min-height: 44px; padding: 0 .4rem; color: #334155; font-size: .95rem; text-decoration: none; border-bottom: 2px solid transparent; }
+  .nav-container nav a:visited { color: #334155; }
+  .nav-container nav a:hover, .nav-container nav a[aria-current="page"] { color: var(--accent); border-bottom-color: var(--accent); }
+  .nav-container nav a[aria-current="page"] { font-weight: 700; }
+  .site-footer { border-top: 1px solid var(--border); margin-top: 3rem; padding: 2rem 1rem 2.5rem; text-align: center; color: var(--muted); font-size: .9rem; background: #fff; }
   .footer-container { max-width: 900px; margin: 0 auto; }
   .footer-links { display: flex; justify-content: center; flex-wrap: wrap; gap: .25rem 1.25rem; }
-  .footer-links a { display: inline-flex; align-items: center; min-height: 44px; color: var(--body); }
-  .footer-links a:visited { color: var(--body); }
+  .footer-links a { display: inline-flex; align-items: center; min-height: 44px; color: #334155; }
+  .footer-links a:visited { color: #334155; }
   .footer-notice { max-width: 760px; margin: 1rem auto; }
-  .footer-copy { color: #8f9bb0; margin: 0; }
-
-  /* 공통 본문 영역 */
+  .footer-copy { color: #64748b; margin: 0; }
   .home-container { width: min(1000px, calc(100% - 32px)); margin: 0 auto; padding: clamp(1.5rem, 5vw, 3rem) 0 2rem; }
   .page, .region-container { width: min(860px, calc(100% - 32px)); margin: 0 auto; padding: 1.75rem 0 3rem; }
   .text-page { width: min(760px, calc(100% - 32px)); margin: 0 auto; padding: 2.25rem 0 3.5rem; }
   .text-page p, .text-page li { color: var(--body); }
   .text-page h2 { margin-top: 2.5rem; }
-  .breadcrumb { color: var(--muted); font-size: .95rem; margin-bottom: 1.25rem; }
+  .breadcrumb { color: var(--muted); font-size: .9rem; margin-bottom: 1.25rem; }
   .breadcrumb a { padding: .35rem 0; }
   .hero { margin-bottom: 1.5rem; }
-  .hero p { color: #d3dbe8; }
-  .hero .eyebrow, .eyebrow { color: var(--accent); font-weight: 800; font-size: .95rem; letter-spacing: .02em; margin: 0 0 .45rem; }
-
-  /* 카드·안내 상자 */
-  .info-card, .apply-card, .verification-warning { padding: 1.4rem 1.5rem; margin: 1.5rem 0; border: 1px solid var(--border); border-radius: 14px; background: var(--card); }
+  .hero p { color: #475569; }
+  .hero .eyebrow, .eyebrow { color: #1d4ed8; font-weight: 800; font-size: .9rem; letter-spacing: .02em; margin: 0 0 .45rem; }
+  .info-card, .apply-card, .verification-warning { padding: 1.4rem 1.5rem; margin: 1.5rem 0; border: 1px solid var(--border); border-radius: 14px; background: var(--card); box-shadow: 0 1px 3px rgb(15 23 42 / 4%); }
   .info-card > h2:first-child, .apply-card > h2:first-child { margin-top: 0; }
-  .verification-warning { border-color: #b45309; background: #2a1d0a; }
-  .verification-warning strong { color: #fcd34d; }
-  .verification-warning p { margin: .35rem 0 0; color: #f1e3c5; }
+  .verification-warning { border-color: #fdba74; background: var(--warning-bg); }
+  .verification-warning strong { color: var(--warning-text); }
+  .verification-warning p { margin: .35rem 0 0; color: #7c2d12; }
   dl { margin: 0; }
   dl > div { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 2.2fr); gap: .5rem 1.25rem; padding: .95rem 0; border-bottom: 1px solid var(--border); }
   dl > div:first-child { padding-top: .2rem; }
   dl > div:last-child { border-bottom: 0; padding-bottom: .2rem; }
-  dt { color: var(--muted); font-weight: 600; }
+  dt { color: #526174; font-weight: 700; }
   dd { margin: 0; color: var(--text); overflow-wrap: anywhere; }
   details { border-bottom: 1px solid var(--border); }
   details:last-child { border-bottom: 0; }
@@ -169,23 +160,16 @@ const isContact = current.startsWith('/contact');
   .table-wrap { overflow-x: auto; }
   table { width: 100%; border-collapse: collapse; font-size: .95rem; min-width: 560px; }
   th, td { padding: .85rem .7rem; border-bottom: 1px solid var(--border); text-align: left; vertical-align: top; }
-  thead th { color: var(--accent); }
-  tbody th { color: var(--muted); font-weight: 600; }
-  .source-note, .muted { color: var(--muted); font-size: .95rem; }
+  thead th { color: #1e40af; background: #eff6ff; }
+  tbody th { color: #475569; font-weight: 700; }
+  .source-note, .muted { color: var(--muted); font-size: .9rem; }
   .back-link { margin-top: 2rem; }
-
-  /* 가이드 상단 바로가기 */
   .toc { display: flex; flex-wrap: wrap; gap: .5rem; margin: 0 0 1.5rem; padding: 0; list-style: none; }
   .toc li { margin: 0; }
-  .toc a { display: inline-flex; align-items: center; min-height: 44px; padding: 0 1rem; border: 1px solid var(--border); border-radius: 999px; background: var(--card); color: var(--body); font-size: .95rem; text-decoration: none; }
-  .toc a:visited { color: var(--body); }
+  .toc a { display: inline-flex; align-items: center; min-height: 44px; padding: 0 1rem; border: 1px solid var(--border); border-radius: 999px; background: #fff; color: #334155; font-size: .9rem; text-decoration: none; }
+  .toc a:visited { color: #334155; }
   .toc a:hover { border-color: var(--accent); color: var(--accent); }
-
-  .ad-slot-wrapper { min-height: 280px; margin: 1.5rem 0; border: 1px dashed var(--border); border-radius: 8px; display: grid; place-items: center; overflow: hidden; }
-  @media (max-width: 600px) {
-    .info-card, .apply-card, .verification-warning { padding: 1.1rem 1rem; }
-    dl > div { grid-template-columns: 1fr; gap: .2rem; }
-    .nav-container nav a { padding: 0 .3rem; }
-  }
+  .ad-slot-wrapper { min-height: 280px; margin: 1.5rem 0; border-radius: 8px; display: grid; place-items: center; overflow: hidden; }
+  @media (max-width: 600px) { .info-card, .apply-card, .verification-warning { padding: 1.1rem 1rem; } dl > div { grid-template-columns: 1fr; gap: .2rem; } .nav-container nav a { padding: 0 .3rem; } }
   @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
 </style>
