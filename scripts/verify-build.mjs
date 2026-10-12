@@ -97,7 +97,7 @@ if (has('ads.txt')) {
 }
 
 // 5) sitemap은 색인 허용 페이지와 정확히 일치해야 합니다.
-const expectedPaths = new Set(['/about/', '/privacy/', '/contact/']);
+const expectedPaths = new Set(['/about/', '/privacy/', '/contact/', '/editorial-policy/', '/corrections/']);
 if (isHomeIndexable(national, regions)) expectedPaths.add('/');
 if (isGuideIndexable(national)) expectedPaths.add('/guide/');
 for (const region of regions) if (isRegionIndexable(region)) expectedPaths.add(`/${region.slug}/`);
@@ -118,7 +118,11 @@ for (const p of sitemapPaths) if (!expectedPaths.has(p)) errors.push(`sitemap: u
 // 6) 광고 기본 비활성 확인
 if (process.env.PUBLIC_ADS_ENABLED !== 'true') {
   for (const f of files.filter((x) => x.endsWith('.html'))) {
-    if (/adsbygoogle/i.test(fs.readFileSync(f, 'utf8'))) errors.push(`${rel(f)}: ad markup present while ads are disabled`);
+    const html = fs.readFileSync(f, 'utf8');
+    // CSS 클래스명(.adsbygoogle)만 있는 경우는 광고 마크업이 아닙니다. 실제 광고 요소/로더만 검사합니다.
+    if (/<ins\b[^>]*class=[\"'][^\"']*\badsbygoogle\b/i.test(html) || /<script\b[^>]*src=[\"']https:\/\/pagead2\.googlesyndication\.com\/pagead\/js\/adsbygoogle\.js/i.test(html) || /window\.adsbygoogle\s*=/.test(html)) {
+      errors.push(`${rel(f)}: ad markup present while ads are disabled`);
+    }
   }
 }
 

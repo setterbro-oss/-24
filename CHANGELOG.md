@@ -32,3 +32,8 @@
 - 라이트 테마, 홈 CTA, 정책 페이지, 광고 레이아웃 규칙을 확인하는 회귀 테스트 4개를 추가했습니다.
 - AdSense 준비 자체 점검 스크립트(`npm run check:adsense`)를 추가했습니다. 이 도구는 기술 설정을 점검할 뿐 승인이나 수익을 보장하지 않습니다.
 - 공식 수치의 무인 추론 수정, 근거 없는 226개 지역 페이지 대량 생성, 자격 판정으로 오인될 수 있는 계산은 추가하지 않았습니다.
+
+
+## 1.7.1
+- Fixed build verification false positives: the disabled-ad check now ignores CSS selectors and detects only actual AdSense elements/loaders.
+- Aligned expected sitemap URLs with the editorial-policy and corrections pages already intentionally included by the sitemap filter.
