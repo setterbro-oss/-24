@@ -36,6 +36,7 @@ const { birthYearMin, birthYearMax, incomeLimit1p } = Astro.props;
       </select>
     </div>
   </div>
+  <noscript><p class="desc">자가진단을 사용하려면 브라우저에서 JavaScript를 켜 주세요.</p></noscript>
   <div class="result" aria-live="polite" aria-atomic="true">
     <p class="overall" data-out="overall">값을 입력하면 결과가 표시됩니다.</p>
     <ul class="items" data-out="items"></ul>
@@ -93,18 +94,20 @@ const { birthYearMin, birthYearMax, incomeLimit1p } = Astro.props;
   });
 </script>
 <style>
-  .check-card { margin: 2rem 0; padding: clamp(1rem, 4vw, 1.5rem); border: 1px solid #293548; border-radius: 14px; background: #111827; }
-  .eyebrow { margin: 0 0 .3rem; color: #34d399; font-size: .8rem; font-weight: 800; }
-  .check-card h2 { margin: 0 0 .5rem; font-size: 1.35rem; }
-  .desc { color: #c1cad7; font-size: .92rem; }
-  .form-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; margin: 1.2rem 0; }
-  .field label { display: block; margin-bottom: .35rem; font-size: .9rem; }
-  .field input, .field select { width: 100%; min-height: 44px; padding: .65rem; border: 1px solid #526078; border-radius: 7px; background: #0b0f19; color: #fff; font: inherit; }
-  .result { min-height: 260px; padding: 1rem; border-radius: 9px; background: #0b0f19; border: 1px solid #293548; }
-  .overall { margin: 0 0 .8rem; font-weight: 700; }
-  .items { list-style: none; margin: 0; padding: 0; display: grid; gap: .6rem; }
-  .items :global(.item) { display: flex; flex-direction: column; gap: .15rem; padding: .6rem .8rem; border-left: 4px solid #526078; background: #111827; border-radius: 4px; font-size: .9rem; }
-  .items :global(.item span) { color: #c1cad7; }
+  .check-card { margin: 1.5rem 0; padding: clamp(1.1rem, 4vw, 1.6rem); border: 1px solid var(--border); border-radius: 14px; background: var(--card); }
+  .eyebrow { margin: 0 0 .35rem; color: var(--accent); font-size: .9rem; font-weight: 800; }
+  .check-card h2 { margin: 0 0 .6rem; font-size: 1.4rem; }
+  .desc { color: var(--body); font-size: 1rem; }
+  .form-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1.1rem; margin: 1.3rem 0; }
+  .field label { display: block; margin-bottom: .4rem; font-size: .95rem; font-weight: 600; color: var(--text); }
+  .field input, .field select { width: 100%; min-height: 48px; padding: .65rem .8rem; border: 1px solid #5a6a85; border-radius: 8px; background: var(--bg); color: #fff; font: inherit; }
+  .field input:focus, .field select:focus { border-color: var(--accent); }
+  .result { min-height: 260px; padding: 1.1rem 1.2rem; border-radius: 10px; background: var(--bg); border: 1px solid var(--border); }
+  .overall { margin: 0 0 1rem; font-weight: 700; color: var(--text); }
+  .items { list-style: none; margin: 0; padding: 0; display: grid; gap: .7rem; }
+  .items :global(.item) { display: flex; flex-direction: column; gap: .2rem; margin: 0; padding: .7rem .9rem; border-left: 4px solid #5a6a85; background: var(--card); border-radius: 6px; font-size: .95rem; }
+  .items :global(.item strong) { color: var(--text); }
+  .items :global(.item span) { color: var(--body); }
   .items :global(.item-ok) { border-left-color: #34d399; }
   .items :global(.item-fail) { border-left-color: #f59e0b; }
   @media (max-width: 520px) { .form-grid { grid-template-columns: 1fr; } .result { min-height: 340px; } }

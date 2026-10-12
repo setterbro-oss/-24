@@ -67,24 +67,25 @@ const total = regions.length + 1;
   </main>
 </Layout>
 <style>
-  .home-container { max-width: 1000px; margin: 0 auto; padding: clamp(1.5rem, 5vw, 3rem) 1rem; }
   .hero { max-width: 780px; margin: 0 auto 2rem; text-align: center; }
-  .hero h1 { font-size: clamp(1.8rem, 5vw, 2.6rem); line-height: 1.25; }
-  .hero p { color: #c1cad7; }
-  .eyebrow { color: #34d399 !important; font-weight: 800; }
-  .notice { max-width: 850px; margin: 0 auto 2rem; padding: 1rem 1.2rem; border: 1px solid #805b20; border-radius: 10px; background: #211a0d; }
-  .notice p { margin-bottom: 0; color: #e5d7b8; }
-  .section-desc { color: #c1cad7; margin-top: 0; }
-  section { margin-bottom: 2rem; }
-  .grid-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 280px), 1fr)); gap: 1rem; }
-  .card { display: flex; flex-direction: column; gap: .65rem; min-height: 190px; padding: 1.2rem; border: 1px solid #293548; border-radius: 12px; background: #111827; text-decoration: none; }
-  .card.featured { border-color: #34d399; }
-  .card:hover { border-color: #34d399; }
-  .card h3 { margin: 0; color: #fff; font-size: 1.15rem; }
-  .card p { margin: 0; color: #c1cad7; font-size: .9rem; }
-  .list-badge { align-self: flex-start; padding: .15rem .45rem; border-radius: 5px; background: #3f2c13; color: #fbbf24; font-size: .75rem; }
+  .hero h1 { margin-bottom: 1rem; }
+  .hero p { font-size: 1.05rem; }
+  .notice { max-width: 850px; margin: 0 auto 2.25rem; padding: 1.1rem 1.3rem; border: 1px solid #805b20; border-radius: 12px; background: #231a0b; }
+  .notice strong { color: #fcd34d; }
+  .notice p { margin: .35rem 0 0; color: #f1e3c5; }
+  .section-desc { color: var(--muted); margin-top: -.3rem; }
+  section { margin-bottom: 2.25rem; }
+  section > h2 { margin-top: 0; }
+  .grid-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 290px), 1fr)); gap: 1rem; }
+  .card, .card:visited { display: flex; flex-direction: column; gap: .7rem; min-height: 200px; padding: 1.3rem; border: 1px solid var(--border); border-radius: 14px; background: var(--card); color: var(--body); text-decoration: none; }
+  .card.featured { border-color: var(--accent); }
+  .card:hover { border-color: var(--accent); background: #131c2e; }
+  .card h3 { margin: 0; color: #fff; font-size: 1.2rem; }
+  .card p { margin: 0; color: var(--body); font-size: .98rem; }
+  .list-badge { align-self: flex-start; padding: .2rem .55rem; border-radius: 6px; background: #3f2c13; color: #fcd34d; font-size: .82rem; font-weight: 600; }
   .list-badge.verified { background: #103b2c; color: #6ee7b7; }
-  .card-link { margin-top: auto; font-weight: 700; }
-  .howto { margin-top: 2.5rem; padding: 1.2rem; border: 1px solid #293548; border-radius: 12px; }
-  .howto li { margin: .5rem 0; }
+  .card-link { margin-top: auto; padding-top: .4rem; color: var(--accent); font-weight: 700; }
+  .howto { margin-top: 2.5rem; padding: 1.4rem 1.5rem; border: 1px solid var(--border); border-radius: 14px; background: var(--card); }
+  .howto h2 { margin-top: 0; }
+  .howto ol { margin: 0; }
 </style>

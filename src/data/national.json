@@ -8,20 +8,60 @@
   "verifiedAt": "",
   "effectiveFrom": "2026-03-30",
   "effectiveTo": "",
-  "calc": { "monthlyLimit": 200000, "maxMonths": 24 },
-  "eligibility": { "birthYearMin": 1991, "birthYearMax": 2007, "incomeLimit1p": 1538000 },
+  "calc": {
+    "monthlyLimit": 200000,
+    "maxMonths": 24
+  },
+  "eligibility": {
+    "birthYearMin": 1991,
+    "birthYearMax": 2007,
+    "incomeLimit1p": 1538000
+  },
   "facts": [
-    { "label": "사업", "value": "청년월세 지원 (국토교통부 사업, 복지로·주민센터에서 접수)" },
-    { "label": "지원 대상", "value": "부모와 별도 거주하는 무주택 청년, 2026년 신청 가능 출생연도 1991~2007년생(만 19~34세)" },
-    { "label": "지원 금액", "value": "월 최대 20만원, 최대 24개월(생애 1회)" },
-    { "label": "지원 범위", "value": "실제 납부하는 월세 범위 안에서 지원하며 임차보증금·관리비는 제외" },
-    { "label": "소득 기준", "value": "청년가구 기준 중위소득 60% 이하, 원가구(청년+부모) 기준 중위소득 100% 이하" },
-    { "label": "재산 기준", "value": "청년 독립가구 1억 2,200만원 이하, 원가구 4억 7,000만원 이하" },
-    { "label": "2026년 기준 중위소득 참고", "value": "청년가구(1인) 60%는 월 약 153.8만원, 원가구(3인) 100%는 월 약 535.9만원 (지자체 공고 기재 수치)" },
-    { "label": "2026년 신규 신청 기간", "value": "2026.3.30.(월) 09:00 ~ 5.29.(금) 16:00" },
-    { "label": "신규 수혜자 지급 종료", "value": "2028년 12월까지" },
-    { "label": "신청 방법", "value": "복지로(bokjiro.go.kr) 온라인 신청 또는 주소지 관할 주민센터 방문" },
-    { "label": "문의", "value": "국토교통부 콜센터 1599-0001" }
+    {
+      "label": "사업",
+      "value": "청년월세 지원 (국토교통부 사업, 복지로·주민센터에서 접수)"
+    },
+    {
+      "label": "지원 대상",
+      "value": "부모와 별도 거주하는 무주택 청년, 2026년 신청 가능 출생연도 1991~2007년생(만 19~34세)"
+    },
+    {
+      "label": "지원 금액",
+      "value": "월 최대 20만원, 최대 24개월(생애 1회)"
+    },
+    {
+      "label": "지원 범위",
+      "value": "실제 납부하는 월세 범위 안에서 지원하며 임차보증금·관리비는 제외"
+    },
+    {
+      "label": "소득 기준",
+      "value": "청년가구 기준 중위소득 60% 이하, 원가구(청년+부모) 기준 중위소득 100% 이하"
+    },
+    {
+      "label": "재산 기준",
+      "value": "청년 독립가구 1억 2,200만원 이하, 원가구 4억 7,000만원 이하"
+    },
+    {
+      "label": "2026년 기준 중위소득 참고",
+      "value": "청년가구(1인) 60%는 월 약 153.8만원, 원가구(3인) 100%는 월 약 535.9만원 (지자체 공고 기재 수치)"
+    },
+    {
+      "label": "2026년 신규 신청 기간",
+      "value": "2026.3.30.(월) 09:00 ~ 5.29.(금) 16:00"
+    },
+    {
+      "label": "신규 수혜자 지급 종료",
+      "value": "2028년 12월까지"
+    },
+    {
+      "label": "신청 방법",
+      "value": "복지로(bokjiro.go.kr) 온라인 신청 또는 주소지 관할 주민센터 방문"
+    },
+    {
+      "label": "문의",
+      "value": "국토교통부 콜센터 1599-0001"
+    }
   ],
   "exclusions": [
     "주택 소유자",
@@ -63,9 +103,31 @@
     }
   ],
   "sources": [
-    { "label": "복지로 공지사항 - 2026년 청년월세 지원 신청 안내", "url": "https://m.bokjiro.go.kr/ssis-tem/cms/mob/customer/notice/1309500_1155.html", "note": "대상, 지원 금액, 신청 기간, 지급 종료 시점" },
-    { "label": "강남구청 - 2026년 국토부 청년월세 지원사업 신청 안내", "url": "https://www.gangnam.go.kr/board/B_000001/1076368/view.do?mid=ID05_040101", "note": "소득·재산 기준, 제외 대상, 선정자 발표일" },
-    { "label": "전주시 - 2026년 청년월세 지원사업 모집공고(PDF)", "url": "https://jeonju.go.kr/youth2/download/announcement.pdf", "note": "2026년 기준 중위소득 수치" }
+    {
+      "label": "복지로 공지사항 - 2026년 청년월세 지원 신청 안내",
+      "url": "https://m.bokjiro.go.kr/ssis-tem/cms/mob/customer/notice/1309500_1155.html",
+      "note": "대상, 지원 금액, 신청 기간, 지급 종료 시점"
+    },
+    {
+      "label": "강남구청 - 2026년 국토부 청년월세 지원사업 신청 안내",
+      "url": "https://www.gangnam.go.kr/board/B_000001/1076368/view.do?mid=ID05_040101",
+      "note": "소득·재산 기준, 제외 대상, 선정자 발표일"
+    },
+    {
+      "label": "전주시 - 2026년 청년월세 지원사업 모집공고(PDF)",
+      "url": "https://jeonju.go.kr/youth2/download/announcement.pdf",
+      "note": "2026년 기준 중위소득 수치"
+    },
+    {
+      "label": "복지로 공지사항(PC) - 2026년 청년월세 지원 신청 안내",
+      "url": "https://www.bokjiro.go.kr/ssis-tbu/cms/pc/customer/notice/1309500_1141.html",
+      "note": "신청 기간, 지원 대상, 지급 종료 시점, 신규 수혜자 규모, 문의처"
+    },
+    {
+      "label": "전주시 - 2026년 청년월세 지원사업 한눈에 보기(PDF)",
+      "url": "https://jeonju.go.kr/youth2/download/programguide.pdf",
+      "note": "재산 기준(청년가구 1억 2,200만원·원가구 4억 7,000만원) 대조용"
+    }
   ],
   "editorialNote": "이 데이터는 공식 기관 공고에서 옮겨 적은 초안입니다. 아래 sourceUrl의 원문과 항목별로 대조한 뒤에만 verificationStatus를 verified로 바꾸세요."
 }

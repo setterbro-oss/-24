@@ -21,6 +21,7 @@ const fmt = (value: number) => new Intl.NumberFormat('ko-KR').format(value);
       <input id="months-input" type="number" inputmode="numeric" min="1" max={maxMonths} step="1" value={Math.min(12, maxMonths)} />
     </div>
   </div>
+  <noscript><p class="desc">계산기를 사용하려면 브라우저에서 JavaScript를 켜 주세요.</p></noscript>
   <div class="result-box" aria-live="polite" aria-atomic="true">
     <div class="res-item"><span>월 지원 상한 적용 금액</span><strong data-out="monthly">-</strong></div>
     <div class="res-item"><span>선택 기간 단순 합계</span><strong data-out="total">-</strong></div>
@@ -63,16 +64,18 @@ const fmt = (value: number) => new Intl.NumberFormat('ko-KR').format(value);
   });
 </script>
 <style>
-  .calc-card { margin: 2rem 0; padding: clamp(1rem, 4vw, 1.5rem); border: 1px solid #293548; border-radius: 14px; background: #111827; }
-  .eyebrow { margin: 0 0 .3rem; color: #34d399; font-size: .8rem; font-weight: 800; }
-  .calc-card h2 { margin: 0 0 .5rem; font-size: 1.35rem; }
-  .desc { color: #c1cad7; font-size: .92rem; }
-  .form-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; margin: 1.2rem 0; }
-  .field label { display: block; margin-bottom: .35rem; font-size: .9rem; }
-  .field input { width: 100%; min-height: 44px; padding: .65rem; border: 1px solid #526078; border-radius: 7px; background: #0b0f19; color: #fff; font: inherit; }
-  .result-box { min-height: 150px; padding: 1rem; border-radius: 9px; background: #0b0f19; border: 1px solid #293548; }
-  .res-item { display: flex; justify-content: space-between; gap: 1rem; padding: .5rem 0; }
-  .res-item strong { color: #34d399; text-align: right; }
-  .res-note { margin: .5rem 0 0; padding-top: .7rem; border-top: 1px solid #293548; color: #d1d5db; font-size: .85rem; }
+  .calc-card { margin: 1.5rem 0; padding: clamp(1.1rem, 4vw, 1.6rem); border: 1px solid var(--border); border-radius: 14px; background: var(--card); }
+  .eyebrow { margin: 0 0 .35rem; color: var(--accent); font-size: .9rem; font-weight: 800; }
+  .calc-card h2 { margin: 0 0 .6rem; font-size: 1.4rem; }
+  .desc { color: var(--body); font-size: 1rem; }
+  .form-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1.1rem; margin: 1.3rem 0; }
+  .field label { display: block; margin-bottom: .4rem; font-size: .95rem; font-weight: 600; color: var(--text); }
+  .field input { width: 100%; min-height: 48px; padding: .65rem .8rem; border: 1px solid #5a6a85; border-radius: 8px; background: var(--bg); color: #fff; font: inherit; }
+  .field input:focus { border-color: var(--accent); }
+  .result-box { min-height: 160px; padding: 1.1rem 1.2rem; border-radius: 10px; background: var(--bg); border: 1px solid var(--border); }
+  .res-item { display: flex; justify-content: space-between; align-items: baseline; gap: 1rem; padding: .6rem 0; }
+  .res-item span { color: var(--body); }
+  .res-item strong { color: var(--accent); font-size: 1.3rem; text-align: right; }
+  .res-note { margin: .6rem 0 0; padding-top: .8rem; border-top: 1px solid var(--border); color: var(--muted); font-size: .9rem; }
   @media (max-width: 520px) { .form-grid { grid-template-columns: 1fr; } .res-item { flex-direction: column; gap: .15rem; } .res-item strong { text-align: left; } }
 </style>

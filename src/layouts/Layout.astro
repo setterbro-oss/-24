@@ -19,6 +19,11 @@ const validAdsId = /^ca-pub-\d{16}$/.test(adsId);
 const hasContact = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(siteConfig.contactEmail || '');
 // 광고는 명시적으로 켜고, 색인 가능한 페이지이며, 유효한 게시자 ID와 운영자 연락처가 있을 때만 로드합니다.
 const shouldRenderAds = !noindex && hasAds && adsEnabled && validAdsId && hasContact;
+const current = Astro.url.pathname;
+const isGuide = current.startsWith('/guide');
+const isAbout = current.startsWith('/about');
+const isPrivacy = current.startsWith('/privacy');
+const isContact = current.startsWith('/contact');
 ---
 <!doctype html>
 <html lang="ko">
@@ -26,6 +31,7 @@ const shouldRenderAds = !noindex && hasAds && adsEnabled && validAdsId && hasCon
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="theme-color" content="#0b0f19" />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
     <title>{title}</title>
     <meta name="description" content={description} />
     <link rel="canonical" href={canonical} />
@@ -49,10 +55,10 @@ const shouldRenderAds = !noindex && hasAds && adsEnabled && validAdsId && hasCon
       <div class="nav-container">
         <a href="/" class="brand-logo" aria-label="청년월세24 홈">🏠 청년월세24</a>
         <nav aria-label="주요 메뉴">
-          <a href="/guide/">청년월세 가이드</a>
-          <a href="/about/">서비스 안내</a>
-          <a href="/privacy/">개인정보</a>
-          <a href="/contact/">문의</a>
+          <a href="/guide/" aria-current={isGuide ? 'page' : undefined}>청년월세 가이드</a>
+          <a href="/about/" aria-current={isAbout ? 'page' : undefined}>서비스 안내</a>
+          <a href="/privacy/" aria-current={isPrivacy ? 'page' : undefined}>개인정보</a>
+          <a href="/contact/" aria-current={isContact ? 'page' : undefined}>문의</a>
         </nav>
       </div>
     </header>
@@ -72,25 +78,114 @@ const shouldRenderAds = !noindex && hasAds && adsEnabled && validAdsId && hasCon
   </body>
 </html>
 <style is:global>
-  :root { color-scheme: dark; --bg: #0b0f19; --card: #111827; --border: #293548; --text: #f9fafb; --muted: #aab4c4; --accent: #34d399; }
+  :root {
+    color-scheme: dark;
+    --bg: #0b0f19;
+    --card: #111827;
+    --border: #2b3a52;
+    --text: #f5f7fb;
+    --body: #dde4ee;
+    --muted: #b7c2d2;
+    --accent: #34d399;
+    --accent-hover: #6ee7b7;
+  }
   * { box-sizing: border-box; }
-  html { background: var(--bg); scroll-behavior: smooth; }
-  body { margin: 0; background: var(--bg); color: var(--text); font-family: system-ui, -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", sans-serif; line-height: 1.65; }
-  a { color: var(--accent); text-underline-offset: .2em; }
-  a:focus-visible, button:focus-visible, input:focus-visible { outline: 3px solid #fbbf24; outline-offset: 3px; }
-  .skip-link { position: absolute; top: -100px; left: 1rem; z-index: 20; padding: .7rem; background: #fff; color: #111; }
+  html { background: var(--bg); scroll-behavior: smooth; font-size: 106.25%; -webkit-text-size-adjust: 100%; }
+  @media (min-width: 900px) { html { font-size: 112.5%; } }
+  body {
+    margin: 0; background: var(--bg); color: var(--body);
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", "Pretendard", "Noto Sans KR", "Malgun Gothic", sans-serif;
+    line-height: 1.75;
+    /* 한글이 단어 중간에서 끊기지 않게 합니다 (긴 주소만 예외로 줄바꿈) */
+    word-break: keep-all; overflow-wrap: break-word;
+  }
+  h1, h2, h3, h4 { color: var(--text); line-height: 1.35; text-wrap: balance; }
+  h1 { font-size: clamp(1.75rem, 5vw, 2.4rem); letter-spacing: -0.02em; margin: 0 0 .9rem; }
+  h2 { font-size: 1.4rem; margin: 2.25rem 0 .9rem; letter-spacing: -0.01em; }
+  h3 { font-size: 1.15rem; margin: 0 0 .5rem; }
+  p { margin: 0 0 1rem; text-wrap: pretty; }
+  ul, ol { padding-left: 1.4rem; }
+  li { margin: .45rem 0; }
+  h2[id] { scroll-margin-top: 1rem; }
+
+  /* 링크: 방문 여부와 관계없이 읽기 쉬운 초록 계열 (where()로 우선순위 0 → 클래스 색이 우선) */
+  :where(a) { color: var(--accent); text-underline-offset: .22em; text-decoration-thickness: 1px; }
+  :where(a:visited) { color: var(--accent-hover); }
+  :where(a:hover) { color: #a7f3d0; }
+  a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible, summary:focus-visible { outline: 3px solid #fbbf24; outline-offset: 3px; }
+
+  .skip-link { position: absolute; top: -100px; left: 1rem; z-index: 20; padding: .7rem 1rem; background: #fff; color: #111; }
   .skip-link:focus { top: 1rem; }
+
+  /* 헤더 */
   .site-header { border-bottom: 1px solid var(--border); background: #0d1322; }
-  .nav-container { max-width: 1000px; margin: 0 auto; padding: .9rem 1rem; display: flex; align-items: center; justify-content: space-between; gap: 1rem; flex-wrap: wrap; }
-  .brand-logo { color: #fff; font-size: 1.1rem; font-weight: 800; text-decoration: none; }
-  .nav-container nav { display: flex; gap: 1rem; flex-wrap: wrap; font-size: .9rem; }
-  .site-footer { border-top: 1px solid var(--border); margin-top: 3rem; padding: 2rem 1rem; text-align: center; color: var(--muted); font-size: .85rem; }
+  .nav-container { max-width: 1000px; margin: 0 auto; padding: .5rem 1rem; display: flex; align-items: center; justify-content: space-between; gap: .5rem 1rem; flex-wrap: wrap; }
+  .brand-logo { display: inline-flex; align-items: center; min-height: 44px; color: #fff; font-size: 1.15rem; font-weight: 800; text-decoration: none; }
+  .brand-logo:visited { color: #fff; }
+  .nav-container nav { display: flex; gap: .15rem .6rem; flex-wrap: wrap; }
+  .nav-container nav a { display: inline-flex; align-items: center; min-height: 44px; padding: 0 .4rem; color: var(--body); font-size: .95rem; text-decoration: none; border-bottom: 2px solid transparent; }
+  .nav-container nav a:visited { color: var(--body); }
+  .nav-container nav a:hover { color: var(--accent); border-bottom-color: var(--accent); }
+  .nav-container nav a[aria-current="page"] { color: var(--accent); border-bottom-color: var(--accent); font-weight: 700; }
+
+  /* 푸터 */
+  .site-footer { border-top: 1px solid var(--border); margin-top: 3rem; padding: 2rem 1rem 2.5rem; text-align: center; color: var(--muted); font-size: .9rem; }
   .footer-container { max-width: 900px; margin: 0 auto; }
-  .footer-links { display: flex; justify-content: center; flex-wrap: wrap; gap: 1rem; }
-  .footer-links a { color: var(--muted); }
+  .footer-links { display: flex; justify-content: center; flex-wrap: wrap; gap: .25rem 1.25rem; }
+  .footer-links a { display: inline-flex; align-items: center; min-height: 44px; color: var(--body); }
+  .footer-links a:visited { color: var(--body); }
   .footer-notice { max-width: 760px; margin: 1rem auto; }
-  .footer-copy { color: #778397; }
+  .footer-copy { color: #8f9bb0; margin: 0; }
+
+  /* 공통 본문 영역 */
+  .home-container { width: min(1000px, calc(100% - 32px)); margin: 0 auto; padding: clamp(1.5rem, 5vw, 3rem) 0 2rem; }
+  .page, .region-container { width: min(860px, calc(100% - 32px)); margin: 0 auto; padding: 1.75rem 0 3rem; }
+  .text-page { width: min(760px, calc(100% - 32px)); margin: 0 auto; padding: 2.25rem 0 3.5rem; }
+  .text-page p, .text-page li { color: var(--body); }
+  .text-page h2 { margin-top: 2.5rem; }
+  .breadcrumb { color: var(--muted); font-size: .9rem; margin-bottom: 1.25rem; }
+  .breadcrumb a { padding: .35rem 0; }
+  .hero { margin-bottom: 1.5rem; }
+  .hero p { color: #d3dbe8; }
+  .hero .eyebrow, .eyebrow { color: var(--accent); font-weight: 800; font-size: .9rem; letter-spacing: .02em; margin: 0 0 .45rem; }
+
+  /* 카드·안내 상자 */
+  .info-card, .apply-card, .verification-warning { padding: 1.4rem 1.5rem; margin: 1.5rem 0; border: 1px solid var(--border); border-radius: 14px; background: var(--card); }
+  .info-card > h2:first-child, .apply-card > h2:first-child { margin-top: 0; }
+  .verification-warning { border-color: #b45309; background: #2a1d0a; }
+  .verification-warning strong { color: #fcd34d; }
+  .verification-warning p { margin: .35rem 0 0; color: #f1e3c5; }
+  dl { margin: 0; }
+  dl > div { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 2.2fr); gap: .5rem 1.25rem; padding: .95rem 0; border-bottom: 1px solid var(--border); }
+  dl > div:first-child { padding-top: .2rem; }
+  dl > div:last-child { border-bottom: 0; padding-bottom: .2rem; }
+  dt { color: var(--muted); font-weight: 600; }
+  dd { margin: 0; color: var(--text); overflow-wrap: anywhere; }
+  details { border-bottom: 1px solid var(--border); }
+  details:last-child { border-bottom: 0; }
+  summary { cursor: pointer; font-weight: 700; color: var(--text); padding: .8rem 0; min-height: 44px; }
+  details[open] > summary { color: var(--accent); }
+  details p { margin: 0 0 1rem; color: var(--body); }
+  .table-wrap { overflow-x: auto; }
+  table { width: 100%; border-collapse: collapse; font-size: .95rem; min-width: 560px; }
+  th, td { padding: .85rem .7rem; border-bottom: 1px solid var(--border); text-align: left; vertical-align: top; }
+  thead th { color: var(--accent); }
+  tbody th { color: var(--muted); font-weight: 600; }
+  .source-note, .muted { color: var(--muted); font-size: .9rem; }
+  .back-link { margin-top: 2rem; }
+
+  /* 가이드 상단 바로가기 */
+  .toc { display: flex; flex-wrap: wrap; gap: .5rem; margin: 0 0 1.5rem; padding: 0; list-style: none; }
+  .toc li { margin: 0; }
+  .toc a { display: inline-flex; align-items: center; min-height: 44px; padding: 0 1rem; border: 1px solid var(--border); border-radius: 999px; background: var(--card); color: var(--body); font-size: .95rem; text-decoration: none; }
+  .toc a:visited { color: var(--body); }
+  .toc a:hover { border-color: var(--accent); color: var(--accent); }
+
   .ad-slot-wrapper { min-height: 280px; margin: 1.5rem 0; border: 1px dashed var(--border); border-radius: 8px; display: grid; place-items: center; overflow: hidden; }
-  @media (max-width: 520px) { .nav-container { align-items: flex-start; flex-direction: column; } .nav-container nav { gap: .8rem; } }
+  @media (max-width: 600px) {
+    .info-card, .apply-card, .verification-warning { padding: 1.1rem 1rem; }
+    dl > div { grid-template-columns: 1fr; gap: .2rem; }
+    .nav-container nav a { padding: 0 .3rem; }
+  }
   @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
 </style>
