@@ -1,6 +1,7 @@
 ---
 // 광고는 명시적으로 활성화되고, 페이지가 검증·색인 가능하며, 게시자 ID와 슬롯 ID가 유효할 때만 출력합니다.
 interface Props { slot: string; label?: string }
+import siteConfig from '../data/site.json';
 const { slot, label = '광고' } = Astro.props;
 const adsEnabled = import.meta.env.PUBLIC_ADS_ENABLED === 'true';
 const client = import.meta.env.PUBLIC_ADSENSE_ID ?? '';
@@ -8,19 +9,17 @@ const slotIds: Record<string, string> = {
   content: import.meta.env.PUBLIC_ADSENSE_SLOT_CONTENT ?? '',
 };
 const slotId = slotIds[slot] ?? '';
-const enabled = adsEnabled && /^ca-pub-\d{16}$/.test(client) && /^\d{5,20}$/.test(slotId);
+const hasContact = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(siteConfig.contactEmail || '');
+const enabled = adsEnabled && /^ca-pub-\d{16}$/.test(client) && /^\d{5,20}$/.test(slotId) && hasContact;
 ---
 {enabled && (
   <aside class="ad-slot" aria-label={label}>
     <p class="ad-label">광고</p>
-    <ins class="adsbygoogle" style="display:block;min-height:280px" data-ad-client={client} data-ad-slot={slotId} data-ad-format="auto" data-full-width-responsive="true"></ins>
-    <script is:inline>
-      (window.adsbygoogle = window.adsbygoogle || []).push({});
-    </script>
+    <ins class="adsbygoogle" style="display:block;width:100%;min-height:250px" data-ad-client={client} data-ad-slot={slotId} data-ad-format="auto" data-full-width-responsive="true"></ins>
   </aside>
 )}
 <style>
-  .ad-slot { display: block; width: 100%; min-height: 300px; margin: 2rem 0; padding: .5rem 0; }
-  .ad-label { margin: 0 0 .35rem; color: var(--muted); font-size: .75rem; line-height: 1.2; text-align: center; }
-  .adsbygoogle { display: block; width: 100%; min-height: 280px; overflow: hidden; }
+  .ad-slot { display: block; width: 100%; min-width: 0; min-height: 280px; margin: 2rem 0; padding: .5rem 0; }
+  .ad-label { margin: 0 0 .35rem; color: #526174; font-size: .75rem; line-height: 1.2; text-align: center; }
+  .adsbygoogle { display: block; width: 100%; max-width: 100%; min-width: 0; min-height: 250px; }
 </style>

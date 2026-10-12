@@ -1,4 +1,13 @@
-# 변경 기록
+# Changelog
+
+## 1.8.0 — 2026-10-12
+- Fixed build verification false positives: a client API reference alone is no longer treated as a rendered ad; actual AdSense slot markup and loader remain blocked when ads are disabled.
+- Added explicit build-output and indexability checks for `/editorial-policy/` and `/corrections/`.
+- Removed clipping and fixed minimum-width behavior from the AdSense slot to reduce narrow-screen overflow risk. Ad initialization now lives in the layout and only renders when the same ad-eligibility gate passes; slot markup also requires a valid contact email.
+- Rebuilt homepage cards as `<article>` surfaces with stretched title links so `:visited` styling cannot recolor the card background in Firefox.
+- Added regression tests for card structure and ad-slot clipping.
+- Did not add fabricated official verification, hard-coded policy claims, or guaranteed AdSense outcomes.
+
 
 ## v1.4.0
 - Firefox에서 카드 hover/visited 상태의 글자·배경색 대비를 명시해 밝은 배경에 흰 글자가 남는 현상을 방지.

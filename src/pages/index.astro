@@ -27,12 +27,12 @@ const homeIndexable = isHomeIndexable(national, regions);
     <section aria-labelledby="start-title">
       <h2 id="start-title">먼저 확인하세요</h2>
       <div class="grid-list">
-        <a href="/guide/" class="card featured">
+        <article class="card featured">
           <span class={`list-badge ${isGuideIndexable(national) ? 'verified' : ''}`}>{isGuideIndexable(national) ? '출처 확인 완료' : '출처 확인 필요'}</span>
-          <h3>{national.name}</h3>
+          <h3><a class="card-title-link" href="/guide/">{national.name}</a></h3>
           <p>{national.description}</p>
-          <span class="card-link">가이드 보기 →</span>
-        </a>
+          <span class="card-link" aria-hidden="true">가이드 보기 →</span>
+        </article>
       </div>
     </section>
 
@@ -41,12 +41,12 @@ const homeIndexable = isHomeIndexable(national, regions);
       <p class="section-desc">전국 공통 기준과 다른 점이 있는 지자체만 별도 페이지로 정리합니다. 지역 페이지는 공식 공고에서 확인된 내용만 담습니다.</p>
       <div class="grid-list">
         {regions.map((region) => (
-          <a href={`/${region.slug}/`} class="card">
+          <article class="card">
             <span class={`list-badge ${isRegionIndexable(region) ? 'verified' : ''}`}>{isRegionIndexable(region) ? '출처 확인 완료' : '출처 확인 필요'}</span>
-            <h3>{region.name}</h3>
+            <h3><a class="card-title-link" href={`/${region.slug}/`}>{region.name}</a></h3>
             <p>{region.description}</p>
-            <span class="card-link">자세히 보기 →</span>
-          </a>
+            <span class="card-link" aria-hidden="true">자세히 보기 →</span>
+          </article>
         ))}
       </div>
     </section>
@@ -76,11 +76,15 @@ const homeIndexable = isHomeIndexable(national, regions);
   section { margin-bottom: 2.25rem; }
   section > h2 { margin-top: 0; }
   .grid-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 290px), 1fr)); gap: 1rem; }
-  .card, .card:visited { display: flex; flex-direction: column; gap: .7rem; min-height: 200px; padding: 1.3rem; border: 1px solid var(--border); border-radius: 14px; background: #fff; color: #263449; text-decoration: none; box-shadow: 0 1px 3px rgb(15 23 42 / 4%); }
-  .card * { color: inherit; }
-  .card:hover, .card:focus-visible { border-color: #93c5fd; background: #f0f7ff; color: #172554; }
+  .card { position: relative; display: flex; flex-direction: column; gap: .7rem; min-height: 200px; padding: 1.3rem; border: 1px solid #dbe3ee; border-radius: 14px; background: #ffffff; color: #263449; box-shadow: 0 1px 3px rgb(15 23 42 / 4%); }
+  .card:hover, .card:focus-within { border-color: #93c5fd; background: #f0f7ff; }
   .card.featured { border-color: #93c5fd; }
   .card h3 { margin: 0; color: #111827; font-size: 1.2rem; }
+  .card-title-link { position: static; color: #1d4ed8; text-decoration: none; }
+  .card-title-link:visited { color: #1d4ed8; }
+  .card-title-link::after { content: ""; position: absolute; inset: 0; border-radius: 14px; }
+  .card-title-link:hover { color: #1e40af; text-decoration: underline; text-underline-offset: .2em; }
+  .card-title-link:focus-visible { outline: 3px solid #b45309; outline-offset: 3px; }
   .card p { margin: 0; color: #475569; font-size: .98rem; }
   .list-badge { align-self: flex-start; padding: .2rem .55rem; border-radius: 6px; background: #eff6ff; color: #1e40af; font-size: .82rem; font-weight: 700; }
   .list-badge.verified { background: #dcfce7; color: #166534; }

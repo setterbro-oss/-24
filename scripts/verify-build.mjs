@@ -28,7 +28,7 @@ const has = (r) => fs.existsSync(path.join(dist, r));
 const text = (r) => fs.readFileSync(path.join(dist, r), 'utf8');
 
 // 1) 필수 산출물
-const routes = ['', 'guide', 'about', 'privacy', 'contact', ...regions.map((r) => r.slug)];
+const routes = ['', 'guide', 'about', 'privacy', 'contact', 'editorial-policy', 'corrections', ...regions.map((r) => r.slug)];
 for (const route of routes) {
   const file = route ? `${route}/index.html` : 'index.html';
   if (!has(file)) errors.push(`Missing build output: ${file}`);
@@ -75,7 +75,7 @@ for (const region of regions) {
     if (!h1.test(text(`${region.slug}/index.html`))) errors.push(`${region.slug}/index.html: expected H1 missing`);
   }
 }
-for (const page of ['about', 'privacy', 'contact']) {
+for (const page of ['about', 'privacy', 'contact', 'editorial-policy', 'corrections']) {
   if (has(`${page}/index.html`) && noindexRe.test(text(`${page}/index.html`))) errors.push(`${page}/index.html: utility page unexpectedly noindex`);
 }
 if (has('404.html') && !noindexRe.test(text('404.html'))) errors.push('404.html: must be noindex');
@@ -120,8 +120,8 @@ if (process.env.PUBLIC_ADS_ENABLED !== 'true') {
   for (const f of files.filter((x) => x.endsWith('.html'))) {
     const html = fs.readFileSync(f, 'utf8');
     // CSS 클래스명(.adsbygoogle)만 있는 경우는 광고 마크업이 아닙니다. 실제 광고 요소/로더만 검사합니다.
-    if (/<ins\b[^>]*class=[\"'][^\"']*\badsbygoogle\b/i.test(html) || /<script\b[^>]*src=[\"']https:\/\/pagead2\.googlesyndication\.com\/pagead\/js\/adsbygoogle\.js/i.test(html) || /window\.adsbygoogle\s*=/.test(html)) {
-      errors.push(`${rel(f)}: ad markup present while ads are disabled`);
+    if (/<ins\b[^>]*class=[\"'][^\"']*\badsbygoogle\b/i.test(html) || /<script\b[^>]*src=[\"']https:\/\/pagead2?\.googlesyndication\.com\/pagead\/js\/adsbygoogle\.js/i.test(html)) {
+      errors.push(`${rel(f)}: ad markup or AdSense loader present while ads are disabled`);
     }
   }
 }

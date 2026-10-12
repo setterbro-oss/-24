@@ -65,6 +65,14 @@ const isContact = current.startsWith('/contact');
       </div>
     </header>
     <slot />
+    {shouldRenderAds && <script is:inline>
+      window.addEventListener('load', function () {
+        var slots = document.querySelectorAll('ins.adsbygoogle:not([data-adsbygoogle-status])');
+        slots.forEach(function () {
+          (window.adsbygoogle = window.adsbygoogle || []).push({});
+        });
+      });
+    </script>}
     <footer class="site-footer">
       <div class="footer-container">
         <nav class="footer-links" aria-label="서비스 정보">
@@ -109,10 +117,12 @@ const isContact = current.startsWith('/contact');
   ul, ol { padding-left: 1.4rem; }
   li { margin: .45rem 0; }
   h2[id] { scroll-margin-top: 1rem; }
-  a { color: var(--accent); text-underline-offset: .2em; text-decoration-thickness: 1px; }
+  a:link { color: #1d4ed8; text-underline-offset: .2em; text-decoration-thickness: 1px; }
   a:visited { color: #4338ca; }
-  a:hover { color: var(--accent-hover); }
+  a:hover { color: #1e40af; }
+  a:active { color: #1e3a8a; }
   a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible, summary:focus-visible { outline: 3px solid #b45309; outline-offset: 3px; }
+  /* Link state must not control card surface colors; card surfaces are article elements. */
   .skip-link { position: absolute; top: -100px; left: 1rem; z-index: 20; padding: .7rem 1rem; background: #fff; color: #111827; }
   .skip-link:focus { top: 1rem; }
   .site-header { border-bottom: 1px solid var(--border); background: #fff; }
@@ -169,7 +179,7 @@ const isContact = current.startsWith('/contact');
   .toc a { display: inline-flex; align-items: center; min-height: 44px; padding: 0 1rem; border: 1px solid var(--border); border-radius: 999px; background: #fff; color: #334155; font-size: .9rem; text-decoration: none; }
   .toc a:visited { color: #334155; }
   .toc a:hover { border-color: var(--accent); color: var(--accent); }
-  .ad-slot-wrapper { min-height: 280px; margin: 1.5rem 0; border-radius: 8px; display: grid; place-items: center; overflow: hidden; }
+  .ad-slot-wrapper { min-height: 280px; margin: 1.5rem 0; border-radius: 8px; display: grid; place-items: center; }
   @media (max-width: 600px) { .info-card, .apply-card, .verification-warning { padding: 1.1rem 1rem; } dl > div { grid-template-columns: 1fr; gap: .2rem; } .nav-container nav a { padding: 0 .3rem; } }
   @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
 </style>

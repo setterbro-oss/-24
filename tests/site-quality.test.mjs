@@ -30,5 +30,27 @@ test('ad slot does not encourage clicks and has a reserved layout area', () => {
   const ad = read('../src/components/AdSlot.astro');
   assert.match(ad, /min-height:\s*280px/);
   assert.match(ad, /aria-label/);
+  assert.doesNotMatch(ad, /<script\s+is:inline/);
   assert.doesNotMatch(ad, /클릭해|눌러서 광고/);
+});
+
+
+test('homepage cards use article surfaces and stretched title links, not anchor card surfaces', () => {
+  const home = fs.readFileSync(new URL('../src/pages/index.astro', import.meta.url), 'utf8');
+  assert.match(home, /<article class="card/);
+  assert.match(home, /class="card-title-link"/);
+  assert.doesNotMatch(home, /<a\s[^>]*class="card(?: featured)?"/);
+});
+
+test('AdSlot does not clip ads or force a 300px minimum width', () => {
+  const ad = fs.readFileSync(new URL('../src/components/AdSlot.astro', import.meta.url), 'utf8');
+  assert.doesNotMatch(ad, /overflow\s*:\s*hidden/i);
+  assert.doesNotMatch(ad, /min-width\s*:\s*300px/i);
+  assert.match(ad, /min-height:\s*280px/);
+});
+
+test('build verifier does not treat a harmless adsbygoogle API reference as rendered ad markup', () => {
+  const verifier = fs.readFileSync(new URL('../scripts/verify-build.mjs', import.meta.url), 'utf8');
+  assert.match(verifier, /ad markup or AdSense loader present while ads are disabled/);
+  assert.doesNotMatch(verifier, /window\\.adsbygoogle\\s*=/);
 });

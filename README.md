@@ -71,3 +71,12 @@ Issue 생성에 실패하면 저장소의 `Settings → Actions → General → 
 ## v1.5.0 광고 게재 안전장치
 
 `src/components/AdSlot.astro`는 게시자 ID·광고 슬롯 ID·`PUBLIC_ADS_ENABLED=true`가 모두 유효할 때만 본문 광고를 렌더링합니다. `Layout.astro`도 같은 조건에 더해 페이지 색인 허용과 연락처 유효성을 요구합니다. 광고 기본값은 OFF이며, 검증되지 않은 데이터는 색인·광고에서 제외됩니다. 광고 슬롯은 CLS 완화를 위해 최소 높이를 예약하지만, 이는 승인·수익·광고 표시를 보장하지 않습니다. 광고 설정 안내는 `START-HERE-KO.md` 12절을 참고하세요.
+
+
+## v1.8.0 변경 사항
+
+- Firefox에서 방문한 링크 스타일이 카드 전체 배경을 바꾸지 않도록 홈 카드 구조를 `article` + 제목 링크로 변경했습니다.
+- 광고 비활성 상태에서 광고 API 참조만으로 실패하던 빌드 검사를 수정하고, 실제 광고 슬롯/로더가 출력되는 경우만 감지합니다.
+- 광고 컨테이너의 `overflow:hidden`과 고정 최소 너비를 제거했습니다.
+- `/editorial-policy/`, `/corrections/`의 빌드 출력과 색인 검사도 검증 대상으로 포함했습니다.
+- 테스트: `npm test` 24/24 통과, `node scripts/validate-data.mjs` 통과. 현재 실행 환경에서 npm 레지스트리에 접근할 수 없어 Astro 의존성을 설치하지 못했으므로 전체 `astro build`는 여기서 검증하지 못했습니다. GitHub Actions의 `Validate and Build` 결과를 배포 전에 확인하세요.
