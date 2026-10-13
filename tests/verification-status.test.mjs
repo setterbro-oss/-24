@@ -73,7 +73,34 @@ test('about page reuses the same full status board', () => {
   assert.match(about, /id="data-status"/);
 });
 
-test('national record is not treated as verified without explicit claim-level evidence', () => {
+
+test('national record verification report contains explicit claim-level evidence and a reproducible fingerprint', () => {
+  assert.ok(national.verificationReport, 'verificationReport must exist');
+  assert.equal(national.verificationReport.sourceUrl, national.sourceUrl);
+
+  assert.ok(Array.isArray(national.verificationReport.claims));
+  assert.ok(national.verificationReport.claims.length >= 8);
+
+  assert.ok(
+    national.verificationReport.claims.every((claim) =>
+      claim.status === 'matched' &&
+      typeof claim.sourceSnippet === 'string' &&
+      claim.sourceSnippet.trim().length > 0 &&
+      typeof claim.anchor === 'string' &&
+      claim.anchor.trim().length > 0
+    ),
+    'Every verified claim must contain a matching status, source excerpt, and anchor'
+  );
+
+  assert.equal(
+    crypto
+      .createHash('sha256')
+      .update(national.verificationReport.snapshotText, 'utf8')
+      .digest('hex'),
+    national.verificationReport.snapshotHash,
+    'snapshotHash must match snapshotText'
+  );
+});
   if (national.verificationStatus !== 'verified') {
     assert.equal(national.verifiedAt ?? '', '');
     assert.equal(national.verificationReport, undefined);
