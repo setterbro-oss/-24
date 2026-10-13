@@ -1,11 +1,11 @@
 {
   "name": "국토교통부 청년월세 지원",
   "description": "복지로의 2026년 공식 안내에서 확인되는 청년월세 지원 대상, 신청 기간, 지원 한도와 지급 기간을 정리했습니다. 2026년 신규 신청은 5월 29일 마감됐으므로 지금 접수 중인 사업으로 오해하지 않도록 마감 상태와 다음 공고 확인 방법을 함께 안내합니다.",
-  "verificationStatus": "verified",
+  "verificationStatus": "unverified",
   "sourceTitle": "복지로 공지사항 - 2026년 청년월세 지원 신청 안내",
   "sourceUrl": "https://www.bokjiro.go.kr/ssis-tbu/cms/pc/customer/notice/1309500_1141.html",
   "applyUrl": "https://www.bokjiro.go.kr/",
-  "verifiedAt": "2026-10-13",
+  "verifiedAt": "",
   "effectiveFrom": "2026-03-30",
   "effectiveTo": "",
   "facts": [
