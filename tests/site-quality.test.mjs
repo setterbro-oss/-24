@@ -16,7 +16,9 @@ test('home page does not expose internal verification count and includes primary
   assert.doesNotMatch(home, /대조가 끝난 페이지는/);
   assert.match(home, /공식 공고 원문 확인/);
   assert.match(home, /자료 검증 현황/);
-  assert.match(home, /regions\.filter\(\(region\) => isRegionIndexable\(region\)\)/);
+  assert.match(home, /publishedRegions = regions\.filter\(\(region\) => isRegionIndexable\(region\)\)/);
+  assert.match(home, /<VerificationBoard variant="compact"/);
+  assert.match(home, /현재 공개 가능한 자료가 없습니다/);
 });
 
 test('editorial policy and corrections pages exist and are discoverable in sitemap config', () => {

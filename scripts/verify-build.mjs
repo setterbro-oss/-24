@@ -70,6 +70,16 @@ function checkRobots(file, shouldIndex, label) {
 }
 checkRobots('index.html', isHomeIndexable(national, regions), 'home');
 checkRobots('guide/index.html', isGuideIndexable(national), 'guide');
+if (has('index.html')) {
+  const homeHtml = text('index.html');
+  const publishedRegions = regions.filter((region) => isRegionIndexable(region));
+  const hasPublished = isGuideIndexable(national) || publishedRegions.length > 0;
+  if (!hasPublished && !/현재 공개 가능한 자료가 없습니다/.test(homeHtml)) errors.push('index.html: zero published records require an empty-state notice');
+  if (!hasPublished && /id="start-title"|id="regions-title"/.test(homeHtml)) errors.push('index.html: empty publish section heading must not render when no records are indexable');
+  if (isGuideIndexable(national) && !/id="start-title"/.test(homeHtml)) errors.push('index.html: indexable national guide card section missing');
+  if (publishedRegions.length > 0 && !/id="regions-title"/.test(homeHtml)) errors.push('index.html: indexable regional card section missing');
+  if (!/verification-board-title-compact/.test(homeHtml)) errors.push('index.html: verification status board missing');
+}
 for (const region of regions) {
   checkRobots(`${region.slug}/index.html`, isRegionIndexable(region), region.slug);
   if (has(`${region.slug}/index.html`)) {

@@ -1,0 +1,75 @@
+---
+import { getVerificationSummary } from '../lib/verification-status.mjs';
+const { variant = 'compact', national, regions = [] } = Astro.props;
+const records = [
+  { ...national, slug: 'national', scope: '전국' },
+  ...regions.map((region) => ({ ...region, scope: '지역' })),
+];
+const stats = getVerificationSummary(records);
+const full = variant === 'full';
+const stateText = { published: '공개 가능', inProgress: '대조 진행 중', held: '보류·만료' };
+const stateIcon = { published: '✓', inProgress: '◷', held: '!' };
+---
+<section class={`verification-board ${full ? 'is-full' : 'is-compact'}`} aria-labelledby={`verification-board-title-${variant}`}>
+  <div class="board-heading">
+    <div>
+      <p class="eyebrow">자료 투명성</p>
+      <h2 id={`verification-board-title-${variant}`}>공식 자료 검증 현황</h2>
+    </div>
+    { !full && <a class="board-detail-link" href="/about/#data-status">자세히 보기 <span aria-hidden="true">→</span></a> }
+  </div>
+  <div class="summary-grid" aria-label="검증 현황 요약">
+    <div class="summary-card published"><span>공개 가능한 자료</span><strong>{stats.published}건</strong></div>
+    <div class="summary-card progress"><span>대조 진행 중</span><strong>{stats.inProgress}건</strong></div>
+    <div class="summary-card held"><span>보류·만료</span><strong>{stats.held}건</strong></div>
+  </div>
+  <div class="progress-area">
+    <div class="progress-label"><span>공개 가능 자료 비율</span><strong>{stats.published} / {stats.total}건</strong></div>
+    <div class="progress-track" role="progressbar" aria-label="전체 자료 중 공개 가능한 자료 비율" aria-valuemin="0" aria-valuemax={stats.total} aria-valuenow={stats.published}>
+      <span style={`width:${stats.total ? (stats.published / stats.total) * 100 : 0}%`}></span>
+    </div>
+    <p class="board-note">최근 원문 대조 기록: {stats.lastCheckedAt || '아직 기록 없음'}</p>
+  </div>
+  {full && <div class="table-wrap board-table-wrap">
+    <table>
+      <caption>전국 공통 및 지역별 자료의 검증 상태. 공개 가능 상태가 아닌 자료에는 링크나 지원 수치를 표시하지 않습니다.</caption>
+      <thead><tr><th scope="col">자료명</th><th scope="col">구분</th><th scope="col">상태</th><th scope="col">근거 대조</th><th scope="col">확인일</th><th scope="col">안내</th></tr></thead>
+      <tbody>
+        {stats.items.map((item) => <tr>
+          <th scope="row">{item.name}</th>
+          <td>{item.scope}</td>
+          <td><span class={`state-label ${item.state}`}><span aria-hidden="true">{stateIcon[item.state]}</span> {stateText[item.state]}</span></td>
+          <td>{item.claimsMatched}/{item.claimsTotal}개</td>
+          <td>{item.verifiedAt || '—'}</td>
+          <td>{item.state === 'published' ? '게시 게이트 통과' : (item.reasons.join(' · ') || '원문 확인 필요')}</td>
+        </tr>)}
+      </tbody>
+    </table>
+    <div class="mobile-status-list">
+      {stats.items.map((item) => <article class="status-card">
+        <h3>{item.name}</h3><p>{item.scope} · <span class={`state-label ${item.state}`}>{stateIcon[item.state]} {stateText[item.state]}</span></p>
+        <p>근거 대조: {item.claimsMatched}/{item.claimsTotal}개 · 확인일: {item.verifiedAt || '—'}</p>
+        <p>{item.state === 'published' ? '게시 게이트 통과' : (item.reasons.join(' · ') || '원문 확인 필요')}</p>
+      </article>)}
+    </div>
+  </div>}
+  <p class="board-disclaimer">상태 표시는 읽기 전용 현황입니다. 대조 진행·보류 자료의 지원 조건과 수치는 공개하지 않으며, 상태 표시가 게시·색인·광고 게이트를 변경하지 않습니다.</p>
+</section>
+<style>
+  .verification-board{margin:2rem 0;padding:1.25rem;border:1px solid var(--border,#dbe3ee);border-radius:16px;background:#fff;color:#111827}
+  .board-heading{display:flex;justify-content:space-between;align-items:flex-end;gap:1rem;flex-wrap:wrap;margin-bottom:1rem}
+  .board-heading h2{margin:.15rem 0 0;font-size:1.35rem}
+  .board-heading .eyebrow{margin:0;color:#1d4ed8;font-weight:750;font-size:.82rem}
+  .board-detail-link{font-weight:700;white-space:nowrap}
+  .summary-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:.7rem}
+  .summary-card{min-width:0;padding:.9rem;border:1px solid #cbd5e1;border-radius:10px;display:flex;flex-direction:column;gap:.35rem;background:#fff}
+  .summary-card span{font-size:.85rem;color:#334155}.summary-card strong{font-size:1.5rem;color:#111827;font-variant-numeric:tabular-nums}
+  .summary-card.published{border-top:3px solid #15803d}.summary-card.progress{border-top:3px solid #1d4ed8}.summary-card.held{border-top:3px solid #b45309}
+  .progress-area{margin-top:1rem}.progress-label{display:flex;justify-content:space-between;gap:1rem;font-size:.9rem;color:#334155}.progress-label strong{font-variant-numeric:tabular-nums}
+  .progress-track{height:10px;margin-top:.5rem;background:#e2e8f0;border-radius:999px;overflow:hidden}.progress-track span{display:block;height:100%;background:#15803d;border-radius:999px}
+  .board-note,.board-disclaimer{margin:.65rem 0 0;color:#475569;font-size:.85rem}.board-disclaimer{padding-top:.8rem;border-top:1px solid #e2e8f0;line-height:1.6}
+  .board-table-wrap{margin-top:1.25rem}.board-table-wrap table{min-width:0;font-size:.88rem;table-layout:fixed}.board-table-wrap th,.board-table-wrap td{overflow-wrap:anywhere;padding:.65rem .45rem}.board-table-wrap caption{text-align:left;padding:.5rem 0 1rem;color:#475569;line-height:1.5}
+  .state-label{display:inline-flex;align-items:center;gap:.25rem;font-weight:700;white-space:normal}.state-label.published{color:#166534}.state-label.inProgress{color:#1d4ed8}.state-label.held{color:#92400e}
+  .mobile-status-list{display:none}.status-card{padding:1rem;border:1px solid #cbd5e1;border-radius:10px;margin:.75rem 0}.status-card h3{margin:0 0 .5rem;font-size:1rem}.status-card p{margin:.35rem 0;font-size:.9rem;overflow-wrap:anywhere}
+  @media(max-width:680px){.verification-board{padding:1rem}.summary-grid{gap:.45rem}.summary-card{padding:.65rem}.summary-card span{font-size:.75rem}.summary-card strong{font-size:1.25rem}.board-table-wrap table{display:none}.mobile-status-list{display:block}.progress-label{align-items:flex-start;flex-direction:column;gap:.15rem}}
+</style>
