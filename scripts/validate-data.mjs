@@ -1,4 +1,5 @@
 import fs from 'node:fs';
+import crypto from 'node:crypto';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { MIN_FACTS_FOR_INDEX, MIN_BODY_FOR_INDEX, hasSpecificSource } from '../src/lib/indexing.mjs';
@@ -61,6 +62,7 @@ function checkVerification(at, r, { minFacts, requireBody }) {
     if (requireBody && (r.body?.length ?? 0) < MIN_BODY_FOR_INDEX) errors.push(`${at}: verified records need at least ${MIN_BODY_FOR_INDEX} body paragraph`);
     const report = r.verificationReport;
     if (report?.allClaimsMatch !== true || report.sourceUrl !== r.sourceUrl || !DATE_RE.test(report.checkedAt || '') || !/^[a-fA-F0-9]{64}$/.test(report.snapshotHash || '') || !Array.isArray(report.claims) || report.claims.length === 0 || !report.claims.every((c) => c?.status === 'matched' && isText(c?.id) && isText(c?.type) && c.value !== undefined && isText(c?.unit) && isText(c?.sourceSnippet) && isText(c?.anchor) && DATE_RE.test(c?.verifiedAt || ''))) errors.push(`${at}: verified records require a source-matched verificationReport with snapshot hash and fully evidenced matched claims`);
+    if (typeof report?.snapshotText !== 'string' || !isText(report.snapshotMethod) || crypto.createHash('sha256').update(report.snapshotText || '', 'utf8').digest('hex') !== report.snapshotHash) errors.push(`${at}: verificationReport snapshotHash must match the recorded snapshotText (hash is not proof of source authenticity by itself)`);
   }
 }
 

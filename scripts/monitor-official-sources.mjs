@@ -4,6 +4,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import crypto from 'node:crypto';
 import { fileURLToPath } from 'node:url';
+import { extractReadableText, classifySourceInspection } from '../src/lib/source-extract.mjs';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const readJson = (p) => JSON.parse(fs.readFileSync(path.join(root, p), 'utf8'));
@@ -39,16 +40,6 @@ async function readLimitedBody(response, limit) {
   }
   return Buffer.concat(chunks, total);
 }
-const cleanText = (html) => html
-  .replace(/<script\b[^>]*>[\s\S]*?<\/script>/gi, ' ')
-  .replace(/<style\b[^>]*>[\s\S]*?<\/style>/gi, ' ')
-  .replace(/<!--[\s\S]*?-->/g, ' ')
-  .replace(/<[^>]+>/g, ' ')
-  .replace(/&nbsp;|&#160;/gi, ' ')
-  .replace(/&amp;/gi, '&').replace(/&lt;/gi, '<').replace(/&gt;/gi, '>')
-  .replace(/&#(\d+);/g, (_, n) => String.fromCodePoint(Number(n)))
-  .replace(/&#x([0-9a-f]+);/gi, (_, n) => String.fromCodePoint(parseInt(n, 16)))
-  .replace(/\s+/g, ' ').trim();
 // 정책과 직접 관련된 문구를 보고서에 남겨 단순 해시보다 검토 시간을 줄입니다.
 function relevantExcerpt(body) {
   const terms = /(재산|소득|중위소득|신청기간|신청 기간|접수기간|접수 기간|지원금|월 최대|지급|대상 연령|출생연도|선정 발표|시행일|적용기간)/g;
@@ -78,8 +69,9 @@ async function inspect(source) {
     const declaredLength = Number(response.headers.get('content-length') || 0);
     if (declaredLength > maxBytes) throw new Error(`response exceeds ${maxBytes} bytes (content-length)`);
     const bytes = await readLimitedBody(response, maxBytes);
-    const body = cleanText(bytes.toString('utf8'));
-    if (body.length < 300) throw new Error(`too little readable text (${body.length} chars)`);
+    const body = extractReadableText(bytes.toString('utf8'));
+    const inspection = classifySourceInspection({ ok: true, text: body });
+    if (!inspection.publishable) throw new Error(`too little readable text (${body.length} chars; ${inspection.state}; page may require JS or block automated access)`);
     return { id: source.id, label: source.label, url: source.url, ok: true,
       hash: crypto.createHash('sha256').update(body).digest('hex'), length: body.length,
       relevantExcerpt: relevantExcerpt(body), checkedAt: new Date().toISOString() };
