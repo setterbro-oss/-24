@@ -1,2 +1,5 @@
+
 User-agent: *
 Allow: /
+
+Sitemap: https://24.setterbro.workers.dev/sitemap-index.xml
