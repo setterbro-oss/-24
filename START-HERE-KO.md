@@ -1,68 +1,21 @@
-# 청년월세24 v1.11.0 — 적용 안내
+# 청년월세24 v1.12.0 시작 안내
 
-## 이번 버전에서 바뀐 점
+## 이번 버전 변경점
+- `src/lib/source-extract.mjs`: 중첩된 HTML 컨테이너를 끝까지 읽도록 개선하고, `board-view-content`, `nttCn` 등 국내 공공 게시판 선택자를 추가했습니다. 탐색 메뉴·헤더·푸터·사이드바는 fallback 본문에서 제외합니다.
+- `scripts/adsense-policy-lint.mjs`: 독립 사이트 고지, 광고 클릭 유도/보장 문구, 공식 발췌문 해시, claim 발췌의 증거 스냅샷 포함 여부를 검사합니다. 빌드 전 자동 실행하며 GitHub Actions 요약에도 결과를 남깁니다.
+- `src/pages/guide.astro`: 독립 정보 사이트임을 첫 화면에서 명확히 알립니다.
+- `tests/policy-lint.test.mjs` 및 `tests/source-extract.test.mjs`: 근거 무결성, 고지 위치, 중첩 컨테이너와 탐색 노이즈 테스트를 추가했습니다.
+- `package.json`: 버전을 1.12.0으로 올리고 정책 린트를 빌드 단계에 연결했습니다.
 
-- 전국 공통 자료는 복지로의 2026년 공식 안내에서 확인되는 10개 claim만 근거와 함께 기록하고, 2026년 신규 신청이 마감됐음을 명시했습니다. 현재 접수 중인 사업으로 오해하지 않도록 다음 공고 확인 안내를 추가했습니다.
-- `verificationReport.claims[]`에 사실별 `id/type/value/unit/anchor/sourceSnippet/verifiedAt/status`를 기록합니다. `snapshotHash`는 이 보고서에 보관된 공식 안내 발췌문 텍스트의 SHA-256이며, 원본 HTML 바이트의 해시가 아님을 명시했습니다.
-- 전국 원문에서 확인되지 않는 재산 기준·지역별 상세 조건은 전국 공통 사실로 단정하지 않도록 제거/범위 제한했습니다.
-- `src/lib/source-extract.mjs`를 추가해 지자체 게시판의 주요 본문 컨테이너와 HTML 엔티티를 처리합니다. 접근 실패나 짧은 텍스트는 성공으로 간주하지 않습니다.
-- 만료 적용 기간, 45일 초과 확인일, 출처 접근 실패, 서울·강남의 개별 검증 상태 테스트를 추가했습니다.
-- 현재 전국 자료 1건이 게시 게이트를 통과합니다. 서울시·강남구는 각자의 원문 근거 검증이 끝나지 않아 `unverified` 상태를 유지합니다.
+## GitHub에서 적용
+1. 저장소 `https://github.com/setterbro-oss/-24`를 엽니다.
+2. `Add file → Upload files` 또는 GitHub 웹 편집기로 압축을 푼 파일의 변경 사항을 반영합니다. 저장소의 `.github/workflows/validate.yml`도 함께 업데이트합니다.
+3. `Actions → Validate and Build → Run workflow`를 실행하거나 main에 커밋합니다.
+4. `Run tests`, `Validate data`, `Build and verify site` 단계가 모두 초록색인지 확인합니다.
+5. `AdSense / publication safety lint` 요약에서 정책 린트가 PASS인지 확인합니다.
 
-- 홈 화면에 게시 게이트와 독립된 읽기 전용 검증 현황 보드를 추가했습니다. 공개 가능·대조 진행·보류 건수는 실제 레코드의 기존 게이트 결과에서 계산합니다.
-- 공개 가능한 자료가 0건이면 빈 "먼저 확인하세요"/"지자체별 정보" 제목을 렌더링하지 않고, 공개 가능한 자료가 없다는 안내를 표시합니다. 미검증 데이터의 링크·요약·지원 수치는 홈 카드로 노출하지 않습니다.
-- `/about/#data-status`에서 동일한 보드의 상세 항목을 확인할 수 있고, 모바일에서는 표를 카드로 전환합니다.
-- `src/pages/[region].astro`의 `facts` 조건부 섹션에서 빌드를 막던 닫는 중괄호 누락을 수정했습니다.
-- `verify-build.mjs`에 홈의 빈 섹션·빈 상태 안내·현황 보드 검사를 추가했습니다.
-- 회귀 테스트 5개를 추가했습니다.
-
-- 단일 게시 게이트 `src/lib/publish-gate.mjs` 추가: 검증 상태, 45일 최신성, 공식기관 도메인, 원문 스냅샷 해시, 항목별 근거 문장, facts 4개 이상, 본문 700자 이상을 한 번에 확인합니다.
-- 미통과 페이지는 `noindex,nofollow`, sitemap 제외, 광고 스크립트 제외, 홈 카드/내부 링크 제외 처리합니다.
-- `public/_headers`에 draft/demoted 경로의 `X-Robots-Tag: noindex, nofollow`를 자동 생성합니다. `robots.txt`는 해당 경로를 Disallow 하지 않습니다.
-- `national.json`의 `calc`, `eligibility`와 지역 JSON의 `calc` 중복 수치를 제거했습니다. 계산기·자가진단은 검증된 `verificationReport.claims[]` 값이 존재할 때만 표시합니다.
-- 공식 원문 변경 감시는 수치를 자동 수정하지 않습니다. 변경/접근 실패는 검토 대상으로 남깁니다.
-- 방문 링크 색상과 푸터 하단 배경을 통일했습니다.
-
-## 현재 데이터 상태
-
-전국 가이드는 `verified`이며, 2026년 복지로 공식 안내의 근거 발췌 10개와 확인일을 기록했습니다. 신청 기간은 2026년 5월 29일에 끝났으므로 페이지에 마감 상태를 표시합니다. 서울시·강남구는 서로 다른 원문을 별도로 확인해야 하므로 `unverified`를 유지합니다. 이 ZIP은 검색 순위, 애드센스 승인 또는 수익을 보장하지 않습니다.
-
-## GitHub 적용
-
-1. ZIP 압축을 풉니다.
-2. 저장소 `https://github.com/setterbro-oss/-24`의 `main` 브랜치에서 `Add file → Upload files`를 선택합니다.
-3. 압축 해제한 폴더 내부의 모든 파일을 업로드합니다. `.github` 폴더도 포함해야 합니다.
-4. 기존 파일과 같은 이름은 덮어쓰고, 삭제된 파일은 GitHub에서 별도로 삭제합니다. 특히 `national.json`과 `regions.json`은 반드시 새 버전으로 교체합니다.
-5. `Commit changes` 후 `Actions → Validate and Build`를 열고 최신 실행을 확인합니다.
-
-## 확인 순서
-
-1. `npm test` — 단위 테스트.
-2. `npm run check:data` — 데이터 스키마 및 검증 상태.
-3. `npm run build` — 헤더 생성 → 데이터 검사 → Astro 빌드 → dist 검증.
-4. 배포 후 `https://24.setterbro.workers.dev/guide/` 소스에서 `robots`가 `noindex,nofollow`인지 확인합니다.
-5. `/sitemap-index.xml`에서 `/guide/`, `/seoul/`, `/gangnam/`이 빠져 있는지 확인합니다.
-6. `/about/#data-status`에서 내부 검증 현황을 확인합니다.
-7. Cloudflare 응답 헤더에서 draft 경로에 `X-Robots-Tag: noindex, nofollow`가 있는지 확인합니다.
-
-## 데이터를 정식 공개로 승격할 때 필요한 필드
-
-`verificationReport`는 다음을 모두 포함해야 합니다.
-
-- `sourceUrl`: 레코드 `sourceUrl`과 완전히 동일한 공식 원문 주소
-- `checkedAt`: 원문을 확인한 날짜
-- `snapshotHash`: `snapshotText`에 저장된 근거 발췌문 텍스트의 SHA-256 64자리 해시 (원본 HTML 바이트 해시와 다름)
-- `allClaimsMatch: true`
-- `claims[]`: 각 항목의 `id`, `type`, `value`, `unit`, `anchor`, `sourceSnippet`, `verifiedAt`, `status: "matched"`
-
-그 밖에도 `verifiedAt`은 현재 기준 45일 이내여야 하고, `effectiveTo`가 지났거나 잘못된 날짜이면 공개되지 않습니다. 단지 URL이 열리거나 값이 숫자라는 이유만으로 자동 승격하지 마세요. 자동 감시는 원문 변경을 찾아낼 뿐, 의미를 잘못 해석해 지원 기준을 자동 수정하지 않습니다.
-
-## 자동 대조 범위 및 주의사항
-
-이번 ZIP은 홈 현황 UI와 빌드 오류/검증 테스트를 개선한 버전입니다. 공식 원문 해시 감시는 기존대로 변경·접근 실패를 탐지하지만, 원문 의미를 자동으로 완벽히 해석해 `verified`로 승격하는 기능은 추가하지 않았습니다. 숫자·기간·소득·연령을 단순 키워드나 문자열 일치만으로 자동 승격시키면 다른 연도 공고 또는 문맥이 다른 숫자를 잘못 승인할 수 있기 때문입니다. 따라서 `unverified` 자료는 그대로 비공개 상태입니다.
-
-## 설정 및 빌드 한계
-
-- 정식 사이트 주소는 `SITE_URL=https://24.setterbro.workers.dev`입니다. 다른 도메인을 쓰면 Cloudflare와 GitHub Actions 변수에 같은 값을 넣으세요.
-- 광고는 기본 비활성 상태로 유지하세요. 검증 완료는 애드센스 승인이나 수익을 보장하지 않습니다.
-- 현재 작업 환경에서 네트워크/DNS가 차단되어 Astro 의존성을 설치하지 못했습니다. 로컬 검증은 Node 테스트 36/36, 데이터 검증 PASS, 최신성 검사 PASS입니다. 전체 Astro 빌드는 실행하지 못했으므로 GitHub Actions의 `Validate and Build`가 통과하기 전에는 배포 검증 완료라고 간주하지 마세요.
+## 중요한 한계
+- 이 검사는 자동 탐지 가능한 위험 신호와 저장된 근거의 무결성을 검사할 뿐, AdSense 승인이나 정책 위험 0을 보장하지 않습니다.
+- 서울시·강남구를 포함한 지역 자료는 각각의 공식 원문과 근거가 확인되기 전까지 미검증 상태를 유지합니다. 접수처 전화번호나 국토부 공통 기준만 결합해서 지역 사업을 VERIFIED로 승격하지 않습니다.
+- 강남구 원문이 HTTP 오류, 차단, 짧은 텍스트 또는 JS 렌더링으로 읽히지 않으면 실패로 보고하며, 자동으로 변경 없음/검증 완료로 취급하지 않습니다.
+- 본 ZIP은 코드 테스트 41/41 및 데이터/정책 린트 검사를 통과했지만, Astro 전체 빌드는 이 실행 환경에서 의존성을 설치할 수 없어 별도로 확인해야 합니다. GitHub Actions에서 전체 빌드 PASS를 확인하기 전에는 배포 성공이라고 간주하지 마세요.

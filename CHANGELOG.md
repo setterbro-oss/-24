@@ -1,33 +1,8 @@
-# 변경 기록
-
-## v1.11.0 — 근거 단위 검증 및 출처 추출 개선
-
-- 전국 공통 자료를 복지로의 2026년 공식 안내에서 확인되는 범위로 다시 작성하고, 신청 마감 상태를 명확히 표시했습니다.
-- `verificationReport.claims[]`에 10개 사실의 근거 문구·앵커·값·단위·확인일을 기록했습니다. `snapshotHash`는 기록된 발췌 텍스트의 SHA-256이며 원본 HTML 바이트의 해시가 아님을 필드에 명시했습니다.
-- 원문에서 확인되지 않은 재산 기준·지역별 상세 조건을 전국 공통 사실로 단정하지 않도록 범위를 좁혔습니다.
-- 출처 HTML 추출기를 별도 모듈로 분리하고, 한국 지자체 게시판 콘텐츠 컨테이너와 엔티티 처리 테스트를 추가했습니다. 짧은 응답·403 등은 접근/추출 실패로 처리하며 변경 없음이나 검증 성공으로 간주하지 않습니다.
-- 만료 기간·45일 초과 검증·서울/강남 독립 검증 상태 테스트를 추가했습니다. 서울시와 강남구는 별도 원문 대조가 끝나지 않아 `unverified`로 유지합니다.
-- 홈은 게시 게이트를 통과한 전국/지역 자료만 카드로 렌더링합니다. 현재 전국 자료 1건이 게이트를 통과하며, 서울·강남은 게시되지 않습니다.
-- 로컬 검증: Node 테스트 36/36, 데이터 검증 PASS, 최신성 검사 PASS. 이 실행 환경에서는 네트워크가 차단되어 Astro 의존성을 설치할 수 없어 전체 `astro build`는 실행 확인하지 못했습니다.
-
 # Changelog
 
-## 1.9.0
-- 중앙 `getPublishState()` 게이트로 색인·sitemap·광고·내부 링크의 공개 기준 통합.
-- 45일 확인 기한, 공식 도메인, 적용기간, source URL 일치, snapshot hash 및 근거 claim 보고서 요구.
-- 미검증/강등 페이지용 `X-Robots-Tag: noindex, nofollow` 헤더 자동 생성.
-- 하드코딩된 calc/eligibility 필드를 데이터에서 제거하고 검증된 claim에서만 도구 값을 읽도록 변경.
-- 미검증 페이지 홈 카드 및 지역 비교 링크 제외.
-- 방문 링크 색상 통일 및 sticky footer 적용.
-- 24개 테스트 통과. Astro 전체 빌드는 npm 설치 시간 초과로 이 환경에서 검증하지 못함.
-
-
-## 1.10.0 — 2026-10-13
-
-- 홈에 게이트 결과 기반의 읽기 전용 검증 현황 보드 추가.
-- 공개 가능한 레코드가 0건일 때 비어 있는 섹션 제목 대신 안전한 빈 상태 메시지를 표시.
-- `/about/#data-status`에서 상세 현황 컴포넌트 재사용.
-- 지역 상세 Astro 파일의 조건부 섹션 구문 오류 수정.
-- 빌드 후 검증기에 홈 섹션/현황 보드 검사 추가.
-- 검증 현황 및 홈 렌더링 회귀 테스트 추가.
-- 자동 의미 검증을 가장한 문자열 매칭 승격은 추가하지 않음.
+## 1.12.0
+- Added build-time policy-risk lint with evidence hash and claim excerpt integrity checks.
+- Added an above-the-fold independent-site disclosure on the guide page.
+- Improved nested HTML container extraction for government/municipal bulletin pages and stripped common navigation chrome from fallback extraction.
+- Added regression tests for source evidence, disclosure placement, nested HTML and navigation noise.
+- Kept unverified local records gated; no synthetic regional facts or automatic VERIFIED promotion.
