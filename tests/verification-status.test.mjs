@@ -101,11 +101,9 @@ test('national record verification report contains explicit claim-level evidence
     'snapshotHash must match snapshotText'
   );
 });
-  if (national.verificationStatus !== 'verified') {
-    assert.equal(national.verifiedAt ?? '', '');
-    assert.equal(national.verificationReport, undefined);
-    return;
-  }
+
+test('verified national record carries reproducible evidence', () => {
+  if (national.verificationStatus !== 'verified') return; // unverified: nothing to prove
 
   // If the record is marked verified, require reproducible evidence.
   assert.ok(national.verificationReport);

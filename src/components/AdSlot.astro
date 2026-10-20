@@ -5,8 +5,10 @@ import siteConfig from '../data/site.json';
 const { slot, label = '광고' } = Astro.props;
 const adsEnabled = import.meta.env.PUBLIC_ADS_ENABLED === 'true';
 const client = import.meta.env.PUBLIC_ADSENSE_ID ?? '';
+// 페이지당 최대 2개(본문 중간 content, 본문 끝 end). 둘 다 첫 화면 아래에 놓아 콘텐츠가 먼저 보이게 합니다.
 const slotIds: Record<string, string> = {
   content: import.meta.env.PUBLIC_ADSENSE_SLOT_CONTENT ?? '',
+  end: import.meta.env.PUBLIC_ADSENSE_SLOT_END ?? '',
 };
 const slotId = slotIds[slot] ?? '';
 const hasContact = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(siteConfig.contactEmail || '');
@@ -19,7 +21,7 @@ const enabled = adsEnabled && /^ca-pub-\d{16}$/.test(client) && /^\d{5,20}$/.tes
   </aside>
 )}
 <style>
-  .ad-slot { display: block; width: 100%; min-width: 0; min-height: 280px; margin: 2rem 0; padding: .5rem 0; }
+  .ad-slot { display: block; width: 100%; min-width: 0; min-height: 280px; margin: 2rem 0; padding: .5rem 0; contain: layout; } /* 광고가 늦게 떠도 아래 본문이 밀리지 않도록 높이 예약(CLS 방지) */
   .ad-label { margin: 0 0 .35rem; color: #526174; font-size: .75rem; line-height: 1.2; text-align: center; }
   .adsbygoogle { display: block; width: 100%; max-width: 100%; min-width: 0; min-height: 250px; }
 </style>

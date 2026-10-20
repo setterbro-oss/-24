@@ -1,0 +1,56 @@
+{
+ "_note": "SYNTHETIC SAMPLE for unit tests only — field names follow src/lib/youth-api.mjs FIELD, not a real API response.",
+ "result": {
+  "youthPolicyList": [
+   {
+    "plcyNo": "TEST000001",
+    "plcyNm": "테스트시 청년 월세 지원",
+    "lclsfNm": "주거",
+    "plcyExplnCn": "테스트시에 6개월 이상 거주하며 월세로 살고 있는 청년의 주거비 부담을 덜기 위해 월세 일부를 현금으로 지원하는 사업입니다. 보증금과 월세 상한 요건을 충족하는 무주택 청년이 대상이며, 신청 기간 안에 온라인으로 접수해야 합니다. 지원금은 심사 후 매월 지정 계좌로 지급되고, 소득·재산 조사 결과에 따라 선정 여부가 달라질 수 있습니다.",
+    "plcySprtCn": "월 최대 10만원, 최대 12개월 월세 지원. 실제 납부하는 월세 범위 안에서 지급하며 관리비와 보증금은 지원에 포함되지 않습니다. 다른 지자체 또는 중앙정부의 월세 지원을 받고 있는 경우 중복 지원이 제한될 수 있습니다.",
+    "sprvsnInstCdNm": "테스트시",
+    "plcyAplyMthdCn": "테스트시 청년포털에서 온라인 신청하며, 신청 후 소득·재산 및 중복 수혜 여부를 조사한 뒤 선정 결과를 개별 통지합니다. 제출 서류는 임대차계약서, 주민등록등본, 소득 확인 서류입니다.",
+    "aplyYmd": "20261101 ~ 20261130",
+    "refUrlAddr1": "https://www.test.go.kr/youth/rent/1",
+    "sprtTrgtMinAge": "19",
+    "sprtTrgtMaxAge": "39",
+    "earnEtcCn": "기준 중위소득 150% 이하",
+    "addAplyQlfcCndCn": "테스트시 주민등록 6개월 이상",
+    "bizPrdBgngYmd": "20260101",
+    "bizPrdEndYmd": "20261231",
+    "ptcpPrpTrgtCn": "테스트시에 주민등록을 두고 월세로 거주하는 무주택 청년"
+   },
+   {
+    "plcyNo": "TEST000002",
+    "plcyNm": "테스트군 청년 월세 지원(종료)",
+    "lclsfNm": "주거",
+    "plcyExplnCn": "월세 지원",
+    "plcySprtCn": "월 5만원 월세 지원",
+    "sprvsnInstCdNm": "테스트군",
+    "plcyAplyMthdCn": "방문 신청",
+    "aplyYmd": "20250301 ~ 20250331",
+    "refUrlAddr1": "https://www.testgun.go.kr/y/2",
+    "sprtTrgtMinAge": "19",
+    "sprtTrgtMaxAge": "34",
+    "earnEtcCn": "중위소득 120% 이하",
+    "bizPrdBgngYmd": "20250101",
+    "bizPrdEndYmd": "20251231"
+   },
+   {
+    "plcyNo": "TEST000003",
+    "plcyNm": "테스트도 청년 취업 장려금",
+    "lclsfNm": "일자리",
+    "plcyExplnCn": "취업 지원",
+    "plcySprtCn": "월 50만원",
+    "sprvsnInstCdNm": "테스트도"
+   },
+   {
+    "plcyNo": "TEST000004",
+    "plcyNm": "정보 부족 월세 지원",
+    "lclsfNm": "주거",
+    "plcySprtCn": "월세 지원",
+    "refUrlAddr1": "https://www.thin.go.kr/a/4"
+   }
+  ]
+ }
+}

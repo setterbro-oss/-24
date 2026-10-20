@@ -15,7 +15,7 @@ const reportPath = path.join(root, 'source-monitor-report.md');
 const sources = [
   { id: 'national-main', label: national.sourceTitle, url: national.sourceUrl },
   ...(national.sources || []).filter((s) => !/\.pdf(?:$|[?#])/i.test(s.url)).map((s, i) => ({ id: `national-ref-${i + 1}`, label: s.label, url: s.url })),
-  ...regions.filter((r) => !/\.pdf(?:$|[?#])/i.test(r.sourceUrl)).map((r) => ({ id: `region-${r.slug}`, label: r.sourceTitle, url: r.sourceUrl })),
+  ...regions.filter((r) => r.sourceType !== 'official_api' && !/\.pdf(?:$|[?#])/i.test(r.sourceUrl)).map((r) => ({ id: `region-${r.slug}`, label: r.sourceTitle, url: r.sourceUrl })),
 ];
 const timeoutMs = 15000;
 const maxBytes = 2 * 1024 * 1024;
@@ -76,8 +76,9 @@ async function inspect(source) {
       hash: crypto.createHash('sha256').update(body).digest('hex'), length: body.length,
       relevantExcerpt: relevantExcerpt(body), checkedAt: new Date().toISOString() };
   } catch (error) {
+    const cause = error?.cause?.code || error?.cause?.message || '';
     return { id: source.id, label: source.label, url: source.url, ok: false,
-      error: String(error?.message || error), checkedAt: new Date().toISOString() };
+      error: String(error?.message || error) + (cause ? ` [${cause}]` : ''), checkedAt: new Date().toISOString() };
   } finally { clearTimeout(timer); }
 }
 const previous = fs.existsSync(statePath) ? readJson('src/data/source-monitor-state.json') : null;
@@ -97,7 +98,9 @@ for (const source of sources) {
 const firstRun = !previous;
 // 출처가 바뀌었거나 접근할 수 없으면 연결된 페이지의 검증 상태를 자동으로 해제합니다.
 // 이 동작은 수치 데이터를 바꾸지 않고, 검토 전 색인 노출만 막는 보수적 보호장치입니다.
-const affectedIds = new Set([...changed, ...failed].map((s) => s.id));
+// 접근 실패는 변경의 증거가 아니므로 강등하지 않습니다(강등은 내용이 실제로 바뀐 경우만).
+// 오래된 확인일은 게시 게이트의 45일 만료가 따로 처리합니다.
+const affectedIds = new Set(changed.filter((s) => s.previousHash !== '이전 확인 실패').map((s) => s.id));
 let quarantined = 0;
 if (affectedIds.has('national-main') || [...affectedIds].some((id) => id.startsWith('national-ref-'))) {
   if (national.verificationStatus === 'verified') {

@@ -90,3 +90,6 @@ Issue 생성에 실패하면 저장소의 `Settings → Actions → General → 
 ## v1.9.0 게시 게이트
 
 `npm run build`는 `scripts/build-headers.mjs`를 먼저 실행해 미통과 경로의 `X-Robots-Tag: noindex, nofollow` 규칙을 생성합니다. 미검증 레코드는 홈/지역 링크, sitemap, 계산기·자가진단, 광고에서 제외됩니다. 공식 원문 HTML 변경 감지는 자동 검증과 같지 않으며, 의미 단위의 근거 대조 없이 자동 승격하지 않습니다.
+
+## v2.0 data refresh and publication safety
+See [`OPERATIONS-KO.md`](./OPERATIONS-KO.md) for official-source monitoring, optional Youth Policy API ingestion, manual verification, and AdSense configuration. Regional pages are not auto-approved from city names or national-level facts; source-specific evidence is required.

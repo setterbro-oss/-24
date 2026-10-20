@@ -1,6 +1,6 @@
 {
   "name": "youth-rent-24",
-  "version": "1.12.0",
+  "version": "2.0.0",
   "private": true,
   "type": "module",
   "engines": {
@@ -17,7 +17,10 @@
     "monitor:sources": "node scripts/monitor-official-sources.mjs",
     "check:adsense": "node scripts/adsense-readiness.mjs",
     "check:headers": "node scripts/build-headers.mjs",
-    "lint:policy": "node scripts/adsense-policy-lint.mjs"
+    "lint:policy": "node scripts/adsense-policy-lint.mjs",
+    "reverify:claims": "node scripts/reverify-claims.mjs",
+    "ingest:youth": "node scripts/ingest-youth-policies.mjs",
+    "refresh:data": "node scripts/monitor-official-sources.mjs && node scripts/reverify-claims.mjs && node scripts/ingest-youth-policies.mjs"
   },
   "dependencies": {
     "@astrojs/sitemap": "^3.2.1",

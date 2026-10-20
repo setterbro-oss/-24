@@ -81,6 +81,8 @@ const jsonLd = {
 
     {indexable && <AdSlot slot="content" label="본문 중간 광고" />}
 
+    {indexable && <AdSlot slot="end" label="본문 하단 광고" />}
+
     <section class="apply-card" aria-labelledby="src-title">
       <h2 id="src-title">공식 출처</h2>
       <p><a href={region.sourceUrl} target="_blank" rel="noopener noreferrer">{region.sourceTitle} ↗</a></p>

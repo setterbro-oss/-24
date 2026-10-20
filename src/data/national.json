@@ -1,11 +1,11 @@
 {
   "name": "국토교통부 청년월세 지원",
   "description": "복지로의 2026년 공식 안내에서 확인되는 청년월세 지원 대상, 신청 기간, 지원 한도와 지급 기간을 정리했습니다. 2026년 신규 신청은 5월 29일 마감됐으므로 지금 접수 중인 사업으로 오해하지 않도록 마감 상태와 다음 공고 확인 방법을 함께 안내합니다.",
-  "verificationStatus": "unverified",
+  "verificationStatus": "verified",
   "sourceTitle": "복지로 공지사항 - 2026년 청년월세 지원 신청 안내",
   "sourceUrl": "https://www.bokjiro.go.kr/ssis-tbu/cms/pc/customer/notice/1309500_1141.html",
   "applyUrl": "https://www.bokjiro.go.kr/",
-  "verifiedAt": "",
+  "verifiedAt": "2026-10-13",
   "effectiveFrom": "2026-03-30",
   "effectiveTo": "",
   "facts": [
@@ -40,6 +40,26 @@
     {
       "label": "공식 문의",
       "value": "복지로 공지에 기재된 전담 콜센터는 국토교통부 1599-0001입니다."
+    },
+    {
+      "label": "사업 성격",
+      "value": "국토교통부 보도자료는 이 사업을 계속사업으로 전환해 매년 신규 수혜자를 모집한다고 설명합니다. 연중 상시 접수라는 뜻의 문구는 확인되지 않았습니다."
+    },
+    {
+      "label": "재산 기준",
+      "value": "청년가구는 자산 1억 2,200만 원 이하, 원가구는 자산 4억 7,000만 원 이하입니다(국토교통부 보도자료 기준)."
+    },
+    {
+      "label": "선정·지급 일정",
+      "value": "2026년 신청자는 9월에 선정자를 공지하고 5월분 월세부터 소급 지원하는 것으로 안내됐습니다. 개별 결과는 신청 계정에서 확인해야 합니다."
+    },
+    {
+      "label": "청약통장 요건",
+      "value": "2차 사업에서 신설된 청약통장 가입 요건은 2026년 신규 수혜자 모집부터 삭제됐다고 안내됩니다."
+    },
+    {
+      "label": "국토부 담당 부서",
+      "value": "국토교통부 주거복지정책관 청년주거정책과 044-201-3640 (보도자료 기재)"
     }
   ],
   "exclusions": [
@@ -68,6 +88,14 @@
     {
       "q": "이 페이지가 신청 자격을 확정해 주나요?",
       "a": "아닙니다. 공식 안내를 요약한 정보이며 실제 선정 여부는 개별 심사에 달려 있습니다."
+    },
+    {
+      "q": "재산 기준은 얼마인가요?",
+      "a": "국토교통부 보도자료는 청년가구 자산 1억 2,200만 원 이하, 원가구 자산 4억 7,000만 원 이하라고 안내합니다. 자산 산정 범위는 복지로 상세 안내에서 확인하세요."
+    },
+    {
+      "q": "'연중 상시 신청'이라는 글을 봤는데 맞나요?",
+      "a": "국토교통부 보도자료는 계속사업으로 전환해 매년 신규 수혜자를 모집한다고 설명하며, 2026년 접수는 5월 29일까지였습니다. 연중 상시 접수를 뜻하는 공식 문구는 확인하지 못했습니다. 새 모집 공고는 복지로에서 확인하세요."
     }
   ],
   "sources": [
@@ -75,9 +103,14 @@
       "label": "복지로 공지사항 - 2026년 청년월세 지원 신청 안내",
       "url": "https://www.bokjiro.go.kr/ssis-tbu/cms/pc/customer/notice/1309500_1141.html",
       "note": "2026년 3월 20일 등록. 신청 기간, 대상, 소득 기준, 지원액·횟수, 신규 수혜자 지급 종료 시점, 문의처"
+    },
+    {
+      "label": "정책브리핑 - 청년들에 2년간 월세 최대 20만 원 지원…30일부터 접수 (국토교통부, 2026-03-18)",
+      "url": "https://www.korea.kr/news/policyNewsView.do?newsId=148961039",
+      "note": "계속사업 전환, 매년 신규 수혜자 모집, 자산 기준, 선정 발표·소급 지급, 청약통장 요건 삭제, 담당 부서 연락처"
     }
   ],
-  "editorialNote": "검증 기록은 복지로 공식 공지에서 확인 가능한 문구에 한정합니다. 다른 지자체 공고에만 있는 재산 기준·지역별 인원·추가 제외 조건은 전국 공통 사실로 자동 승격하지 않습니다.",
+  "editorialNote": "검증 기록은 공식 문서에서 확인 가능한 문구에 한정합니다. 복지로 공지(주 출처)와 국토교통부 보도자료(보조 출처)를 각각 별도 보고서로 대조하며, 한쪽 문서에만 있는 수치를 다른 쪽 근거로 쓰지 않습니다.",
   "applicationStatus": "closed",
   "applicationStartDate": "2026-03-30",
   "applicationEndDate": "2026-05-29",
@@ -86,7 +119,9 @@
     "공식 안내상 지원 대상은 부모와 별도 거주하는 19~34세 무주택 청년이며, 2026년 신청 가능 출생연도는 1991년부터 2007년까지입니다. 소득 기준은 청년가구 기준 중위소득 60% 이하와 원가구 기준 중위소득 100% 이하로 구분됩니다. 개인별 예외나 가구원 산정 방식은 안내문에 연결된 복지서비스 상세 및 관련 지침으로 확인해야 합니다.",
     "지원액은 실제 납부하는 월세를 기준으로 월 최대 20만원이며, 임차보증금과 관리비는 지원 대상 금액에서 제외됩니다. 복지로 안내에는 생애 1회, 최대 24회 지원이라고 명시돼 있고, 과거 사업에서 이미 지급받은 회차는 최대 지급 횟수에서 제외될 수 있습니다. 2026년 신규 수혜자의 지원은 2028년 12월까지만 가능하다는 제한도 함께 안내돼 있습니다.",
     "이 자료는 자격 승인이나 지급을 보장하지 않습니다. 신청 가능 여부는 실제 공고, 가구 구성, 소득·재산 심사, 중복 수혜 여부 및 제출 서류에 따라 달라질 수 있습니다. 2026년 접수는 마감됐으므로 신청 버튼이나 일반 복지로 홈페이지만 보고 접수 가능하다고 판단하지 말고, 다음 모집 공고가 올라왔는지 공식 공지에서 확인하세요.",
-    "원문 검증 범위는 아래 verificationReport에 개별 근거 문구로 기록한 신청 기간, 연령·출생연도, 소득 기준, 지원 한도·횟수, 모집 규모, 지급 종료 시점, 문의처입니다. 재산 기준이나 상세 제외 사유처럼 이 원문 발췌만으로 확인되지 않는 세부 수치는 이 페이지에서 확정 사실로 단정하지 않습니다."
+    "원문 검증 범위는 아래 verificationReport에 개별 근거 문구로 기록한 신청 기간, 연령·출생연도, 소득 기준, 지원 한도·횟수, 모집 규모, 지급 종료 시점, 문의처입니다. 재산 기준이나 상세 제외 사유처럼 이 원문 발췌만으로 확인되지 않는 세부 수치는 이 페이지에서 확정 사실로 단정하지 않습니다.",
+    "국토교통부가 2026년 3월 18일 낸 보도자료는 이 사업이 한시 사업에서 계속사업으로 바뀌었고 매년 신규 수혜자를 모집한다고 설명합니다. 같은 자료에는 2026년 접수가 5월 29일까지였고, 선정자는 9월에 공지하며 지원금은 5월분부터 소급한다고 적혀 있습니다. 복지로 공지와 이 보도자료 두 공식 자료에서는 연중 상시 접수를 뜻하는 문구를 확인하지 못했습니다. 그래서 '상시 신청'이라고 소개하는 일부 글과 달리, 이 사이트는 새 모집 공고가 올라오기 전까지 접수 중이라고 안내하지 않습니다.",
+    "재산 요건은 국토교통부 보도자료 기준으로 청년가구 자산 1억 2,200만 원 이하, 원가구 자산 4억 7,000만 원 이하입니다. 복지로 공지 발췌에는 없던 항목이라 정책브리핑 보도자료를 별도 출처로 대조했습니다. 자산의 산정 범위와 예외는 보도자료에 나와 있지 않으므로 복지로 상세 안내와 지침에서 확인해야 합니다."
   ],
   "verificationReport": {
     "allClaimsMatch": true,
@@ -198,5 +233,147 @@
       }
     ],
     "reviewNote": "Claims were checked against the official Bokjiro notice text returned for the original notice URL. Snapshot hash covers the listed verbatim excerpts, not the raw response bytes."
-  }
+  },
+  "supplementalReports": [
+    {
+      "allClaimsMatch": true,
+      "sourceUrl": "https://www.korea.kr/news/policyNewsView.do?newsId=148961039",
+      "checkedAt": "2026-10-20",
+      "snapshotHash": "501ebb55b572be1fb45e356fb047427c456f908a0055fc4bca77726dce40cbde",
+      "snapshotMethod": "SHA-256 of the verbatim sentences of the 국토교통부 보도자료 (정책브리핑 2026-03-18) recorded in snapshotText; evidence-text fingerprint, not a raw HTML hash.",
+      "snapshotText": "국토교통부는 청년들의 주거비 부담 완화를 위해 월 최대 20만 원씩 최장 24개월간 월세를 지원하는 '청년월세 지원사업'을 계속사업으로 전환해 오는 30일부터 신규 신청접수를 시작한다고 밝혔다.\n올해는 전국에서 6만 명의 신규수혜자를 선정할 계획으로, 오는 5월 29일까지 복지로 누리집 또는 거주지 행정복지센터에 방문해 신청하면 오는 9월에 선정자를 공지하고 5월분부터 월세를 소급·지원한다.\n그동안 청년월세 지원사업은 한시적으로 추진됐으나 월세 상승, 취업난 등 어려운 경제상황에 처한 청년들의 주거비 부담을 완화하기 위해 지난해 국정과제로 선정해 매년 신규 수혜자를 모집하게 됐다.\n이에 청년가구는 중위소득 60% 이하 및 자산 1억 2200만 원 이하, 원가구는 중위소득 100% 이하에 자산 4억 7000만 원 이하 등 소득·재산 요건을 갖춘 19세에서 34세 사이의 청년 중 부모와 따로 거주하는 무주택자를 대상으로 한다.\n다만 2차 사업 시 신설한 청약통장가입 요건은 올해 신규수혜자 모집부터는 삭제됐다.\n문의 : 국토교통부 주거복지정책관 청년주거정책과(044-201-3640)",
+      "claims": [
+        {
+          "id": "gov_program_annual_recruitment",
+          "type": "program_continuing_annual",
+          "value": "annual_recruitment",
+          "unit": "enum",
+          "anchor": "본문 1·3문단",
+          "sourceSnippet": "지난해 국정과제로 선정해 매년 신규 수혜자를 모집하게 됐다",
+          "status": "matched",
+          "verifiedAt": "2026-10-20"
+        },
+        {
+          "id": "gov_application_end_date",
+          "type": "application_end_date_gov",
+          "value": "2026-05-29",
+          "unit": "date",
+          "anchor": "본문 2문단",
+          "sourceSnippet": "오는 5월 29일까지 복지로 누리집 또는 거주지 행정복지센터에 방문해 신청하면",
+          "status": "matched",
+          "verifiedAt": "2026-10-20"
+        },
+        {
+          "id": "gov_selection_announcement",
+          "type": "selection_announcement_month",
+          "value": "2026-09",
+          "unit": "month",
+          "anchor": "본문 2문단",
+          "sourceSnippet": "오는 9월에 선정자를 공지하고 5월분부터 월세를 소급·지원한다",
+          "status": "matched",
+          "verifiedAt": "2026-10-20"
+        },
+        {
+          "id": "gov_new_beneficiaries",
+          "type": "new_beneficiaries_2026",
+          "value": 60000,
+          "unit": "명",
+          "anchor": "본문 2문단",
+          "sourceSnippet": "올해는 전국에서 6만 명의 신규수혜자를 선정할 계획",
+          "status": "matched",
+          "verifiedAt": "2026-10-20"
+        },
+        {
+          "id": "gov_monthly_limit",
+          "type": "monthly_limit_krw_gov",
+          "value": 200000,
+          "unit": "KRW/month",
+          "anchor": "본문 1문단",
+          "sourceSnippet": "월 최대 20만 원씩 최장 24개월간 월세를 지원하는",
+          "status": "matched",
+          "verifiedAt": "2026-10-20"
+        },
+        {
+          "id": "gov_max_months",
+          "type": "max_months_gov",
+          "value": 24,
+          "unit": "months",
+          "anchor": "본문 1문단",
+          "sourceSnippet": "최장 24개월간 월세를 지원하는",
+          "status": "matched",
+          "verifiedAt": "2026-10-20"
+        },
+        {
+          "id": "gov_income_youth_pct",
+          "type": "income_limit_youth_pct",
+          "value": 60,
+          "unit": "% 기준 중위소득",
+          "anchor": "본문 4문단",
+          "sourceSnippet": "청년가구는 중위소득 60% 이하 및 자산 1억 2200만 원 이하",
+          "status": "matched",
+          "verifiedAt": "2026-10-20"
+        },
+        {
+          "id": "gov_asset_youth",
+          "type": "asset_limit_youth_krw",
+          "value": 122000000,
+          "unit": "KRW",
+          "anchor": "본문 4문단",
+          "sourceSnippet": "자산 1억 2200만 원 이하",
+          "status": "matched",
+          "verifiedAt": "2026-10-20"
+        },
+        {
+          "id": "gov_income_origin_pct",
+          "type": "income_limit_origin_pct",
+          "value": 100,
+          "unit": "% 기준 중위소득",
+          "anchor": "본문 4문단",
+          "sourceSnippet": "원가구는 중위소득 100% 이하에 자산 4억 7000만 원 이하",
+          "status": "matched",
+          "verifiedAt": "2026-10-20"
+        },
+        {
+          "id": "gov_asset_origin",
+          "type": "asset_limit_origin_household_krw",
+          "value": 470000000,
+          "unit": "KRW",
+          "anchor": "본문 4문단",
+          "sourceSnippet": "자산 4억 7000만 원 이하",
+          "status": "matched",
+          "verifiedAt": "2026-10-20"
+        },
+        {
+          "id": "gov_age_range",
+          "type": "age_range_gov",
+          "value": "19~34",
+          "unit": "세",
+          "anchor": "본문 4문단",
+          "sourceSnippet": "19세에서 34세 사이의 청년 중 부모와 따로 거주하는 무주택자",
+          "status": "matched",
+          "verifiedAt": "2026-10-20"
+        },
+        {
+          "id": "gov_subscription_removed",
+          "type": "housing_subscription_requirement_removed",
+          "value": true,
+          "unit": "boolean",
+          "anchor": "본문 5문단",
+          "sourceSnippet": "청약통장가입 요건은 올해 신규수혜자 모집부터는 삭제됐다",
+          "status": "matched",
+          "verifiedAt": "2026-10-20"
+        },
+        {
+          "id": "gov_ministry_phone",
+          "type": "ministry_phone",
+          "value": "044-201-3640",
+          "unit": "tel",
+          "anchor": "문의처",
+          "sourceSnippet": "청년주거정책과(044-201-3640)",
+          "status": "matched",
+          "verifiedAt": "2026-10-20"
+        }
+      ]
+    }
+  ]
 }
