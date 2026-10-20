@@ -1,69 +1,534 @@
-// 온통청년 청년정책 API → src/data/regions.json (official_api 레코드만 갱신, 수동 레코드는 그대로)
-// 필요: GitHub Secret YOUTH_API_KEY (온통청년 오픈API 인증키). 예) node scripts/ingest-youth-policies.mjs --probe
+
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { buildRecord, isRentPolicy, FIELD } from '../src/lib/youth-api.mjs';
 import { todayKst } from '../src/lib/claim-match.mjs';
 
-const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
-const args = process.argv.slice(2);
-const probe = args.includes('--probe');
-const fixture = (args.find((a) => a.startsWith('--fixture=')) || '').split('=')[1];
-const KEY = process.env.YOUTH_API_KEY || '';
-const API_URL = process.env.YOUTH_API_URL || 'https://www.youthcenter.go.kr/go/ythip/getPlcy'; // 공식 문서의 요청주소로 확인 후 설정
-const DETAIL_TEMPLATE = process.env.YOUTH_DETAIL_URL_TEMPLATE || ''; // 예: https://…/ytpPolicyDtl?plcyNo={id} (공식 상세 URL 규칙 확인 후 설정)
-const MAX_PAGES = 30, PAGE = 100;
-const rd = (p) => JSON.parse(fs.readFileSync(path.join(root, p), 'utf8'));
+const ROOT = path.resolve(
+  path.dirname(fileURLToPath(import.meta.url)),
+  '..'
+);
 
-const pick = (json) => json?.result?.youthPolicyList || json?.youthPolicyList || json?.data || json?.items || [];
-async function fetchAll() {
-  if (fixture) return pick(JSON.parse(fs.readFileSync(fixture, 'utf8')));
-  if (!KEY) { console.error('YOUTH_API_KEY 가 없습니다. 건너뜁니다(기존 자료 유지).'); process.exit(0); }
-  const all = [];
-  for (let page = 1; page <= MAX_PAGES; page++) {
-    const url = new URL(API_URL);
-    url.searchParams.set('apiKeyNm', KEY); url.searchParams.set('pageNum', String(page));
-    url.searchParams.set('pageSize', String(PAGE)); url.searchParams.set('rtnType', 'json');
-    for (const [k, v] of new URLSearchParams(process.env.YOUTH_API_EXTRA_QUERY || '')) url.searchParams.set(k, v);
-    const res = await fetch(url, { headers: { accept: 'application/json' } });
-    if (!res.ok) throw new Error(`API HTTP ${res.status}`);
-    const list = pick(await res.json());
-    all.push(...list);
-    if (list.length < PAGE) break;
+const args = process.argv.slice(2);
+const hasFlag = (name) => args.includes(name);
+const getArg = (name) => {
+  const prefix = `--${name}=`;
+  const arg = args.find((value) => value.startsWith(prefix));
+  return arg ? arg.slice(prefix.length) : '';
+};
+
+const PROBE = hasFlag('--probe');
+const DRY_RUN = hasFlag('--dry-run');
+const FIXTURE = getArg('fixture');
+
+const API_KEY = process.env.YOUTH_API_KEY || '';
+const API_URL =
+  process.env.YOUTH_API_URL ||
+  'https://www.youthcenter.go.kr/go/ythip/getPlcy';
+
+const DETAIL_TEMPLATE =
+  process.env.YOUTH_DETAIL_URL_TEMPLATE || '';
+
+const MAX_PAGES = boundedInteger(
+  process.env.YOUTH_API_MAX_PAGES,
+  5,
+  1,
+  30
+);
+
+const PAGE_SIZE = boundedInteger(
+  process.env.YOUTH_API_PAGE_SIZE,
+  100,
+  1,
+  100
+);
+
+const DATA_PATH = path.join(ROOT, 'src/data/regions.json');
+const NATIONAL_PATH = path.join(ROOT, 'src/data/national.json');
+
+function boundedInteger(value, fallback, min, max) {
+  if (value === undefined || value === '') return fallback;
+
+  const parsed = Number(value);
+
+  if (
+    !Number.isSafeInteger(parsed) ||
+    parsed < min ||
+    parsed > max
+  ) {
+    throw new Error(
+      `잘못된 정수 설정: ${value} (허용 범위 ${min}~${max})`
+    );
   }
+
+  return parsed;
+}
+
+function readJson(filePath) {
+  return JSON.parse(fs.readFileSync(filePath, 'utf8'));
+}
+
+function writeJsonAtomically(filePath, data) {
+  const tempPath = `${filePath}.tmp`;
+
+  try {
+    fs.writeFileSync(
+      tempPath,
+      JSON.stringify(data, null, 2) + '\n',
+      'utf8'
+    );
+
+    // 같은 파일 시스템 내에서 교체해 중간 쓰기 상태를 줄입니다.
+    fs.renameSync(tempPath, filePath);
+  } finally {
+    if (fs.existsSync(tempPath)) {
+      fs.unlinkSync(tempPath);
+    }
+  }
+}
+
+function extractList(json) {
+  const candidates = [
+    json?.result?.youthPolicyList,
+    json?.youthPolicyList,
+    json?.data?.youthPolicyList,
+    json?.data,
+    json?.items,
+  ];
+
+  for (const candidate of candidates) {
+    if (Array.isArray(candidate)) return candidate;
+  }
+
+  // 목록이 비어 있다는 사실과 API 응답 형식이 바뀐 상황을 구분합니다.
+  const knownEmpty =
+    json?.result?.youthPolicyList === null ||
+    json?.result?.youthPolicyList === undefined;
+
+  if (
+    knownEmpty &&
+    (json?.result?.totalCount === 0 ||
+      json?.result?.totalCnt === 0 ||
+      json?.totalCount === 0)
+  ) {
+    return [];
+  }
+
+  throw new Error(
+    'API 응답에서 정책 배열을 찾지 못했습니다. --probe로 응답 구조를 확인하세요.'
+  );
+}
+
+function validateApiUrl(raw) {
+  const url = new URL(raw);
+
+  if (url.protocol !== 'https:') {
+    throw new Error('API URL은 HTTPS여야 합니다.');
+  }
+
+  if (url.username || url.password) {
+    throw new Error('API URL에 계정 정보를 넣을 수 없습니다.');
+  }
+
+  return url;
+}
+
+async function fetchAllPolicies() {
+  if (FIXTURE) {
+    const fixturePath = path.resolve(ROOT, FIXTURE);
+
+    if (!fs.existsSync(fixturePath)) {
+      throw new Error(`Fixture 파일을 찾을 수 없습니다: ${FIXTURE}`);
+    }
+
+    const fixture = readJson(fixturePath);
+    const list = extractList(fixture);
+
+    console.log(`[FIXTURE] ${list.length}건을 읽었습니다.`);
+    return list;
+  }
+
+  if (!API_KEY) {
+    console.log(
+      '[SKIP] YOUTH_API_KEY가 없습니다. 기존 데이터를 변경하지 않습니다.'
+    );
+
+    return null;
+  }
+
+  const baseUrl = validateApiUrl(API_URL);
+  const extraParams = new URLSearchParams(
+    process.env.YOUTH_API_EXTRA_QUERY || ''
+  );
+
+  // API 키를 로그에 노출하지 않습니다.
+  if (extraParams.has('apiKeyNm')) {
+    throw new Error(
+      'YOUTH_API_EXTRA_QUERY에 인증키를 넣지 마세요. YOUTH_API_KEY를 사용하세요.'
+    );
+  }
+
+  const all = [];
+  const seenIds = new Set();
+
+  for (let page = 1; page <= MAX_PAGES; page++) {
+    const url = new URL(baseUrl);
+
+    url.searchParams.set('apiKeyNm', API_KEY);
+    url.searchParams.set('pageNum', String(page));
+    url.searchParams.set('pageSize', String(PAGE_SIZE));
+    url.searchParams.set('rtnType', 'json');
+
+    for (const [key, value] of extraParams) {
+      url.searchParams.set(key, value);
+    }
+
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 15000);
+
+    let response;
+
+    try {
+      response = await fetch(url, {
+        method: 'GET',
+        headers: {
+          accept: 'application/json',
+          'user-agent': 'YouthRent24PolicyIngest/2.1',
+        },
+        signal: controller.signal,
+      });
+    } catch (error) {
+      const reason =
+        error?.name === 'AbortError'
+          ? '요청 시간 초과'
+          : '네트워크 요청 실패';
+
+      throw new Error(`페이지 ${page}: ${reason}`);
+    } finally {
+      clearTimeout(timeout);
+    }
+
+    if (!response.ok) {
+      throw new Error(
+        `페이지 ${page}: API HTTP ${response.status}`
+      );
+    }
+
+    const rawText = await response.text();
+
+    let json;
+
+    try {
+      json = JSON.parse(rawText);
+    } catch {
+      throw new Error(
+        `페이지 ${page}: JSON 파싱 실패. API 응답 형식과 인증 상태를 확인하세요.`
+      );
+    }
+
+    const list = extractList(json);
+
+    if (list.length === 0) break;
+
+    for (const item of list) {
+      const id = String(item?.[FIELD.id] ?? '').trim();
+
+      // ID가 없는 행은 임의 ID를 만들어 등록하지 않습니다.
+      if (id) {
+        if (seenIds.has(id)) continue;
+        seenIds.add(id);
+      }
+
+      all.push(item);
+    }
+
+    console.log(
+      `[FETCH] page=${page}, rows=${list.length}, total=${all.length}`
+    );
+
+    if (list.length < PAGE_SIZE) break;
+  }
+
   return all;
 }
 
-const items = await fetchAll();
-if (probe) {
-  console.log(`items=${items.length}`);
-  console.log('첫 항목 키:', Object.keys(items[0] || {}).join(', '));
-  const expected = Object.values(FIELD);
-  const keys = new Set(Object.keys(items[0] || {}));
-  console.log('FIELD 매핑 중 응답에 없는 키:', expected.filter((k) => !keys.has(k)).join(', ') || '없음');
-  process.exit(0);
+function normalizeSlug(value) {
+  return String(value || '')
+    .toLowerCase()
+    .replace(/[^a-z0-9-]/g, '')
+    .replace(/-+/g, '-')
+    .replace(/^-|-$/g, '');
 }
 
-const today = todayKst();
-const national = rd('src/data/national.json');
-const regions = rd('src/data/regions.json');
-const claimsOf = (rec) => Object.fromEntries((rec.verificationReport?.claims || []).map((c) => [c.type, c]));
-const nationalClaims = { age_range: claimsOf(national).age_range, monthly_limit_krw: claimsOf(national).monthly_limit_krw, max_months: claimsOf(national).max_months };
-const detailUrlOf = (item) => (DETAIL_TEMPLATE ? DETAIL_TEMPLATE.replace('{id}', encodeURIComponent(String(item[FIELD.id] ?? ''))) : '');
-
-const manual = regions.filter((r) => r.sourceType !== 'official_api');
-const prev = new Map(regions.filter((r) => r.sourceType === 'official_api').map((r) => [r.slug, r]));
-const fresh = new Map(); const skipped = {};
-for (const item of items.filter(isRentPolicy)) {
-  const out = buildRecord(item, { today, nationalClaims, detailUrlOf });
-  if (out.skip) { skipped[out.skip] = (skipped[out.skip] || 0) + 1; continue; }
-  fresh.set(out.record.slug, out.record);
+function factSignature(record) {
+  return JSON.stringify(
+    (record.facts || [])
+      .map((fact) => [
+        String(fact.label || '').trim(),
+        String(fact.value || '').trim(),
+      ])
+      .sort(([a], [b]) => a.localeCompare(b))
+  );
 }
-// API 에서 사라진 항목은 삭제하지 않고 비공개(unverified)로 보관합니다(404 급증 방지).
-const retired = [...prev.values()].filter((r) => !fresh.has(r.slug)).map((r) => ({ ...r, verificationStatus: 'unverified', verifiedAt: '' }));
-const next = [...manual, ...fresh.values(), ...retired];
-// 서로 다른 정책이 같은 facts 를 갖는 경우(복제 페이지)는 두 번째부터 제외합니다.
-const seen = new Set(); const deduped = next.filter((r) => { const sig = JSON.stringify(r.facts.map((f) => [f.label, f.value])); if (seen.has(sig)) { skipped.duplicate_facts = (skipped.duplicate_facts || 0) + 1; return false; } seen.add(sig); return true; });
-fs.writeFileSync(path.join(root, 'src/data/regions.json'), JSON.stringify(deduped, null, 2) + '\n');
-console.log(`INGEST: api_items=${items.length}, rent_policies=${fresh.size}, retired=${retired.length}, skipped=${JSON.stringify(skipped)}`);
+
+function isUsableRecord(record) {
+  return (
+    record &&
+    typeof record.slug === 'string' &&
+    /^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(record.slug) &&
+    typeof record.name === 'string' &&
+    record.name.trim().length >= 2 &&
+    typeof record.sourceUrl === 'string' &&
+    typeof record.applyUrl === 'string' &&
+    Array.isArray(record.facts) &&
+    record.facts.length >= 4 &&
+    Array.isArray(record.body) &&
+    record.body.some(
+      (paragraph) =>
+        typeof paragraph === 'string' &&
+        paragraph.trim().length > 0
+    ) &&
+    record.verificationReport?.allClaimsMatch === true &&
+    Array.isArray(record.verificationReport?.claims) &&
+    record.verificationReport.claims.length > 0
+  );
+}
+
+function main() {
+  const items = globalThis.__youthRentItems;
+
+  if (items === null) {
+    return;
+  }
+
+  if (!Array.isArray(items)) {
+    throw new Error('수집 결과가 배열이 아닙니다.');
+  }
+
+  const today = todayKst();
+  const national = readJson(NATIONAL_PATH);
+  const existing = readJson(DATA_PATH);
+
+  if (!Array.isArray(existing)) {
+    throw new Error('regions.json은 배열이어야 합니다.');
+  }
+
+  const nationalClaims = Object.fromEntries(
+    (national.verificationReport?.claims || []).map((claim) => [
+      claim.type,
+      claim,
+    ])
+  );
+
+  const nationalComparisonClaims = {
+    age_range: nationalClaims.age_range,
+    monthly_limit_krw: nationalClaims.monthly_limit_krw,
+    max_months: nationalClaims.max_months,
+  };
+
+  const manualRecords = existing.filter(
+    (record) => record.sourceType !== 'official_api'
+  );
+
+  const previousApiRecords = existing.filter(
+    (record) => record.sourceType === 'official_api'
+  );
+
+  const previousBySlug = new Map(
+    previousApiRecords.map((record) => [record.slug, record])
+  );
+
+  const manualSlugs = new Set(
+    manualRecords.map((record) => record.slug)
+  );
+
+  const fresh = new Map();
+  const skipped = Object.create(null);
+
+  const skip = (reason) => {
+    skipped[reason] = (skipped[reason] || 0) + 1;
+  };
+
+  for (const item of items) {
+    if (!isRentPolicy(item)) {
+      skip('not_rent_policy');
+      continue;
+    }
+
+    const id = normalizeSlug(item?.[FIELD.id]);
+
+    if (!id) {
+      skip('missing_policy_id');
+      continue;
+    }
+
+    let result;
+
+    try {
+      result = buildRecord(item, {
+        today,
+        nationalClaims: nationalComparisonClaims,
+        detailUrlOf: (row) => {
+          if (!DETAIL_TEMPLATE) return '';
+
+          const rowId = String(row?.[FIELD.id] ?? '');
+
+          if (!rowId) return '';
+
+          return DETAIL_TEMPLATE.replace(
+            '{id}',
+            encodeURIComponent(rowId)
+          );
+        },
+      });
+    } catch {
+      skip('record_build_failed');
+      continue;
+    }
+
+    if (result?.skip) {
+      skip(result.skip);
+      continue;
+    }
+
+    const record = result?.record;
+
+    if (!isUsableRecord(record)) {
+      skip('invalid_record_shape');
+      continue;
+    }
+
+    if (manualSlugs.has(record.slug)) {
+      skip('manual_slug_collision');
+      continue;
+    }
+
+    // 같은 정책 ID의 중복 행은 한 건만 사용합니다.
+    if (fresh.has(record.slug)) {
+      skip('duplicate_policy_id');
+      continue;
+    }
+
+    // 기존 레코드가 있어도 근거가 부족하거나 기간이 끝난 정책을
+    // 강제로 공개하지 않습니다. 기존 publish gate가 최종 판정합니다.
+    fresh.set(record.slug, record);
+  }
+
+  // 동일한 사실 목록을 가진 API 페이지는 하나만 남깁니다.
+  // 수동 작성 레코드는 자동 중복 정리 대상으로 삼지 않습니다.
+  const uniqueApiRecords = [];
+  const signatures = new Set();
+
+  for (const record of fresh.values()) {
+    const signature = factSignature(record);
+
+    if (signatures.has(signature)) {
+      skip('duplicate_api_facts');
+      continue;
+    }
+
+    signatures.add(signature);
+    uniqueApiRecords.push(record);
+  }
+
+  const currentSlugs = new Set(
+    uniqueApiRecords.map((record) => record.slug)
+  );
+
+  // API 응답에서 사라진 정책은 삭제하지 않고 비공개 상태로 보존합니다.
+  // API 장애로 인한 빈 응답은 아래의 보호 조건에서 별도로 차단합니다.
+  const retired = previousApiRecords
+    .filter((record) => !currentSlugs.has(record.slug))
+    .map((record) => ({
+      ...record,
+      verificationStatus: 'unverified',
+      verifiedAt: '',
+    }));
+
+  const next = [
+    ...manualRecords,
+    ...uniqueApiRecords,
+    ...retired,
+  ];
+
+  const oldContent = JSON.stringify(existing);
+  const newContent = JSON.stringify(next);
+
+  const summary = {
+    sourceItems: items.length,
+    matchingPolicies: items.filter(isRentPolicy).length,
+    manualRecordsPreserved: manualRecords.length,
+    apiRecordsAccepted: uniqueApiRecords.length,
+    retiredRecords: retired.length,
+    skipped,
+    dryRun: DRY_RUN,
+  };
+
+  console.log('[INGEST SUMMARY]');
+  console.log(JSON.stringify(summary, null, 2));
+
+  if (oldContent === newContent) {
+    console.log('[NO CHANGE] regions.json에 변경 사항이 없습니다.');
+    return;
+  }
+
+  if (DRY_RUN) {
+    console.log(
+      '[DRY RUN] 변경 내용을 저장하지 않았습니다.'
+    );
+    return;
+  }
+
+  writeJsonAtomically(DATA_PATH, next);
+
+  console.log(
+    `[WRITE] regions.json 저장 완료: ${next.length}개 레코드`
+  );
+}
+
+async function run() {
+  const items = await fetchAllPolicies();
+
+  if (items === null) return;
+
+  if (PROBE) {
+    const first = items[0] || {};
+    const keys = new Set(Object.keys(first));
+
+    console.log(`[PROBE] items=${items.length}`);
+    console.log('[PROBE] 응답 키:', [...keys].join(', '));
+    console.log(
+      '[PROBE] FIELD 매핑:',
+      JSON.stringify(FIELD, null, 2)
+    );
+
+    for (const [logicalName, fieldName] of Object.entries(FIELD)) {
+      if (!keys.has(fieldName)) {
+        console.log(
+          `[PROBE WARNING] ${logicalName}: 응답에 ${fieldName} 필드가 없습니다.`
+        );
+      }
+    }
+
+    console.log(
+      '[PROBE] 이 검사는 응답 구조만 확인합니다. 정책의 사실 검증이나 공개 승인을 의미하지 않습니다.'
+    );
+
+    return;
+  }
+
+  globalThis.__youthRentItems = items;
+
+  try {
+    main();
+  } finally {
+    delete globalThis.__youthRentItems;
+  }
+}
+
+run().catch((error) => {
+  // 인증키 및 요청 URL의 쿼리 값은 출력하지 않습니다.
+  console.error(`[INGEST ERROR] ${error.message}`);
+  process.exitCode = 1;
+});
