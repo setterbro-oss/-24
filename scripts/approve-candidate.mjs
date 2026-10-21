@@ -1,0 +1,23 @@
+import fs from 'node:fs';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
+import { getPublishState } from '../src/lib/publish-gate.mjs';
+
+const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
+const slug = process.argv[2] || '';
+if (!/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(slug)) throw new Error('유효한 후보 slug가 필요합니다.');
+const draftPath = path.join(root, 'data/drafts', `${slug}.json`);
+if (!fs.existsSync(draftPath)) throw new Error(`후보를 찾을 수 없습니다: ${slug}`);
+const draft = JSON.parse(fs.readFileSync(draftPath, 'utf8'));
+if (draft.reviewState !== 'editorial_review') throw new Error('편집 검수 상태가 아닙니다. 검토 완료 후 reviewState를 editorial_review로 설정하세요.');
+const regionsPath = path.join(root, 'src/data/regions.json');
+const regions = JSON.parse(fs.readFileSync(regionsPath, 'utf8'));
+if (regions.some((item) => item.slug === slug)) throw new Error('같은 slug가 이미 게시 데이터에 있습니다.');
+const promoted = { ...draft, verificationStatus: 'verified', verifiedAt: new Date().toISOString().slice(0, 10) };
+const gate = getPublishState(promoted);
+if (gate.state !== 'published') throw new Error(`게시 게이트 차단: ${gate.reasons.join(', ')}`);
+regions.push(promoted);
+regions.sort((a, b) => a.slug.localeCompare(b.slug));
+fs.writeFileSync(regionsPath, `${JSON.stringify(regions, null, 2)}\n`);
+fs.unlinkSync(draftPath);
+console.log(`Approved ${slug}; publish gate passed. The resulting PR still requires a human review and merge.`);

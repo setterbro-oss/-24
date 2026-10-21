@@ -1,0 +1,137 @@
+{
+  "slug": "rent-test000002",
+  "name": "테스트군 청년 월세 지원(종료)",
+  "sourceType": "official_api",
+  "description": "테스트군의 「테스트군 청년 월세 지원(종료)」 지원 대상·지원 내용·신청 방법을 온통청년 공식 정보 기준으로 정리하고 국토교통부 청년월세와 비교했습니다.",
+  "applyUrl": "https://www.youthcenter.go.kr/",
+  "sourceTitle": "온통청년 - 테스트군 청년 월세 지원(종료)",
+  "sourceUrl": "https://www.testgun.go.kr/y/2",
+  "verificationStatus": "unverified",
+  "verifiedAt": "",
+  "effectiveFrom": "2025-01-01",
+  "effectiveTo": "2025-12-31",
+  "facts": [
+    {
+      "label": "지원 연령",
+      "value": "만 19세 ~ 34세"
+    },
+    {
+      "label": "주관 기관",
+      "value": "테스트군"
+    },
+    {
+      "label": "지원 내용",
+      "value": "월 5만원 월세 지원"
+    },
+    {
+      "label": "소득 요건",
+      "value": "중위소득 120% 이하"
+    },
+    {
+      "label": "신청 기간",
+      "value": "20250301 ~ 20250331"
+    },
+    {
+      "label": "신청 방법",
+      "value": "방문 신청"
+    }
+  ],
+  "comparison": [
+    {
+      "label": "대상 연령",
+      "national": "만 19~34세",
+      "local": "만 19~34세"
+    },
+    {
+      "label": "지원 내용",
+      "national": "월 최대 200,000원, 최대 24회",
+      "local": "월 5만원 월세 지원"
+    },
+    {
+      "label": "소득 요건",
+      "national": "청년가구 중위소득 60% 이하 + 원가구 100% 이하",
+      "local": "중위소득 120% 이하"
+    },
+    {
+      "label": "신청 기간",
+      "national": "2026년 접수 5월 29일 종료(다음 공고 확인)",
+      "local": "20250301 ~ 20250331"
+    }
+  ],
+  "body": [
+    "월세 지원"
+  ],
+  "editorialNote": "온통청년 청년정책 API 값을 규칙 기반으로 변환한 자료입니다. 매주 API를 다시 조회해 값이 바뀌면 자동 갱신하고, 신청 기간이 끝나거나 항목이 부족하면 검색 노출에서 자동 제외합니다.",
+  "verificationReport": {
+    "allClaimsMatch": false,
+    "sourceUrl": "https://www.testgun.go.kr/y/2",
+    "checkedAt": "2026-10-21",
+    "snapshotHash": "b333e896a47d05f4b12c3f55839a185295f0766a6f5f77212d185e06176a186f",
+    "snapshotMethod": "Candidate fields copied from the Youth Policy API. This is not evidence that claims match the cited notice; a reviewer must replace this report after checking the official source.",
+    "snapshotText": "지원 연령: 만 19세 ~ 34세\n주관 기관: 테스트군\n지원 내용: 월 5만원 월세 지원\n소득 요건: 중위소득 120% 이하\n신청 기간: 20250301 ~ 20250331\n신청 방법: 방문 신청",
+    "claims": [
+      {
+        "id": "api_1_age_range",
+        "type": "age_range",
+        "value": "만 19세 ~ 34세",
+        "unit": "text",
+        "anchor": "지원 연령",
+        "sourceSnippet": "지원 연령: 만 19세 ~ 34세",
+        "status": "unreachable",
+        "verifiedAt": "2026-10-21"
+      },
+      {
+        "id": "api_2_support_content",
+        "type": "support_content",
+        "value": "월 5만원 월세 지원",
+        "unit": "text",
+        "anchor": "지원 내용",
+        "sourceSnippet": "지원 내용: 월 5만원 월세 지원",
+        "status": "unreachable",
+        "verifiedAt": "2026-10-21"
+      },
+      {
+        "id": "api_3_income_condition",
+        "type": "income_condition",
+        "value": "중위소득 120% 이하",
+        "unit": "text",
+        "anchor": "소득 요건",
+        "sourceSnippet": "소득 요건: 중위소득 120% 이하",
+        "status": "unreachable",
+        "verifiedAt": "2026-10-21"
+      },
+      {
+        "id": "api_4_application_period",
+        "type": "application_period",
+        "value": "20250301 ~ 20250331",
+        "unit": "text",
+        "anchor": "신청 기간",
+        "sourceSnippet": "신청 기간: 20250301 ~ 20250331",
+        "status": "unreachable",
+        "verifiedAt": "2026-10-21"
+      },
+      {
+        "id": "api_5_application_method",
+        "type": "application_method",
+        "value": "방문 신청",
+        "unit": "text",
+        "anchor": "신청 방법",
+        "sourceSnippet": "신청 방법: 방문 신청",
+        "status": "unreachable",
+        "verifiedAt": "2026-10-21"
+      },
+      {
+        "id": "api_6_agency",
+        "type": "agency",
+        "value": "테스트군",
+        "unit": "text",
+        "anchor": "주관 기관",
+        "sourceSnippet": "주관 기관: 테스트군",
+        "status": "unreachable",
+        "verifiedAt": "2026-10-21"
+      }
+    ]
+  },
+  "reviewState": "candidate",
+  "candidateUpdatedAt": "2026-10-21"
+}

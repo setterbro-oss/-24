@@ -1,5 +1,20 @@
 # 청년월세24 v1.12.0 시작 안내
 
+## 검토 대기 → 승인 → 배포
+
+자동 후보 검토와 Cloudflare 배포 설정은 [OPERATIONS-KO.md](./OPERATIONS-KO.md)를 따라 진행하세요.
+
+1. ZIP을 풀어 저장소의 파일을 반영하고 `main`에 반영합니다.
+2. GitHub 저장소 `Settings → Actions → General`에서 워크플로에 `Read and write permissions`를 허용합니다.
+3. `Settings → Rules → Rulesets`에서 `main`에 PR 필수 및 독립 승인 1명 이상을 설정합니다.
+4. `Settings → Secrets and variables → Actions`에 온통청년 API 키(선택)와 Cloudflare의 토큰·Account ID를 등록하고, Pages 프로젝트 이름 변수를 등록합니다.
+5. `Actions → Candidate Intake (review pending) → Run workflow`로 후보 수집 PR을 만듭니다.
+6. 후보 PR에서 `review-report.md`와 공식 공고를 대조하고, 편집 콘텐츠 및 claim별 근거를 보완한 뒤 검수 상태를 `editorial_review`로 표시해 병합합니다.
+7. `Actions → Approve reviewed candidate (opens deployment PR) → Run workflow`에서 slug를 선택 입력하고 확인 문구를 지정합니다. 게시 게이트 통과 시 승인 PR이 열립니다.
+8. 승인 PR의 변경 파일과 검사 결과를 별도 검토자가 확인하고 승인·병합하면 `main` 배포 작업이 Cloudflare Pages에 게시합니다.
+
+API 응답만으로는 사실 검증, 700자 고유 콘텐츠, 광고/색인 적합성을 자동 판정하지 않습니다. 자세한 필수 설정, 불가 조건, 저장소 비밀값은 `OPERATIONS-KO.md`를 참조하세요.
+
 ## 이번 버전 변경점
 - `src/lib/source-extract.mjs`: 중첩된 HTML 컨테이너를 끝까지 읽도록 개선하고, `board-view-content`, `nttCn` 등 국내 공공 게시판 선택자를 추가했습니다. 탐색 메뉴·헤더·푸터·사이드바는 fallback 본문에서 제외합니다.
 - `scripts/adsense-policy-lint.mjs`: 독립 사이트 고지, 광고 클릭 유도/보장 문구, 공식 발췌문 해시, claim 발췌의 증거 스냅샷 포함 여부를 검사합니다. 빌드 전 자동 실행하며 GitHub Actions 요약에도 결과를 남깁니다.

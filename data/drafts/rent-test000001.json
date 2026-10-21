@@ -1,0 +1,170 @@
+{
+  "slug": "rent-test000001",
+  "name": "테스트시 청년 월세 지원",
+  "sourceType": "official_api",
+  "description": "테스트시의 「테스트시 청년 월세 지원」 지원 대상·지원 내용·신청 방법을 온통청년 공식 정보 기준으로 정리하고 국토교통부 청년월세와 비교했습니다.",
+  "applyUrl": "https://www.youthcenter.go.kr/",
+  "sourceTitle": "온통청년 - 테스트시 청년 월세 지원",
+  "sourceUrl": "https://www.test.go.kr/youth/rent/1",
+  "verificationStatus": "unverified",
+  "verifiedAt": "",
+  "effectiveFrom": "2026-01-01",
+  "effectiveTo": "2026-12-31",
+  "facts": [
+    {
+      "label": "지원 연령",
+      "value": "만 19세 ~ 39세"
+    },
+    {
+      "label": "주관 기관",
+      "value": "테스트시"
+    },
+    {
+      "label": "지원 내용",
+      "value": "월 최대 10만원, 최대 12개월 월세 지원. 실제 납부하는 월세 범위 안에서 지급하며 관리비와 보증금은 지원에 포함되지 않습니다. 다른 지자체 또는 중앙정부의 월세 지원을 받고 있는 경우 중복 지원이 제한될 수 있습니다."
+    },
+    {
+      "label": "지원 대상",
+      "value": "테스트시에 주민등록을 두고 월세로 거주하는 무주택 청년"
+    },
+    {
+      "label": "추가 자격 요건",
+      "value": "테스트시 주민등록 6개월 이상"
+    },
+    {
+      "label": "소득 요건",
+      "value": "기준 중위소득 150% 이하"
+    },
+    {
+      "label": "신청 기간",
+      "value": "20261101 ~ 20261130"
+    },
+    {
+      "label": "신청 방법",
+      "value": "테스트시 청년포털에서 온라인 신청하며, 신청 후 소득·재산 및 중복 수혜 여부를 조사한 뒤 선정 결과를 개별 통지합니다. 제출 서류는 임대차계약서, 주민등록등본, 소득 확인 서류입니다."
+    }
+  ],
+  "comparison": [
+    {
+      "label": "대상 연령",
+      "national": "만 19~34세",
+      "local": "만 19~39세"
+    },
+    {
+      "label": "지원 내용",
+      "national": "월 최대 200,000원, 최대 24회",
+      "local": "월 최대 10만원, 최대 12개월 월세 지원. 실제 납부하는 월세 범위 안에서 지급하며 관리비와 보증금은 지원에 포함되지 않습니다. 다른 지자체 또는 중앙정부의 월세 지원을 받고 있는 경우 중복 지원이 제한될 수 있습니다."
+    },
+    {
+      "label": "소득 요건",
+      "national": "청년가구 중위소득 60% 이하 + 원가구 100% 이하",
+      "local": "기준 중위소득 150% 이하"
+    },
+    {
+      "label": "신청 기간",
+      "national": "2026년 접수 5월 29일 종료(다음 공고 확인)",
+      "local": "20261101 ~ 20261130"
+    },
+    {
+      "label": "추가 자격 요건",
+      "national": "무주택·부모와 별도 거주 등 공고 기준",
+      "local": "테스트시 주민등록 6개월 이상"
+    }
+  ],
+  "body": [
+    "테스트시에 6개월 이상 거주하며 월세로 살고 있는 청년의 주거비 부담을 덜기 위해 월세 일부를 현금으로 지원하는 사업입니다. 보증금과 월세 상한 요건을 충족하는 무주택 청년이 대상이며, 신청 기간 안에 온라인으로 접수해야 합니다. 지원금은 심사 후 매월 지정 계좌로 지급되고, 소득·재산 조사 결과에 따라 선정 여부가 달라질 수 있습니다."
+  ],
+  "editorialNote": "온통청년 청년정책 API 값을 규칙 기반으로 변환한 자료입니다. 매주 API를 다시 조회해 값이 바뀌면 자동 갱신하고, 신청 기간이 끝나거나 항목이 부족하면 검색 노출에서 자동 제외합니다.",
+  "verificationReport": {
+    "allClaimsMatch": false,
+    "sourceUrl": "https://www.test.go.kr/youth/rent/1",
+    "checkedAt": "2026-10-21",
+    "snapshotHash": "078cf0d576e7966f99eb845fbf691bdc3c60754555bba7db15bf78b53fdaf9b0",
+    "snapshotMethod": "Candidate fields copied from the Youth Policy API. This is not evidence that claims match the cited notice; a reviewer must replace this report after checking the official source.",
+    "snapshotText": "지원 연령: 만 19세 ~ 39세\n주관 기관: 테스트시\n지원 내용: 월 최대 10만원, 최대 12개월 월세 지원. 실제 납부하는 월세 범위 안에서 지급하며 관리비와 보증금은 지원에 포함되지 않습니다. 다른 지자체 또는 중앙정부의 월세 지원을 받고 있는 경우 중복 지원이 제한될 수 있습니다.\n지원 대상: 테스트시에 주민등록을 두고 월세로 거주하는 무주택 청년\n추가 자격 요건: 테스트시 주민등록 6개월 이상\n소득 요건: 기준 중위소득 150% 이하\n신청 기간: 20261101 ~ 20261130\n신청 방법: 테스트시 청년포털에서 온라인 신청하며, 신청 후 소득·재산 및 중복 수혜 여부를 조사한 뒤 선정 결과를 개별 통지합니다. 제출 서류는 임대차계약서, 주민등록등본, 소득 확인 서류입니다.",
+    "claims": [
+      {
+        "id": "api_1_age_range",
+        "type": "age_range",
+        "value": "만 19세 ~ 39세",
+        "unit": "text",
+        "anchor": "지원 연령",
+        "sourceSnippet": "지원 연령: 만 19세 ~ 39세",
+        "status": "unreachable",
+        "verifiedAt": "2026-10-21"
+      },
+      {
+        "id": "api_2_support_content",
+        "type": "support_content",
+        "value": "월 최대 10만원, 최대 12개월 월세 지원. 실제 납부하는 월세 범위 안에서 지급하며 관리비와 보증금은 지원에 포함되지 않습니다. 다른 지자체 또는 중앙정부의 월세 지원을 받고 있는 경우 중복 지원이 제한될 수 있습니다.",
+        "unit": "text",
+        "anchor": "지원 내용",
+        "sourceSnippet": "지원 내용: 월 최대 10만원, 최대 12개월 월세 지원. 실제 납부하는 월세 범위 안에서 지급하며 관리비와 보증금은 지원에 포함되지 않습니다. 다른 지자체 또는 중앙정부의 월세 지원을 받고 있는 경우 중복 지원이 제한될 수 있습니다.",
+        "status": "unreachable",
+        "verifiedAt": "2026-10-21"
+      },
+      {
+        "id": "api_3_support_target",
+        "type": "support_target",
+        "value": "테스트시에 주민등록을 두고 월세로 거주하는 무주택 청년",
+        "unit": "text",
+        "anchor": "지원 대상",
+        "sourceSnippet": "지원 대상: 테스트시에 주민등록을 두고 월세로 거주하는 무주택 청년",
+        "status": "unreachable",
+        "verifiedAt": "2026-10-21"
+      },
+      {
+        "id": "api_4_extra_qualification",
+        "type": "extra_qualification",
+        "value": "테스트시 주민등록 6개월 이상",
+        "unit": "text",
+        "anchor": "추가 자격 요건",
+        "sourceSnippet": "추가 자격 요건: 테스트시 주민등록 6개월 이상",
+        "status": "unreachable",
+        "verifiedAt": "2026-10-21"
+      },
+      {
+        "id": "api_5_income_condition",
+        "type": "income_condition",
+        "value": "기준 중위소득 150% 이하",
+        "unit": "text",
+        "anchor": "소득 요건",
+        "sourceSnippet": "소득 요건: 기준 중위소득 150% 이하",
+        "status": "unreachable",
+        "verifiedAt": "2026-10-21"
+      },
+      {
+        "id": "api_6_application_period",
+        "type": "application_period",
+        "value": "20261101 ~ 20261130",
+        "unit": "text",
+        "anchor": "신청 기간",
+        "sourceSnippet": "신청 기간: 20261101 ~ 20261130",
+        "status": "unreachable",
+        "verifiedAt": "2026-10-21"
+      },
+      {
+        "id": "api_7_application_method",
+        "type": "application_method",
+        "value": "테스트시 청년포털에서 온라인 신청하며, 신청 후 소득·재산 및 중복 수혜 여부를 조사한 뒤 선정 결과를 개별 통지합니다. 제출 서류는 임대차계약서, 주민등록등본, 소득 확인 서류입니다.",
+        "unit": "text",
+        "anchor": "신청 방법",
+        "sourceSnippet": "신청 방법: 테스트시 청년포털에서 온라인 신청하며, 신청 후 소득·재산 및 중복 수혜 여부를 조사한 뒤 선정 결과를 개별 통지합니다. 제출 서류는 임대차계약서, 주민등록등본, 소득 확인 서류입니다.",
+        "status": "unreachable",
+        "verifiedAt": "2026-10-21"
+      },
+      {
+        "id": "api_8_agency",
+        "type": "agency",
+        "value": "테스트시",
+        "unit": "text",
+        "anchor": "주관 기관",
+        "sourceSnippet": "주관 기관: 테스트시",
+        "status": "unreachable",
+        "verifiedAt": "2026-10-21"
+      }
+    ]
+  },
+  "reviewState": "candidate",
+  "candidateUpdatedAt": "2026-10-21"
+}

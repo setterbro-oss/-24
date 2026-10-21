@@ -44,8 +44,9 @@ const PAGE_SIZE = boundedInteger(
   100
 );
 
-const DRAFT_PATH = path.join(ROOT, 'data/drafts/youth-api-candidates.json');
+const DATA_PATH = path.join(ROOT, 'src/data/regions.json');
 const NATIONAL_PATH = path.join(ROOT, 'src/data/national.json');
+const DRAFTS_PATH = path.join(ROOT, 'data/drafts');
 
 function boundedInteger(value, fallback, min, max) {
   if (value === undefined || value === '') return fallback;
@@ -272,94 +273,199 @@ function factSignature(record) {
   );
 }
 
-function isUsableCandidate(record) {
-  return Boolean(
+function isUsableRecord(record) {
+  return (
     record &&
     typeof record.slug === 'string' &&
     /^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(record.slug) &&
-    typeof record.name === 'string' && record.name.trim().length >= 2 &&
-    typeof record.sourceUrl === 'string' && record.sourceUrl.startsWith('https://') &&
-    Array.isArray(record.facts) && Array.isArray(record.candidateEvidence) &&
-    record.verificationStatus === 'unverified' && !record.verificationReport
+    typeof record.name === 'string' &&
+    record.name.trim().length >= 2 &&
+    typeof record.sourceUrl === 'string' &&
+    typeof record.applyUrl === 'string' &&
+    Array.isArray(record.facts) &&
+    record.facts.length >= 4 &&
+    Array.isArray(record.body) &&
+    record.body.some(
+      (paragraph) =>
+        typeof paragraph === 'string' &&
+        paragraph.trim().length > 0
+    ) &&
+    record.verificationReport?.allClaimsMatch === false &&
+    Array.isArray(record.verificationReport?.claims) &&
+    record.verificationReport.claims.length > 0
   );
 }
 
 function main() {
   const items = globalThis.__youthRentItems;
-  if (!Array.isArray(items)) throw new Error('수집 결과가 배열이 아닙니다.');
+
+  if (items === null) {
+    return;
+  }
+
+  if (!Array.isArray(items)) {
+    throw new Error('수집 결과가 배열이 아닙니다.');
+  }
 
   const today = todayKst();
   const national = readJson(NATIONAL_PATH);
+  const existing = readJson(DATA_PATH);
+
+  if (!Array.isArray(existing)) {
+    throw new Error('regions.json은 배열이어야 합니다.');
+  }
+
   const nationalClaims = Object.fromEntries(
-    (national.verificationReport?.claims || []).map((claim) => [claim.type, claim])
+    (national.verificationReport?.claims || []).map((claim) => [
+      claim.type,
+      claim,
+    ])
   );
+
   const nationalComparisonClaims = {
     age_range: nationalClaims.age_range,
     monthly_limit_krw: nationalClaims.monthly_limit_krw,
     max_months: nationalClaims.max_months,
   };
 
-  const candidates = new Map();
+  const publishedSlugs = new Set(existing.map((record) => record.slug));
+
+  const priorDrafts = new Map();
+  if (fs.existsSync(DRAFTS_PATH)) for (const file of fs.readdirSync(DRAFTS_PATH).filter((x) => x.endsWith('.json'))) {
+    try { const draft = readJson(path.join(DRAFTS_PATH, file)); priorDrafts.set(draft.slug, draft); } catch { /* report malformed drafts below */ }
+  }
+
+  const fresh = new Map();
   const skipped = Object.create(null);
-  const skip = (reason) => { skipped[reason] = (skipped[reason] || 0) + 1; };
+  const existingFactSignatures = new Set(
+    existing.map(factSignature)
+  );
+  for (const draft of priorDrafts.values()) {
+    if (!draft.reviewState || draft.reviewState !== 'editorial_review') existingFactSignatures.add(factSignature(draft));
+  }
+
+  const skip = (reason) => {
+    skipped[reason] = (skipped[reason] || 0) + 1;
+  };
 
   for (const item of items) {
-    if (!isRentPolicy(item)) { skip('not_housing_policy'); continue; }
+    if (!isRentPolicy(item)) {
+      skip('not_rent_policy');
+      continue;
+    }
+
     const id = normalizeSlug(item?.[FIELD.id]);
-    if (!id) { skip('missing_policy_id'); continue; }
+
+    if (!id) {
+      skip('missing_policy_id');
+      continue;
+    }
 
     let result;
+
     try {
       result = buildRecord(item, {
         today,
         nationalClaims: nationalComparisonClaims,
         detailUrlOf: (row) => {
           if (!DETAIL_TEMPLATE) return '';
+
           const rowId = String(row?.[FIELD.id] ?? '');
-          return rowId ? DETAIL_TEMPLATE.replace('{id}', encodeURIComponent(rowId)) : '';
+
+          if (!rowId) return '';
+
+          return DETAIL_TEMPLATE.replace(
+            '{id}',
+            encodeURIComponent(rowId)
+          );
         },
       });
     } catch {
       skip('record_build_failed');
       continue;
     }
-    if (result?.skip) { skip(result.skip); continue; }
+
+    if (result?.skip) {
+      skip(result.skip);
+      continue;
+    }
+
     const record = result?.record;
-    if (!isUsableCandidate(record)) { skip('invalid_candidate_shape'); continue; }
-    if (candidates.has(record.slug)) { skip('duplicate_policy_id'); continue; }
-    candidates.set(record.slug, record);
+
+    if (!isUsableRecord(record)) {
+      skip('invalid_record_shape');
+      continue;
+    }
+
+    if (publishedSlugs.has(record.slug)) {
+      skip('already_published_slug');
+      continue;
+    }
+
+    // 같은 정책 ID의 중복 행은 한 건만 사용합니다.
+    if (fresh.has(record.slug)) {
+      skip('duplicate_policy_id');
+      continue;
+    }
+
+    // 기존 레코드가 있어도 근거가 부족하거나 기간이 끝난 정책을
+    // 강제로 공개하지 않습니다. 기존 publish gate가 최종 판정합니다.
+    fresh.set(record.slug, record);
   }
 
-  const unique = [];
+  // 동일한 사실 목록을 가진 API 후보는 하나만 남깁니다.
+  const uniqueApiRecords = [];
   const signatures = new Set();
-  for (const record of candidates.values()) {
-    const signature = JSON.stringify([
-      record.name,
-      record.sourceUrl,
-      ...(record.facts || []).map((fact) => `${fact.label}:${fact.value}`).sort(),
-    ]);
-    if (signatures.has(signature)) { skip('duplicate_candidate'); continue; }
+
+  for (const record of fresh.values()) {
+    const signature = factSignature(record);
+
+    if (signatures.has(signature) || existingFactSignatures.has(signature)) {
+      skip('duplicate_api_facts');
+      continue;
+    }
+
     signatures.add(signature);
-    unique.push(record);
+    uniqueApiRecords.push(record);
   }
 
-  const queue = {
-    schemaVersion: 1,
-    generatedAt: new Date().toISOString(),
-    source: '온통청년 청년정책 API — 후보 수집 전용',
-    notice: '모든 항목은 비공개 후보입니다. API 응답만으로 사실 검증·게시·색인·광고 승인을 하지 않습니다.',
+  const changed = [];
+  for (const record of uniqueApiRecords) {
+    const prior = priorDrafts.get(record.slug);
+    // Preserve human edits and evidence in a reviewed draft across refreshes.
+    if (prior && prior.reviewState === 'editorial_review') continue;
+    const draft = { ...record, verificationStatus: 'unverified', verifiedAt: '', reviewState: 'candidate', candidateUpdatedAt: today };
+    const file = path.join(DRAFTS_PATH, `${record.slug}.json`);
+    fs.mkdirSync(DRAFTS_PATH, { recursive: true });
+    writeJsonAtomically(file, draft);
+    changed.push(record.slug);
+  }
+
+  const summary = {
     sourceItems: items.length,
     matchingPolicies: items.filter(isRentPolicy).length,
-    candidateCount: unique.length,
+    candidatesWritten: changed.length,
+    candidatesPreservedForEditorialReview: uniqueApiRecords.length - changed.length,
     skipped,
-    candidates: unique,
+    dryRun: DRY_RUN,
   };
 
   console.log('[INGEST SUMMARY]');
-  console.log(JSON.stringify({ sourceItems: queue.sourceItems, matchingPolicies: queue.matchingPolicies, candidateCount: queue.candidateCount, skipped, dryRun: DRY_RUN }, null, 2));
-  if (DRY_RUN) { console.log('[DRY RUN] 초안 큐를 저장하지 않았습니다.'); return; }
-  writeJsonAtomically(DRAFT_PATH, queue);
-  console.log(`[DRAFT QUEUE] ${path.relative(ROOT, DRAFT_PATH)} 저장 완료: 후보 ${unique.length}건. 공개 데이터는 변경하지 않았습니다.`);
+  console.log(JSON.stringify(summary, null, 2));
+
+  if (!changed.length) {
+    console.log('[NO CHANGE] 새 검토 후보가 없습니다.');
+    return;
+  }
+
+  if (DRY_RUN) {
+    console.log(
+      '[DRY RUN] 변경 내용을 저장하지 않았습니다.'
+    );
+    return;
+  }
+
+  console.log(`[DRAFTS] 검토 후보 ${changed.length}개 저장: ${changed.join(', ')}`);
 }
 
 async function run() {

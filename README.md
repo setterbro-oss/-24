@@ -9,7 +9,6 @@ GitHub + Cloudflare 정적 배포용 Astro 사이트입니다. D1, Workers 코�
 ```text
 src/data/national.json        전국 공통 사업(국토교통부 청년월세) 데이터와 검증 상태
 src/data/regions.json         지역별 고유 사업 데이터와 검증 상태
-data/drafts/                  API 후보 대기열(비공개·미검증, 자동 게시 금지)
 src/data/site.json            사이트 이름, 문의 이메일
 src/lib/site.mjs              사이트 주소(SITE_URL)의 단일 기준
 src/lib/publish-gate.mjs     색인·광고·내부 링크 단일 공개 게이트
