@@ -11,6 +11,7 @@
     "build": "node scripts/build-headers.mjs && node scripts/validate-data.mjs && npm run lint:policy && astro build && node scripts/verify-build.mjs",
     "preview": "astro preview",
     "check:data": "node scripts/validate-data.mjs",
+    "check:drafts": "node scripts/validate-drafts.mjs",
     "check:freshness": "node scripts/check-freshness.mjs",
     "verify:build": "node scripts/verify-build.mjs",
     "test": "node --test tests/*.test.mjs",
@@ -20,6 +21,7 @@
     "lint:policy": "node scripts/adsense-policy-lint.mjs",
     "reverify:claims": "node scripts/reverify-claims.mjs",
     "ingest:youth": "node scripts/ingest-youth-policies.mjs",
+    "ingest:youth:dry": "node scripts/ingest-youth-policies.mjs --dry-run",
     "refresh:data": "node scripts/monitor-official-sources.mjs && node scripts/reverify-claims.mjs && node scripts/ingest-youth-policies.mjs"
   },
   "dependencies": {

@@ -27,3 +27,13 @@ Cloudflare → Workers & Pages → 해당 프로젝트 → Settings → Build �
 - 임의의 지역 전화번호·지원 금액·소득 기준을 `verified`로 표시하지 않습니다. 별도 지자체 사업은 해당 지역의 구체적인 공식 공고와 근거 스냅샷이 확보되기 전까지 `unverified`로 둡니다.
 - 현재 저장소에는 근거 검증이 완료된 226개 지역 데이터가 없습니다. 이 패키지는 확인하지 않은 226개 지역을 가짜로 채우지 않습니다.
 - AdSense 광고는 승인 후 실제 게시자 ID와 광고 슬롯 ID를 설정할 때만 렌더링됩니다. 코드만으로 승인, 광고 노출 또는 수익을 보장할 수 없습니다.
+
+
+## 온통청년 API 후보 수집 (비공개 전용)
+
+- GitHub Actions의 **Collect Youth Housing Policy Candidates**는 매일 API 후보를 `data/drafts/youth-api-candidates.json`에 저장합니다.
+- 이 워크플로는 `src/data/regions.json`과 `src/data/national.json`을 수정하지 않으며, API 결과를 `verified`로 만들거나 자동 게시하지 않습니다.
+- `YOUTH_API_KEY`는 Repository Settings → Secrets and variables → Actions → New repository secret에 등록합니다. 변수 이름은 `YOUTH_API_KEY`입니다. 선택적으로 `YOUTH_API_URL`을 Actions variable로 설정할 수 있습니다.
+- 수동 시험은 `npm run ingest:youth -- --probe`, 쓰기 없는 시험은 `npm run ingest:youth:dry`를 사용합니다. 실제 API 수집을 수행하면 결과는 초안 큐에만 저장됩니다.
+- 공개 승격 전에는 상세 공고 원문을 사람이 직접 열어 주요 사실을 대조하고, 사용자에게 도움이 되는 독립 설명을 작성해야 합니다. API 문구를 복사하거나 일반적인 문장을 덧붙여 700자를 채우는 것은 검증 또는 고유 가치로 간주하지 않습니다.
+- 기존 `official-source-monitor.yml`은 별도 역할(원문 변경 감지 및 이슈 생성)을 유지하므로 삭제하지 않습니다.
